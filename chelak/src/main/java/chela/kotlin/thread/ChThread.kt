@@ -3,55 +3,53 @@ package chela.kotlin.thread
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import chela.kotlin.viewmodel.scanner.ChScannedItem
-import chela.kotlin.viewmodel.properties
+import chela.kotlin.viewmodel.ChProperty
+import chela.kotlin.viewmodel.scanner.ChScanner
 import java.util.concurrent.Executors
-
-val threadUtil = ChThread()
-
-class ChThread{
-    enum class MsgType{
-        Prop{override fun f(it: Any){
-            if(it !is Set<*>) return
-            it.forEach {
-                if(it !is ChScannedItem) return
-                val view = it.view
-                it.collector.forEach{(k, v)-> properties[k.toLowerCase()]?.f(view, v)}
-            }
-        }};
-        internal abstract fun f(it:Any)
+sealed class MsgType(val idx:Int){internal abstract fun f(it:Any)}
+object Prop:MsgType(0){override fun f(it: Any){
+    if(it !is Set<*>) return
+    it.forEach {
+        if(it !is ChScanner.Item) return
+        val view = it.view
+        it.collector.forEach{(k, v)-> ChProperty.f(view, k.toLowerCase(), v)}
     }
-    private val mainHnd = object : Handler(Looper.getMainLooper()) {
-        private val msgTypes = MsgType.values()
+}}
+object ChThread{
+    @JvmStatic val property = Prop
+    @JvmStatic val msgType= MsgType::class.sealedSubclasses.map {
+        val v = it.objectInstance as MsgType
+        v.idx to v
+    }.toMap()
+    @JvmStatic private val mainHnd = object:Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg:Message){
-            val idx = msg.what
-            if(idx < msgTypes.size) msgTypes[idx].f(msg.obj)
+            msgType[msg.what]?.f(msg.obj)
             msg.recycle()
         }
     }
-    private val que = Executors.newSingleThreadExecutor()
-    private val pool = Executors.newFixedThreadPool(3)
-    fun flushAll(){
+    @JvmStatic private val que = Executors.newSingleThreadExecutor()
+    @JvmStatic private val pool = Executors.newFixedThreadPool(3)
+    @JvmStatic fun flushAll(){
         que.shutdownNow()
         pool.shutdownNow()
         mainHnd.looper.quit()
     }
-    fun isMain(): Boolean = Looper.getMainLooper().thread === Thread.currentThread()
-    fun que(task: Runnable) {que.execute(task)}
-    fun pool(task: Runnable) {pool.execute(task)}
-    fun main(task: Runnable) {main(0, task)}
-    fun main(delay: Long, task: Runnable) {
+    @JvmStatic fun isMain(): Boolean = Looper.getMainLooper().thread === Thread.currentThread()
+    @JvmStatic fun que(task: Runnable) {que.execute(task)}
+    @JvmStatic fun pool(task: Runnable) {pool.execute(task)}
+    @JvmStatic fun main(task: Runnable) {main(0, task)}
+    @JvmStatic fun main(delay: Long, task: Runnable) {
         if (delay == 0L) {
             if (isMain()) task.run() else mainHnd.post(task)
         } else mainHnd.postDelayed(task, delay)
     }
-    fun mainCancel(task: Runnable) {mainHnd.removeCallbacks(task)}
-    fun msg(type: MsgType, v: Any) {msg(0, type, v)}
-    fun msg(ms: Long, type: MsgType, v: Any) {
-        val msg = mainHnd.obtainMessage(type.ordinal, v)
+    @JvmStatic fun mainCancel(task: Runnable) {mainHnd.removeCallbacks(task)}
+    @JvmStatic fun msg(type: MsgType, v: Any) {msg(0, type, v)}
+    @JvmStatic fun msg(ms: Long, type:MsgType, v: Any) {
+        val msg = mainHnd.obtainMessage(type.idx, v)
         if (ms == 0L) {
             if (isMain()) mainHnd.handleMessage(msg) else mainHnd.sendMessage(msg)
         } else mainHnd.sendMessageDelayed(msg, ms)
     }
-    fun msgCancel(type: MsgType, v: Any) {mainHnd.removeMessages(type.ordinal, v)}
+    @JvmStatic fun msgCancel(type: MsgType, v: Any) {mainHnd.removeMessages(type.idx, v)}
 }

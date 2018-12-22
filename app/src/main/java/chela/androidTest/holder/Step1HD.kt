@@ -8,18 +8,17 @@ import chela.androidTest.R
 import chela.androidTest.groupBase
 import chela.androidTest.looper
 import chela.androidTest.router
-import chela.kotlin.viewmodel.ChProperties
-import chela.kotlin.http.net
+import chela.kotlin.Ch
 import chela.kotlin.looper.ChLooper.Item.Ended
 import chela.kotlin.looper.ChLooper.Item.Time
+import chela.kotlin.viewmodel.holder.ChGroupBase
 import chela.kotlin.viewmodel.holder.ChHolder
 import chela.kotlin.viewmodel.holder.ChHolderBase
-import chela.kotlin.viewmodel.holder.ChGroupBase
 import chela.test.viewmodel.Step1VM
 
 @SuppressLint("StaticFieldLeak")
 object Step1HD: ChHolder<View>(){
-    var view: View? = null
+    lateinit var view:View
     override fun create(base: ChHolderBase<View>): View{
         if(base !is ChGroupBase) throw Exception("invalid base:$base")
         val v =  base.inflate(R.layout.main)
@@ -28,16 +27,16 @@ object Step1HD: ChHolder<View>(){
         v.findViewById<TextView>(R.id.textView)?.let{
             it.setTextColor(Color.parseColor("#6600ff"))
             it.isClickable = true
-            it.setOnClickListener { router.pop() }
+            it.setOnClickListener{router.pop()}
         }
         return v
     }
     override fun push(base: ChHolderBase<View>, isRestore:Boolean){
-        net("GET", "https://www.bsidesoft.com/hika/chela/test.json")
+        Ch.net("GET", "https://www.bsidesoft.com/hika/chela/test.json")
         .send{data, _, _->
             data?.let{
                 Step1VM.fromJson(it)
-                view?.findViewById<TextView>(R.id.textView)?.let{
+                view.findViewById<TextView>(R.id.textView)?.let{
                     it.text = Step1VM.userid
                 }
             }
@@ -46,7 +45,7 @@ object Step1HD: ChHolder<View>(){
     override fun pop(base: ChHolderBase<View>, isJump: Boolean):Boolean {
         val w = -groupBase.group.width.toDouble()
         looper.add(Time(350), Ended{base.pop(this)}) {
-            ChProperties.X.f(view!!, it.backIn(0.0, w))
+            Ch.prop.x.f(view, it.backIn(0.0, w))
         }
         return false
     }

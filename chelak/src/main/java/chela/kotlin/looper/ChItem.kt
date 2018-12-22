@@ -4,18 +4,18 @@ private const val PI = Math.PI
 private const val HPI = Math.PI / 2
 
 class ChItem{
-    var rate = 0.0
-    var current = 0.0
-    internal var start = 0.0
-    internal var end = 0.0
-    internal var term = 0.0
-    internal var isTurn = false
-    internal var loop = 1
-    internal var isPaused = false
-    internal var block: ItemBlock = empty
-    internal var ended: ItemBlock = empty
-    internal var next: ChItem? = null
-    internal var isStop = false
+    @JvmField var rate = 0.0
+    @JvmField var current = 0.0
+    @JvmField internal var start = 0.0
+    @JvmField internal var end = 0.0
+    @JvmField internal var term = 0.0
+    @JvmField internal var isTurn = false
+    @JvmField internal var loop = 1
+    @JvmField internal var isPaused = false
+    @JvmField internal var block: ItemBlock = empty
+    @JvmField internal var ended: ItemBlock = empty
+    @JvmField internal var next: ChItem? = null
+    @JvmField internal var isStop = false
     private var pauseStart = 0.0
     fun stop(){isStop = true}
     fun pause() {

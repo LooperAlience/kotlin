@@ -1,13 +1,11 @@
 package chela.kotlin.http
 
-import chela.kotlin.thread.threadUtil
+import chela.kotlin.Ch
 import okhttp3.*
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 typealias httpCallBack = (String?, String?, Int)->Unit
-
-fun net(method:String, url:String): ChHttp = ChHttpOk3(method, Request.Builder().url(url))
 
 interface ChHttp{
     fun header(key:String, value:String): ChHttp
@@ -16,13 +14,11 @@ interface ChHttp{
     fun file(key: String, filename: String, mine: String, file: ByteArray): ChHttp
     fun send(callback: httpCallBack)
 }
-
 private val okHttpClient = OkHttpClient.Builder()
     .connectTimeout(3, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS)
     .build()
 private val JSON = MediaType.parse("application/json; charset=utf-8")
-class ChHttpOk3 internal constructor(private val method:String, private var request:Request.Builder):
-    ChHttp {
+class ChHttpOk3 internal constructor(private val method:String, private var request:Request.Builder):ChHttp{
     private var form: FormBody.Builder? = null
     private var json:String? = null
     private var multi: MultipartBody.Builder? = null
@@ -58,14 +54,14 @@ class ChHttpOk3 internal constructor(private val method:String, private var requ
         }
         okHttpClient.newCall(request.build()).enqueue(object: Callback {
             override fun onFailure(call: Call, e: IOException){
-                threadUtil.main(Runnable{callback(null, e.toString(), 0)})}
+                Ch.thread.main(Runnable{callback(null, e.toString(), 0)})}
             override fun onResponse(call: Call, response: Response){
                 val code = response.code()
                 response.body()?.let {
                     val b = it.string()
                     response.close()
-                    threadUtil.main(Runnable {callback(b, null, code)})
-                } ?: threadUtil.main(Runnable {callback(null, "body error", code)})
+                    Ch.thread.main(Runnable {callback(b, null, code)})
+                } ?: Ch.thread.main(Runnable {callback(null, "body error", code)})
             }
         })
     }

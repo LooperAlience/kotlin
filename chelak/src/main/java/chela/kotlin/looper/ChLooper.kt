@@ -10,40 +10,36 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import chela.kotlin.core._shift
+import kotlin.concurrent.read
+import kotlin.concurrent.write
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
 typealias ItemBlock = (ChItem)->Unit
 typealias Now = ()->Double
 internal val empty: ItemBlock = {}
-
 internal val now:Now = { SystemClock.uptimeMillis().toDouble()}
-private class Ani(ctx: Context, val looper: ChLooper): View(ctx), LifecycleObserver{
-    init{tag = "CHELA_ANI"}
-    override fun onDraw(canvas: Canvas?){
-        looper.loop()
-        invalidate()
-    }
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun resume() = looper.resume()
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun pause() = looper.pause()
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun stop()=looper.clear()
-}
-class Sequence internal constructor(private val looper: ChLooper){
-    internal lateinit var item: ChItem
-    fun next(vararg param: ChLooper.Item, block: ItemBlock): Sequence {
-        val i = looper.getItem(*param, block = block)
-        item.next = i
-        item = i
-        return this
-    }
-}
-class ChLooper{
+class ChLooper:LifecycleObserver{
     sealed class Item{
         class Time(val ms:Int): Item()
         class Delay(val ms:Int): Item()
         class Loop(val cnt:Int): Item()
         class Ended(val block:(ChItem)->Unit): Item()
+    }
+    private class Ani(ctx: Context, private val looper: ChLooper): View(ctx){
+        init{tag = "CHELA_ANI"}
+        override fun onDraw(canvas: Canvas?){
+            looper.loop()
+            invalidate()
+        }
+    }
+    class Sequence internal constructor(private val looper: ChLooper){
+        internal lateinit var item: ChItem
+        fun next(vararg param: ChLooper.Item, block: ItemBlock): Sequence {
+            val i = looper.getItem(*param, block = block)
+            item.next = i
+            item = i
+            return this
+        }
     }
     private val sequence = Sequence(this)
     private var fps = 0.0
@@ -51,14 +47,16 @@ class ChLooper{
     private var pauseStart = 0.0
     private var pausedTime = 0.0
     private val items = mutableListOf<ChItem>()
+    private val remove = mutableListOf<ChItem>()
+    private val add = mutableListOf<ChItem>()
     private val itemPool = mutableListOf<ChItem>()
-
+    private val lock =  ReentrantReadWriteLock()
     fun act(act: AppCompatActivity){
         val root = act.window.decorView as ViewGroup
         if(root.findViewWithTag<Ani>("CHELA_ANI") == null){
             val ani = Ani(act, this)
             root.addView(ani)
-            act.lifecycle.addObserver(ani)
+            act.lifecycle.addObserver(this)
         }
     }
     fun loop(){
@@ -69,46 +67,57 @@ class ChLooper{
         var isEnd = false
         var rate = 0.0
         if(items.isEmpty()) return
-        for(idx in items.size - 1..0){
-            val item = items[idx]
-            if(item.isPaused || item.start > c) break
-            item.isTurn = false
-            isEnd = false
-            if(item.end <= c){
-                item.loop--
-                if(item.loop == 0){
-                    rate = 1.0
-                    isEnd = true
-                }else{
-                    rate = 0.0
-                    item.isTurn = true
-                    item.start = c
-                    item.end = c + item.term
+        remove.clear()
+        add.clear()
+        lock.read {
+            var i = 0
+            while(i < items.size) {
+                val item = items[i++]
+                if (item.isPaused || item.start > c) break
+                item.isTurn = false
+                isEnd = false
+                if (item.end <= c) {
+                    item.loop--
+                    if (item.loop == 0) {
+                        rate = 1.0
+                        isEnd = true
+                    } else {
+                        rate = 0.0
+                        item.isTurn = true
+                        item.start = c
+                        item.end = c + item.term
+                    }
+                } else {
+                    rate = if (item.term == 0.0) 0.0 else (c - item.start) / item.term
                 }
-            }else{
-                rate = if(item.term == 0.0) 0.0 else (c - item.start) / item.term
-            }
-            item.rate = rate
-            item.current = c
-            item.isStop = false
-            item.block(item)
-            if(item.isStop || isEnd){
-                item.ended(item)
-                item.next?.let{
-                    it.start += c
-                    it.end = it.start + it.term
-                    items += it
+                item.rate = rate
+                item.current = c
+                item.isStop = false
+                item.block(item)
+                if (item.isStop || isEnd) {
+                    item.ended(item)
+                    item.next?.let {
+                        it.start += c
+                        it.end = it.start + it.term
+                        add += it
+                    }
+                    remove += item
                 }
-                items -= item
-                itemPool += item
             }
+        }
+        if(remove.isNotEmpty() || add.isNotEmpty()) lock.write {
+            if(remove.isNotEmpty()){
+                items -= remove
+                itemPool += remove
+            }
+            if(add.isNotEmpty()) items += add
         }
     }
     fun add(vararg param: Item, block: ItemBlock): Sequence {
         val item = getItem(*param, block = block)
         item.start += now()
         item.end = item.start + item.term
-        items += item
+        lock.write {items += item}
         sequence.item = item
         return sequence
     }
@@ -130,14 +139,17 @@ class ChLooper{
         }
         return item
     }
-    internal fun clear(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    private fun clear(){
         itemPool += items
         items.clear()
     }
-    internal fun pause(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    private fun pause(){
         if(pauseStart != 0.0) pauseStart = now()
     }
-    internal fun resume(){
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    private fun resume(){
         if(pauseStart != 0.0){
             pausedTime += now() - pauseStart
             pauseStart = 0.0

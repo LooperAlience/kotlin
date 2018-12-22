@@ -17,12 +17,8 @@ class ChGroupBase: ChHolderBase<View>(){
         restore()
     }
     fun inflate(id:Int, isMerge:Boolean = false):View = inflater.inflate(id, group, isMerge)
-    override fun push(holder: ChHolder<View>){
-        group.addView(holder.create(this))
-    }
-    override fun pop(holder: ChHolder<View>) {
-        group.removeViewAt(group.childCount - 1)
-    }
+    override fun push(holder: ChHolder<View>) = group.addView(holder.create(this))
+    override fun pop(holder: ChHolder<View>) = group.removeViewAt(group.childCount - 1)
 }
 /*
 class ActivityBase(act:AppCompatActivity):HolderBase()
