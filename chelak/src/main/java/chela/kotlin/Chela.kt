@@ -3,6 +3,7 @@ package chela.kotlin
 import android.app.Application
 import chela.kotlin.android.ChApp
 import chela.kotlin.android.ChAsset
+import chela.kotlin.android.ChPermission
 import chela.kotlin.android.ChShared
 import chela.kotlin.core.ChReflect
 import chela.kotlin.http.ChHttp
@@ -40,6 +41,7 @@ object Ch{
     @JvmStatic fun looper():ChLooper = ChLooper()
     @JvmStatic val scanner = ChScanner
     @JvmStatic val prop = ChProperty
+    @JvmStatic val permission = ChPermission
 
     @JvmStatic val typeValidator = ChTypeValidator
 }
