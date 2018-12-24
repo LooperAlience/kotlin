@@ -1,11 +1,10 @@
 package chela.kotlin.viewmodel
 
-import android.database.Cursor
 import chela.kotlin.Ch
-import chela.kotlin.core.*
-import chela.kotlin.validation.ChRule
+import chela.kotlin.core._allStack
+import chela.kotlin.core._notBlank
+import chela.kotlin.core._shift
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
 
 object viewmodel{
     @JvmStatic internal val repo: MutableMap<String, ChViewModel> = HashMap()
@@ -32,7 +31,7 @@ private abstract class Reg(r:String){
     internal fun match(it: String):MatchResult? = re.find(it)
     internal fun cut(it:String):String = re.replaceFirst(it, "")
 }
-private object V:Reg("""^\s*(?:"((?:[^\\"]+|\\["\\bfnrt]|\\u[0-9a-fA-f]{4})*)"|`((?:[^`]+|\\[`\\bfnrt]|\\u[0-9a-fA-f]{4})*)`|""" + //1,2-string
+private object V:Reg("""^\s*(?:"((?:[^\\"]+|\\["\\bfnrt]|\\u[0-9a-fA-invoke]{4})*)"|`((?:[^`]+|\\[`\\bfnrt]|\\u[0-9a-fA-invoke]{4})*)`|""" + //1,2-string
     """(-?(?:0|[1-9]\d*)(?:\.\d+)(?:[eE][-+]?\d+)?)|(-?(?:0|[1-9]\d*))|(true|false)|""" + //3-double, 4-long, 5-bool
     """(?:\@\{([^}]+)\})|(?:\$\{([^}]+)\}))\s*""")
 private object K:Reg("""^\s*(?:"([^":]*)"|([^:,\s"`]+)|`([^`:]*)`)\s*:\s*""")
@@ -61,12 +60,10 @@ abstract class ChViewModel{
         @Suppress("LeakingThis")
         val cls = this::class
         if(!isTypeChecked.contains(cls)) cls.simpleName?.let{
-            if(it == "Item") return@let
             try {
                 val v = cls.java.getDeclaredField("INSTANCE")
                 if(viewmodel.repo[it] == null) viewmodel.repo[it] = this else throw Exception("exist key:$it")
             }catch(e:Exception){
-
             }
         }
     }

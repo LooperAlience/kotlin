@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import chela.kotlin.Ch
 import chela.kotlin.viewmodel.ChViewModel
 
-object ChSql {
+object ChSql{
     interface Watcher{
         fun onInit(sql: Sql) {}
         fun onCreate(sql: Sql) {}
@@ -86,13 +86,13 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         val r = (0 until c.count).map {
             val v = block()
             c.columnNames.forEachIndexed { i, s ->
-                v.set(s, when(c.getType(i)){
-                    Cursor.FIELD_TYPE_INTEGER-> c.getInt(i)
+                v[s] = when(c.getType(i)){
+                    Cursor.FIELD_TYPE_INTEGER->c.getInt(i)
                     Cursor.FIELD_TYPE_FLOAT->c.getFloat(i)
                     Cursor.FIELD_TYPE_STRING->c.getString(i)
                     Cursor.FIELD_TYPE_BLOB->c.getBlob(i)
                     else->c.getString(i)
-                })
+                }
             }
             c.moveToNext()
             v
@@ -130,7 +130,7 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
             val arg = it.param(param)
             return if(db == 'r') reader.rawQuery(it.query, if(arg.isEmpty()) null else arg)
             else{
-                if(arg.size == 0) writer.execSQL(it.query)
+                if(arg.isEmpty()) writer.execSQL(it.query)
                 else writer.execSQL(it.query, arg)
                 null
             }

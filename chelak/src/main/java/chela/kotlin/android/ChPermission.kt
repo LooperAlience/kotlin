@@ -11,10 +11,9 @@ import androidx.core.content.ContextCompat
 typealias resolve = (List<String>, Resolver)->Unit
 typealias oknever = (List<String>)->Unit
 
-
 object ChPermission{
     @SuppressLint("ObsoleteSdkInt")
-    internal val dangers = with(mutableSetOf<String>()){
+    @JvmStatic internal val dangers = with(mutableSetOf<String>()){
         addAll(listOf(
             Manifest.permission.READ_CALENDAR,
             Manifest.permission.WRITE_CALENDAR,
@@ -49,9 +48,9 @@ object ChPermission{
         }
         this
     }
-    internal val isGranted = PackageManager.PERMISSION_GRANTED
-    private val instances = mutableMapOf<Int, Permission>()
-    operator fun invoke(act:AppCompatActivity, code:Int):Permission{
+    @JvmStatic internal val isGranted = PackageManager.PERMISSION_GRANTED
+    @JvmStatic private val instances = mutableMapOf<Int, Permission>()
+    @JvmStatic operator fun invoke(act:AppCompatActivity, code:Int):Permission{
         var v = instances[code]
         if(v == null || v.act !== act){
             v = Permission(act, code)
@@ -59,7 +58,7 @@ object ChPermission{
         }
         return v
     }
-    fun result(act:AppCompatActivity, code:Int, permission:Array<String>, granted:IntArray){
+    @JvmStatic fun result(act:AppCompatActivity, code:Int, permission:Array<String>, granted:IntArray){
         val p = instances[code] ?: return
         val ok = mutableListOf<String>()
         val denied = mutableListOf<String>()
@@ -95,11 +94,9 @@ class Permission(internal val act: AppCompatActivity, private val code:Int){
     fun neverAsk(f:oknever){_never = f}
     fun denied(f:resolve){_denied = f}
     fun before(f:resolve){_before = f}
-    fun permissions(vararg arg: String){
-        arg.forEach {
-            if(!ChPermission.dangers.contains(it)) throw Exception("invalid permission:$it")
-            permissions.add(it)
-        }
+    fun permissions(vararg arg: String) = arg.forEach {
+        if(!ChPermission.dangers.contains(it)) throw Exception("invalid permission:$it")
+        permissions.add(it)
     }
     fun request() {
         val notPermitted = mutableListOf<String>()
