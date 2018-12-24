@@ -104,7 +104,7 @@ class ChLooper:LifecycleObserver{
                     remove += item
                 }
             }
-        }
+        } 
         if(remove.isNotEmpty() || add.isNotEmpty()) lock.write {
             if(remove.isNotEmpty()){
                 items -= remove
