@@ -1,6 +1,8 @@
 package chela.kotlin.validation.rule
 
-class TypeRules:ChRule(){
+import chela.kotlin.validation.ChRule
+
+class TypeRules: ChRule(){
     fun INT(v:Any, arg:List<String>) = if (v is Int) v else this
     fun LONG(v:Any, arg:List<String>) = if (v is Long) v else this
     fun FLOAT(v:Any, arg:List<String>) = if (v is Float) v else this

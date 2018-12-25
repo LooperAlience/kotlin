@@ -1,6 +1,8 @@
 package chela.kotlin.validation.rule
 
-class BaseRules:ChRule(){
+import chela.kotlin.validation.ChRule
+
+class BaseRules: ChRule(){
     fun NoRule(v:Any, arg:List<String>) = v
     fun MinLength(v:Any, arg:List<String>) = if (v is String && arg.size == 1 && v.length >= arg[0].toInt()) v else this
     fun MaxLength(v:Any, arg:List<String>) = if (v is String && arg.size == 1 && v.length <= arg[0].toInt()) v else this

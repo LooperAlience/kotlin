@@ -42,6 +42,4 @@ object Ch{
     @JvmStatic fun looper():ChLooper = ChLooper()
     @JvmStatic val scanner = ChScanner
     @JvmStatic val prop = ChProperty
-
-
 }

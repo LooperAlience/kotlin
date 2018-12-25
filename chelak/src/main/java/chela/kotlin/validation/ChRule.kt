@@ -1,6 +1,5 @@
-package chela.kotlin.validation.rule
+package chela.kotlin.validation
 
-import chela.kotlin.validation.ChRuleSet
 import kotlin.reflect.KFunction
 
 abstract class ChRule{

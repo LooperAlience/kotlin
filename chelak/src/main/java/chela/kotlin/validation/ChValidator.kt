@@ -3,11 +3,11 @@ package chela.kotlin.validation
 import chela.kotlin.viewmodel.ChViewModel
 import kotlin.reflect.full.createType
 
-typealias msg = (ChRuleSet)->String
-abstract class Validator:ChViewModel(){
+internal typealias msg = (ChRuleSet)->String
+abstract class ChValidator:ChViewModel(){
     companion object{
-        @JvmStatic internal val dmsg:msg = {"invalid value"}
         @JvmStatic private val ruleSetType = ChRuleSet::class.createType()
+        @JvmStatic internal val dmsg:msg = {"invalid value"}
         @JvmStatic internal val empty = ChRuleSet("", dmsg)
     }
     override operator fun set(k:String, v:Any):Boolean{
