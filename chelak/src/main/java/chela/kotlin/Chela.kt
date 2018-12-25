@@ -16,8 +16,13 @@ import chela.kotlin.viewmodel.property.ChProperty
 import chela.kotlin.viewmodel.scanner.ChScanner
 import chela.kotlin.viewmodel.viewmodel
 import okhttp3.Request
-
+/**
+ * Chela base object
+ */
 object Ch{
+    /**
+     * set base application
+     */
     operator fun invoke(application:Application):Ch{
         app.app(application)
         return this
@@ -37,6 +42,11 @@ object Ch{
     @JvmStatic val permission = ChPermission
 
     @JvmStatic val sql = ChSql
+
+    /**
+     * get router
+     *
+     */
     @JvmStatic fun <T>router(base: ChHolderBase<T>): ChRouter<T> = ChRouter(base)
     @JvmStatic fun groupBase():ChGroupBase = ChGroupBase()
     @JvmStatic fun looper():ChLooper = ChLooper()
