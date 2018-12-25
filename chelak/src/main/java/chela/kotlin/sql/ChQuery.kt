@@ -2,8 +2,6 @@ package chela.kotlin.sql
 
 import chela.kotlin.Ch
 import chela.kotlin.validation.ChRuleSet
-import chela.kotlin.validation.ChTypeValidator
-import chela.kotlin.validation.ChValidator
 
 private val regParam =  "@([^@:]+(?::([^@:]+))?)@".toRegex()
 private val regTrim =  """[\n\r]""".toRegex()
@@ -13,11 +11,11 @@ internal class ChQuery(body: String){
     internal val query = regTrim.replace(regParam.replace(body){
         val k = it.groupValues[1]
         var v = it.groupValues[2]
-        when{
-            v.isBlank()-> v = "ChTypeValidator.string"
-            !v.contains(".") -> v = "ChTypeValidator.$v"
-        }
-        items[k] = Item(items.size, k, Ch.vm.viewmodel(v.split(".")) as? ChRuleSet ?: ChTypeValidator.string)
+        items[k] = Item(items.size, k, when{
+            v.isBlank() -> ChRuleSet["string"]
+            !v.contains(".") -> ChRuleSet[v]
+            else -> Ch.vm.viewmodel(v.split(".")) as? ChRuleSet ?: ChRuleSet["string"]
+        })
          "?"
     }, " ").trim()
     internal fun param(param:Array<out Pair<String, Any>>):Array<String>{

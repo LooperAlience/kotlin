@@ -45,7 +45,7 @@ object Step1HD: ChHolder<View>(){
     override fun pop(base: ChHolderBase<View>, isJump: Boolean):Boolean {
         val w = -groupBase.group.width.toDouble()
         looper.add(Time(350), Ended{base.pop(this)}) {
-            Ch.prop.x(view, it.backIn(0.0, w))
+            Ch.prop.view.x(view, it.backIn(0.0, w))
         }
         return false
     }

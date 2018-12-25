@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import chela.kotlin.Ch
 import chela.kotlin.core._shift
-import chela.kotlin.viewmodel.ChProperty
+import chela.kotlin.viewmodel.property.ChProperty
 import chela.kotlin.viewmodel.ChViewModel
 
 object ChScanner{

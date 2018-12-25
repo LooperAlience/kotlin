@@ -1,5 +1,6 @@
 package chela.kotlin.viewmodel
 
+import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.core._allStack
 import chela.kotlin.core._notBlank
@@ -32,7 +33,7 @@ private abstract class Reg(r:String){
     internal fun cut(it:String):String = re.replaceFirst(it, "")
 }
 private object V:Reg("""^\s*(?:"((?:[^\\"]+|\\["\\bfnrt]|\\u[0-9a-fA-invoke]{4})*)"|`((?:[^`]+|\\[`\\bfnrt]|\\u[0-9a-fA-invoke]{4})*)`|""" + //1,2-string
-    """(-?(?:0|[1-9]\d*)(?:\.\d+)(?:[eE][-+]?\d+)?)|(-?(?:0|[1-9]\d*))|(true|false)|""" + //3-double, 4-long, 5-bool
+    """(-?(?:0|[1-9]\d*)(?:\.\d+)(?:[eE][-+]?\d+)?(?:dp|%w|%h)?)|(-?(?:0|[1-9]\d*)(?:dp|%w|%h)?)|(true|false)|""" + //3-double, 4-long, 5-bool
     """(?:\@\{([^}]+)\})|(?:\$\{([^}]+)\}))\s*""")
 private object K:Reg("""^\s*(?:"([^":]*)"|([^:,\s"`]+)|`([^`:]*)`)\s*:\s*""")
 private class St(val p: St?, val t:Char, v:String, val k: String = "", val i:Int = 0){
@@ -101,8 +102,24 @@ abstract class ChViewModel{
                         var isOk = true
                         it.groups[1]?.let{isOk = set(key, it.value)} ?:
                         it.groups[2]?.let{isOk = set(key, it.value)} ?:
-                        it.groups[3]?.let{isOk = set(key, it.value.toDouble())} ?:
-                        it.groups[4]?.let{isOk = set(key, it.value.toLong())} ?:
+                        it.groups[3]?.let{
+                            val v = it.value
+                            isOk = set(key, when{
+                                v.endsWith("dp")->v.substring(0, v.length - 2).toDouble() * Ch.app.toDp
+                                v.endsWith("%w")->v.substring(0, v.length - 2).toDouble() * Ch.app.width
+                                v.endsWith("%w")->v.substring(0, v.length - 2).toDouble() * Ch.app.height
+                                else->v.toDouble()
+                            })
+                        } ?:
+                        it.groups[4]?.let{
+                            val v = it.value
+                            isOk = set(key, when{
+                                v.endsWith("dp")->(v.substring(0, v.length - 2).toDouble() * Ch.app.toDp).toLong()
+                                v.endsWith("%w")->(v.substring(0, v.length - 2).toDouble() * Ch.app.width).toLong()
+                                v.endsWith("%w")->(v.substring(0, v.length - 2).toDouble() * Ch.app.height).toLong()
+                                else->v.toLong()
+                            })
+                        } ?:
                         it.groups[5]?.let{isOk = set(key, it.value.toBoolean())} ?:
                         it.groups[6]?.let{isOk = viewmodel(key, it.value.split("."))}
                         it.groups[7]?.let{isOk = record(key, it.value.split("."))}

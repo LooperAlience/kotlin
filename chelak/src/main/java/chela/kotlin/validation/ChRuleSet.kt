@@ -1,82 +1,40 @@
 package chela.kotlin.validation
 
-import kotlin.reflect.full.createInstance
+import chela.kotlin.validation.Validator.Companion.dmsg
+import chela.kotlin.validation.rule.BaseRules
+import chela.kotlin.validation.rule.ChRule
+import chela.kotlin.validation.rule.TypeRules
 
-private val RULES = mutableMapOf<String, (List<String>)->ChRule>()
-private val regArg = """\[(.+)\]""".toRegex()
-private val emptyArg = listOf<String>()
-class ChRuleSet(rule:String, private val msg: msg){
+class ChRuleSet(rule:String, private val msg:msg = dmsg){
     companion object{
+        @JvmStatic private val baseRules = BaseRules()
+        @JvmStatic private val typeRules = TypeRules()
+        @JvmStatic internal val emptyArg = listOf<String>()
+        @JvmStatic private val regArg = """\[(.+)\]""".toRegex()
         @JvmStatic fun isOk(v:Any):Boolean = v !is ChRuleSet
-    }
-    private val rules = rule.split("|").filter{it.isNotBlank()}.map{v->
-        regArg.find(v)?.let{
-            val arg = it.groupValues[1].split(",").map{it.trim()}
-            val k = regArg.replace(v, "").trim()
-            val factory =RULES[k]
-            return@map if(factory != null) factory(arg) else throw Exception("invalid rule:$k")
-        } ?:
-        RULES[v.trim()]?.let{it(emptyArg)} ?:
-        throw Exception("invalid key:$v")
-    }
-    private var errorRule:ChRule = NoRule
-    private var errorValue:Any = false
-    internal fun check(v: Any):Any{
-        var r = v
-        var rule:ChRule = NoRule
-        if(rules.any {
-                r = it.check(r)
-                rule = it
-                return@any r is ChRule
-            }){
-            errorRule = rule
-            errorValue = r
-            return this
-        }else return r
-    }
-}
-private var isChRuleLoaded = false
-sealed class ChRule{
-    abstract fun check(v: Any): Any
-    @JvmField internal var arg:List<String> = emptyArg
-    init{
-        @Suppress("LeakingThis")
-        if(!isChRuleLoaded) {
-            isChRuleLoaded = true
-            ChRule::class.sealedSubclasses.forEach {cls->
-                cls.simpleName?.let {
-                    val k = it.toLowerCase()
-                    if(RULES[k] == null){
-                        val i = cls.java.getDeclaredField("INSTANCE").get(null) as? ChRule
-                        if(i == null){
-                            RULES[k] = {
-                                val rule: ChRule = cls.createInstance()
-                                rule.arg = it
-                                rule
-                            }
-                        }else RULES[k] = {i}
-                    }else throw Exception("exist key:$k")
-                }
-            }
+        @JvmStatic private val _defined = mutableMapOf<String, ChRuleSet>()
+        @JvmStatic operator fun get(k:String):ChRuleSet = _defined[k] ?: run{
+            if(ChRule.rules[k] == null) throw Exception("invalid rule:$k")
+            val r = ChRuleSet(k)
+            _defined[k] = r
+            r
         }
     }
-}
-object NoRule:ChRule(){override fun check(v: Any): Any = v}
-object INT:ChRule(){
-    override fun check(v: Any):Any = if(v is Int) v else this
-}
-object LONG:ChRule(){
-    override fun check(v: Any):Any = if(v is Long) v else this
-}
-object FLOAT:ChRule(){
-    override fun check(v: Any):Any = if(v is Float) v else this
-}
-object DOUBLE:ChRule(){
-    override fun check(v: Any):Any = if(v is Double) v else this
-}
-object STRING:ChRule(){
-    override fun check(v: Any):Any = if(v is String) v else this
-}
-object CHAR:ChRule(){
-    override fun check(v: Any):Any = if(v is Char) v else this
+    private val rules = rule.split("-or-").map{
+        it.split("|").filter{it.isNotBlank()}.map ch@{v->
+            val arg = regArg.find(v)?.let{it.groupValues[1].split(",").map{it.trim()}} ?: emptyArg
+            var k = regArg.replace(v, "").trim().toLowerCase()
+            ChRule.rules[k]?.let {(f, t)->{it:Any->f.call(t, it, arg)!!}} ?: throw Exception("invalid key:$k")
+        }
+    }
+    var result:Any = false
+    internal fun check(v: Any):Any{
+        result = v
+        return if(rules.any{
+            it.all{
+                result = it(result)
+                result !is ChRule
+            }
+        }) result else this
+    }
 }

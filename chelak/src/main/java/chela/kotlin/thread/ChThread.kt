@@ -3,7 +3,7 @@ package chela.kotlin.thread
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import chela.kotlin.viewmodel.ChProperty
+import chela.kotlin.viewmodel.property.ChProperty
 import chela.kotlin.viewmodel.scanner.ChScanner
 import java.util.concurrent.Executors
 sealed class MsgType(val idx:Int){internal abstract fun f(it:Any)}
