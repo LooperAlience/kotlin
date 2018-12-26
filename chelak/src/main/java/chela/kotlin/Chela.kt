@@ -11,6 +11,7 @@ import chela.kotlin.looper.ChLooper
 import chela.kotlin.sql.ChSql
 import chela.kotlin.thread.ChThread
 import chela.kotlin.viewmodel.ChRouter
+import chela.kotlin.viewmodel.holder.ChFragmentBase
 import chela.kotlin.viewmodel.holder.ChGroupBase
 import chela.kotlin.viewmodel.holder.ChHolderBase
 import chela.kotlin.viewmodel.property.ChProperty
@@ -56,6 +57,7 @@ object Ch{
      */
     @JvmStatic fun <T>router(base: ChHolderBase<T>): ChRouter<T> = ChRouter(base)
     @JvmStatic fun groupBase():ChGroupBase = ChGroupBase()
+    @JvmStatic fun fragmentBase():ChFragmentBase = ChFragmentBase()
     @JvmStatic fun looper():ChLooper = ChLooper()
     @JvmStatic val scanner = ChScanner
     @JvmStatic val prop = ChProperty
