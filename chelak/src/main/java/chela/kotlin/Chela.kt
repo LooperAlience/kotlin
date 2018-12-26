@@ -32,8 +32,21 @@ object Ch{
     @JvmStatic val NONE = object{}
     @JvmStatic val NONE_BA = ByteArray(0)
     @JvmStatic fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
-
-
+    @JvmStatic fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, block:()->Unit){
+        with(if(looper == null){
+            val l = Ch.looper()
+            l.act(activity)
+            l
+        }else looper){
+            add(ChLooper.Item.Time(1000)) {
+                if(activity.window.decorView.width != 0) {
+                    block()
+                    it.stop()
+                }
+            }
+        }
+    }
+    */
     @JvmStatic fun finish(act:AppCompatActivity){
         act.finish()
         System.exit(0)
