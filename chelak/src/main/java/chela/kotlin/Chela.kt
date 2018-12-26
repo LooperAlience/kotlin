@@ -1,6 +1,7 @@
 package chela.kotlin
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
 import chela.kotlin.core.ChDate
 import chela.kotlin.core.ChReflect
@@ -30,9 +31,15 @@ object Ch{
     @JvmStatic val NONE = object{}
     @JvmStatic val NONE_BA = ByteArray(0)
     @JvmStatic fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
+
+
+    @JvmStatic fun finish(act:AppCompatActivity){
+        act.finish()
+        System.exit(0)
+    }
+
     @JvmStatic fun net(method:String, url:String):ChHttp = ChHttpOk3(method, Request.Builder().url(url))
     @JvmStatic val reflect = ChReflect
-    @JvmStatic val vm = viewmodel
     @JvmStatic val thread = ChThread
     @JvmStatic val app = ChApp
     @JvmStatic val asset = ChAsset
@@ -40,7 +47,7 @@ object Ch{
     @JvmStatic val keyboard = ChKeyboard
     @JvmStatic val date = ChDate
     @JvmStatic val permission = ChPermission
-
+    @JvmStatic val vm = viewmodel
     @JvmStatic val sql = ChSql
 
     /**

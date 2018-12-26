@@ -20,13 +20,15 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
         base._push(holder, false)
         stack += holder
     }
-    fun pop(isAutoUnlock:Boolean = true){
-        if(popLock || stack.isEmpty()) return
+    fun pop(isAutoUnlock:Boolean = true):Int{
+        if(stack.isEmpty()) return 0
+        if(popLock) return -1
         if(!isAutoUnlock) popLock = true
         val h = stack.last()
         base._pop(h, false)
         stack._pop()
         if(stack.isNotEmpty()) base._resume(stack.last(), false)
+        return stack.size
     }
     fun jump(key:String) = stack._allStack { holder, _ ->
         if(holder.key == key){

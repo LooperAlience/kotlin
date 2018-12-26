@@ -20,9 +20,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         groupBase.group(base)
-        looper.act(this)
-        looper.add(Time(1000)){
-            if(base.width > 0){
+        with(looper) {
+            act(this@MainActivity)
+            add(Time(1000)) {
+                if (base.width == 0) return@add
                 router.push(MainHD, false)
                 it.stop()
             }
@@ -45,5 +46,8 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray){
         Ch.permission.result(this, requestCode, permissions, grantResults)
+    }
+    override fun onBackPressed() {
+        if(router.pop() == 0) Ch.finish(this)
     }
 }

@@ -1,0 +1,77 @@
+package chela.kotlin.validation
+
+import org.junit.Test
+import org.junit.Assert.*
+
+class RuleTest{
+    @Test fun typeTest(){
+        assertTrue("int", ChRuleSet("int").check(3) == 3)
+        assertTrue("float", ChRuleSet("float").check(3.1F) == 3.1F)
+        assertTrue("long", ChRuleSet("long").check(3L) == 3L)
+        assertTrue("double", ChRuleSet("double").check(3.5) == 3.5)
+        assertTrue("char", ChRuleSet("char").check('1') == '1')
+        assertTrue("string", ChRuleSet("string").check("abc") == "abc")
+    }
+    @Test fun baseTest(){
+        assertTrue("NoRule", ChRuleSet("NoRule").check("abcd") == "abcd")
+        assertTrue("MinLength", ChRuleSet("MinLength[4]").check("abcd") == "abcd")
+        assertTrue("MinLength", ChRuleSet("MinLength[4]").check("abc") != "abc")
+        assertTrue("MaxLength", ChRuleSet("MaxLength[4]").check("abcd") == "abcd")
+        assertTrue("MaxLength", ChRuleSet("MaxLength[4]").check("abcde") != "abcde")
+
+        assertTrue("LessThan", ChRuleSet("LessThan[4]").check(3) == 3)
+        assertTrue("LessThan", ChRuleSet("LessThan[4]").check(4) != 4)
+        assertTrue("GreaterThan", ChRuleSet("GreaterThan[4]").check(5) == 5)
+        assertTrue("GreaterThan", ChRuleSet("GreaterThan[4]").check(4) != 4)
+        assertTrue("Range", ChRuleSet("Range[2,4]").check(2) == 2)
+        assertTrue("Range", ChRuleSet("Range[2,4]").check(3) == 3)
+        assertTrue("Range", ChRuleSet("Range[2,4]").check(4) == 4)
+        assertTrue("Range", ChRuleSet("Range[2,4]").check(1) != 1)
+        assertTrue("Range", ChRuleSet("Range[2,4]").check(5) != 5)
+        assertTrue("Equal-string", ChRuleSet("Equal[abc]").check("abc") == "abc")
+        assertTrue("Equal-boolean", ChRuleSet("Equal[true]").check(true) == true)
+        assertTrue("Equal-number", ChRuleSet("Equal[37]").check(37) == 37)
+
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(1) == 1)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(2) == 2)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(3) == 3)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(4) != 4)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(1L) == 1L)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(2L) == 2L)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(3L) == 3L)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(4L) != 4L)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(1F) == 1F)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(2F) == 2F)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(3F) == 3F)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(4F) != 4F)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(1.0) == 1.0)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(2.0) == 2.0)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(3.0) == 3.0)
+        assertTrue("In-number", ChRuleSet("In[1,2,3]").check(4.0) != 4.0)
+        assertTrue("In-string", ChRuleSet("In[a,b,c]").check("a") == "a")
+        assertTrue("In-string", ChRuleSet("In[a,b,c]").check("b") == "b")
+        assertTrue("In-string", ChRuleSet("In[a,b,c]").check("c") == "c")
+        assertTrue("In-string", ChRuleSet("In[a,b,c]").check("d") != "d")
+
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(1) != 1)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(2) != 2)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(3) != 3)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(4) == 4)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(1L) != 1L)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(2L) != 2L)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(3L) != 3L)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(4L) == 4L)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(1F) != 1F)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(2F) != 2F)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(3F) != 3F)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(4F) == 4F)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(1.0) != 1.0)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(2.0) != 2.0)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(3.0) != 3.0)
+        assertTrue("NotIn-number", ChRuleSet("NotIn[1,2,3]").check(4.0) == 4.0)
+        assertTrue("NotIn-string", ChRuleSet("NotIn[a,b,c]").check("a") != "a")
+        assertTrue("NotIn-string", ChRuleSet("NotIn[a,b,c]").check("b") != "b")
+        assertTrue("NotIn-string", ChRuleSet("NotIn[a,b,c]").check("c") != "c")
+        assertTrue("NotIn-string", ChRuleSet("NotIn[a,b,c]").check("d") == "d")
+    }
+}

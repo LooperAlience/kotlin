@@ -20,7 +20,3 @@ class ChGroupBase: ChHolderBase<View>(){
     override fun push(holder: ChHolder<View>) = group.addView(holder.create(this))
     override fun pop(holder: ChHolder<View>) = group.removeViewAt(group.childCount - 1)
 }
-/*
-class ActivityBase(act:AppCompatActivity):HolderBase()
-class FragmentBase(fragment:Fragment):HolderBase()
- */

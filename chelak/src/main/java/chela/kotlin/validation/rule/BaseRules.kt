@@ -24,12 +24,8 @@ class BaseRules: ChRule(){
         is Double->if(arg.map{it.toDouble()}.contains(v)) v else this
         else->this
     }
-    fun NotIn(v:Any, arg:List<String>) = when(v){
-        is String->if(!arg.contains(v)) v else this
-        is Int->if(!arg.map{it.toInt()}.contains(v)) v else this
-        is Long->if(!arg.map{it.toLong()}.contains(v)) v else this
-        is Float->if(!arg.map{it.toFloat()}.contains(v)) v else this
-        is Double->if(!arg.map{it.toDouble()}.contains(v)) v else this
-        else->this
+    fun NotIn(v:Any, arg:List<String>):Any{
+        val r = In(v, arg)
+        return if(r == v) this else v
     }
 }
