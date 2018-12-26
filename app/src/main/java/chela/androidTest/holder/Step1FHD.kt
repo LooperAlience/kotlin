@@ -1,11 +1,13 @@
 package chela.androidTest.holder
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import chela.androidTest.Hika
 import chela.androidTest.R
 import chela.androidTest.routerf
 import chela.kotlin.Ch
@@ -29,7 +31,9 @@ object Step1FHD:ChHolder<ChFragmentInfo>(){
                 with(Ch.prop){
                     view.background(it, "#aaffaa")
                     text.text(it, "fragment2")
-                    event.click(it, View.OnClickListener { routerf.pop() })
+                    event.click(it, View.OnClickListener {
+                        startActivity(Intent(context, Hika::class.java))
+                    })
                 }
             }
         }

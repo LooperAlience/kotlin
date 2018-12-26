@@ -3,7 +3,7 @@ package chela.kotlin.sql
 import chela.kotlin.Ch
 import chela.kotlin.validation.ChRuleSet
 
-private val regParam =  "@([^@:]+(?::([^@:]+))?)@".toRegex()
+private val regParam =  "@(?:([^@:]+)(?::([^@:]+))?)@".toRegex()
 private val regTrim =  """[\n\r]""".toRegex()
 private class Item(val i:Int, val k:String, val ruleSet: ChRuleSet)
 internal class ChQuery(body: String){

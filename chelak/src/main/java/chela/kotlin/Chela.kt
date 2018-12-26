@@ -39,14 +39,13 @@ object Ch{
             l
         }else looper){
             add(ChLooper.Item.Time(1000)) {
-                if(activity.window.decorView.width != 0) {
+                if(activity.window.decorView.width != 0){
                     block()
                     it.stop()
                 }
             }
         }
     }
-    */
     @JvmStatic fun finish(act:AppCompatActivity){
         act.finish()
         System.exit(0)

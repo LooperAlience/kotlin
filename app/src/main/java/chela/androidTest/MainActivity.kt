@@ -27,16 +27,10 @@ class MainActivity : AppCompatActivity() {
         groupBase.group(_group)
         framentBase.manager = supportFragmentManager
         framentBase.container = _fragment.id
-        Log.i("ch", "w"+this@MainActivity.window.decorView.width +":"+_group.width)
-        with(looper) {
-            act(this@MainActivity)
-            add(Time(1000)) {
-                Log.i("ch", "w"+this@MainActivity.window.decorView.rootView.width +":"+_group.width)
-                if (_group.width == 0) return@add
-                router.push(MainHD, false)
-                routerf.push(MainFHD)
-                it.stop()
-            }
+        looper.act(this)
+        Ch.waitActivate(this, looper){
+            router.push(MainHD, false)
+            routerf.push(MainFHD)
         }
         with(Ch.permission(this, 15)){
             permissions(

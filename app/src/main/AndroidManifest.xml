@@ -29,5 +29,8 @@
                         android:pathPattern="/hika/applink"/>
             </intent-filter>
         </activity>
+        <activity android:name="chela.androidTest.Hika">
+
+        </activity>
     </application>
 </manifest>
