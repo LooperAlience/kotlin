@@ -1,7 +1,10 @@
 package chela.kotlin.viewmodel.property
 
 import android.os.Build
+import android.view.MotionEvent
 import android.view.View
+import chela.kotlin.Ch
+import java.util.*
 
 object PropEvent:Property(){
     @JvmStatic fun click(view: View, v:Any){
@@ -38,4 +41,27 @@ object PropEvent:Property(){
         if(v) view.requestFocus()
         focusableInTouchMode(view, v)
     }
+    @JvmStatic private val touches = WeakHashMap<View, MutableMap<String, Ch.Touch>>()
+    @JvmStatic private val hasTouch = WeakHashMap<View, Boolean>()
+    @JvmStatic private fun touch(view:View, v:Any):MutableMap<String, Ch.Touch>?{
+        if(v !is Ch.Touch) return null
+        if(hasTouch[view] == null){
+            hasTouch[view] = true
+            view.setOnTouchListener{_, e->
+                return@setOnTouchListener touches[view]?.let {
+                    when(e.action){
+                        MotionEvent.ACTION_DOWN->it["down"]?.onTouch(e)
+                        MotionEvent.ACTION_UP-> it["up"]?.onTouch(e)
+                        MotionEvent.ACTION_MOVE-> it["move"]?.onTouch(e)
+                        else->true
+                    }
+                } ?: true
+            }
+            touches[view] = mutableMapOf()
+        }
+        return touches[view]
+    }
+    @JvmStatic fun down(view:View, v:Any) = touch(view, v)?.put("down", v as Ch.Touch)
+    @JvmStatic fun up(view:View, v:Any) = touch(view, v)?.put("up", v as Ch.Touch)
+    @JvmStatic fun move(view:View, v:Any) = touch(view, v)?.put("move", v as Ch.Touch)
 }

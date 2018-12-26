@@ -1,6 +1,7 @@
 package chela.kotlin
 
 import android.app.Application
+import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
 import chela.kotlin.core.ChDate
@@ -22,6 +23,12 @@ import okhttp3.Request
  * Chela base object
  */
 object Ch{
+    /**
+     * Interface for touch event(ex down, up, move)
+     */
+    interface Touch{
+        fun onTouch(e: MotionEvent):Boolean
+    }
     /**
      * set base application
      */
