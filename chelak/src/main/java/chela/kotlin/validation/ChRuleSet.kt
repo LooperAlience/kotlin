@@ -2,12 +2,14 @@ package chela.kotlin.validation
 
 import chela.kotlin.validation.ChValidator.Companion.dmsg
 import chela.kotlin.validation.rule.BaseRules
+import chela.kotlin.validation.rule.RegRules
 import chela.kotlin.validation.rule.TypeRules
 
 class ChRuleSet(rule:String, private val msg:msg = dmsg){
     companion object{
         @JvmStatic private val baseRules = BaseRules()
         @JvmStatic private val typeRules = TypeRules()
+        @JvmStatic private val regRules = RegRules()
         @JvmStatic private val _defined = mutableMapOf<String, ChRuleSet>()
         @JvmStatic private val regArg = """\[(.+)\]""".toRegex()
         @JvmStatic internal val emptyArg = listOf<String>()

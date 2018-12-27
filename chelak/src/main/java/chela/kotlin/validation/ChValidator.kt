@@ -7,8 +7,8 @@ internal typealias msg = (ChRuleSet)->String
 abstract class ChValidator:ChViewModel(){
     companion object{
         @JvmStatic private val ruleSetType = ChRuleSet::class.createType()
-        @JvmStatic internal val dmsg:msg = {"invalid value"}
-        @JvmStatic internal val empty = ChRuleSet("", dmsg)
+        @JvmStatic val dmsg:msg = {"invalid value"}
+        @JvmStatic internal val empty = ChRuleSet("")
     }
     override operator fun set(k:String, v:Any):Boolean{
         val f = ref.setter[k]

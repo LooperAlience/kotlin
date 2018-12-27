@@ -130,15 +130,19 @@ object ChScanner{
         val st = mutableListOf(view)
         val result = Scanned(view)
         scanned[id] = result
-        while(st.isNotEmpty()){
+        var limit = 200
+        while(st.isNotEmpty()&& limit-- > 0){
             val v = st.removeAt(st.size - 1)
             if(v.tag != null && v.tag is String){
                 val pos = mutableListOf<Int>()
                 var t = v
-                while (t !== view) v.parent?.let {
-                    val p = it as ViewGroup
-                    pos += p.indexOfChild(v)
-                    t = p
+                var limit = 30
+                while(t !== view && limit-- > 0){
+                    t.parent?.let {
+                        val p = it as ViewGroup
+                        pos += p.indexOfChild(v)
+                        t = p
+                    }
                 }
                 val target = Item(v, pos)
                 target.fromJson("{${v.tag}}")

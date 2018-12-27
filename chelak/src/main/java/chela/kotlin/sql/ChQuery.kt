@@ -14,7 +14,10 @@ internal class ChQuery(body: String){
         items[k] = Item(items.size, k, when{
             v.isBlank() -> ChRuleSet["string"]
             !v.contains(".") -> ChRuleSet[v]
-            else -> Ch.vm.viewmodel(v.split(".")) as? ChRuleSet ?: ChRuleSet["string"]
+            else ->
+                ChSql.rulesets[v] ?:
+                Ch.vm.viewmodel(v.split(".")) as? ChRuleSet ?:
+                ChRuleSet["string"]
         })
          "?"
     }, " ").trim()

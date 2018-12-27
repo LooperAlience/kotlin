@@ -35,7 +35,7 @@ class ChLooper:LifecycleObserver{
     }
     class Sequence internal constructor(private val looper: ChLooper){
         internal lateinit var item: ChItem
-        fun next(vararg param: ChLooper.Item, block: ItemBlock): Sequence {
+        fun next(vararg param: ChLooper.Item, block: ItemBlock = empty): Sequence {
             val i = looper.getItem(*param, block = block)
             item.next = i
             item = i
@@ -114,7 +114,7 @@ class ChLooper:LifecycleObserver{
             if(add.isNotEmpty()) items += add
         }
     }
-    fun add(vararg param: Item, block: ItemBlock): Sequence {
+    fun add(vararg param: Item, block: ItemBlock = empty): Sequence {
         val item = getItem(*param, block = block)
         item.start += now()
         item.end = if(item.term == -1.0) -1.0 else item.start + item.term

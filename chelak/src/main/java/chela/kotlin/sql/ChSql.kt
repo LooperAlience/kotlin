@@ -6,6 +6,9 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import chela.kotlin.Ch
+import chela.kotlin.core._pop
+import chela.kotlin.validation.ChRuleSet
+import chela.kotlin.validation.ChValidator
 import chela.kotlin.viewmodel.ChViewModel
 
 object ChSql{
@@ -14,13 +17,24 @@ object ChSql{
         fun onCreate(sql: Sql) {}
         fun onUpgrade(sql: Sql, oldVersion: Int, newVersion: Int) {}
     }
+    class RulesetVm(val key:String):ChViewModel(){
+        override fun set(k: String, v:Any):Boolean{
+            if(v is String) ChSql.rulesets["$key.$k"] = ChRuleSet(v, ChValidator.dmsg)
+            return true
+        }
+    }
     @JvmStatic private val sql = mutableMapOf<Any, Sql>()
+    @JvmStatic internal val rulesets = mutableMapOf<String, ChRuleSet>()
     @JvmStatic internal val queries = mutableMapOf<String, ChQuery>()
+
     @JvmStatic fun load(vararg files:String) = files.forEach {
         it.replace(regComment, "").split("#").forEach ch@{
             if(it.isBlank()) return@ch
             val i = it.indexOf("\n")
-            addQuery(it.substring(0, i).trim(), it.substring(i + 1).trim().replace("\n", " "))
+            val k = it.substring(0, i).trim().toLowerCase()
+            val v = it.substring(i + 1).trim().replace("\n", " ")
+            if(k[k.length - 1] == '{') RulesetVm(k._pop().toLowerCase().trim()).fromJson("{$v")
+            else addQuery(k, v)
         }
     }
     @JvmStatic fun addQuery(key:String, body:String){
