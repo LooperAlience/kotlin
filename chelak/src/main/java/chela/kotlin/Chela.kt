@@ -8,6 +8,7 @@ import chela.kotlin.core.ChDate
 import chela.kotlin.core.ChReflect
 import chela.kotlin.http.ChHttp
 import chela.kotlin.http.ChHttpOk3
+import chela.kotlin.looper.ChItem
 import chela.kotlin.looper.ChLooper
 import chela.kotlin.sql.ChSql
 import chela.kotlin.thread.ChThread
@@ -26,9 +27,7 @@ object Ch{
     /**
      * Interface for touch event(ex down, up, move)
      */
-    interface Touch{
-        fun onTouch(e: MotionEvent):Boolean
-    }
+    interface Touch{fun onTouch(e: MotionEvent):Boolean}
     /**
      * set base application
      */
@@ -39,13 +38,14 @@ object Ch{
     @JvmStatic val NONE = object{}
     @JvmStatic val NONE_BA = ByteArray(0)
     @JvmStatic fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
+
     @JvmStatic fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, block:()->Unit){
         with(if(looper == null){
             val l = Ch.looper()
             l.act(activity)
             l
         }else looper){
-            add(ChLooper.Item.Time(1000)) {
+            add(Ch.infinity()){
                 if(activity.window.decorView.width != 0){
                     block()
                     it.stop()
@@ -70,6 +70,10 @@ object Ch{
     @JvmStatic val vm = viewmodel
     @JvmStatic val sql = ChSql
 
+    @JvmStatic fun looper():ChLooper = ChLooper()
+    @JvmStatic fun time(ms:Int):ChLooper.Item.Time = ChLooper.Item.Time(ms)
+    @JvmStatic fun infinity():ChLooper.Item.Infinity = ChLooper.Item.Infinity()
+    @JvmStatic fun ended(block:(ChItem)->Unit):ChLooper.Item.Ended = ChLooper.Item.Ended(block)
     /**
      * get router
      *
@@ -77,7 +81,6 @@ object Ch{
     @JvmStatic fun <T>router(base: ChHolderBase<T>): ChRouter<T> = ChRouter(base)
     @JvmStatic fun groupBase():ChGroupBase = ChGroupBase()
     @JvmStatic fun fragmentBase():ChFragmentBase = ChFragmentBase()
-    @JvmStatic fun looper():ChLooper = ChLooper()
     @JvmStatic val scanner = ChScanner
     @JvmStatic val prop = ChProperty
 }

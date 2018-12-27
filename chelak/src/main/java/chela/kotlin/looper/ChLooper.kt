@@ -24,6 +24,7 @@ class ChLooper:LifecycleObserver{
         class Delay(val ms:Int): Item()
         class Loop(val cnt:Int): Item()
         class Ended(val block:(ChItem)->Unit): Item()
+        class Infinity:Item()
     }
     private class Ani(ctx: Context, private val looper: ChLooper): View(ctx){
         init{tag = "CHELA_ANI"}
@@ -76,7 +77,7 @@ class ChLooper:LifecycleObserver{
                 if (item.isPaused || item.start > c) break
                 item.isTurn = false
                 isEnd = false
-                if (item.end <= c) {
+                if(!item.isInfinity && item.end <= c){
                     item.loop--
                     if (item.loop == 0) {
                         rate = 1.0
@@ -87,7 +88,7 @@ class ChLooper:LifecycleObserver{
                         item.start = c
                         item.end = c + item.term
                     }
-                } else {
+                }else{
                     rate = if (item.term == 0.0) 0.0 else (c - item.start) / item.term
                 }
                 item.rate = rate
@@ -116,21 +117,23 @@ class ChLooper:LifecycleObserver{
     fun add(vararg param: Item, block: ItemBlock): Sequence {
         val item = getItem(*param, block = block)
         item.start += now()
-        item.end = item.start + item.term
+        item.end = if(item.term == -1.0) -1.0 else item.start + item.term
         lock.write {items += item}
         sequence.item = item
         return sequence
     }
     internal fun getItem(vararg param: Item, block: ItemBlock): ChItem {
         val item = itemPool._shift() ?: ChItem()
-        item.term = 0.0
+        item.term = -1.0
         item.start = 0.0
         item.loop = 1
         item.block = block
         item.ended = empty
         item.next = null
+        item.isInfinity = false
         param.forEach{
             when(it){
+                is Item.Infinity -> item.isInfinity = true
                 is Item.Time -> item.term = it.ms.toDouble()
                 is Item.Delay -> item.start = it.ms.toDouble()
                 is Item.Loop -> item.loop = it.cnt

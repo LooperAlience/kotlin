@@ -1,5 +1,6 @@
 package chela.kotlin.viewmodel.scanner
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import chela.kotlin.Ch
@@ -71,14 +72,19 @@ object ChScanner{
                 isRender = true
                 collector.putAll(it)
             }
-            prop?.let{collector.putAll(it.mapValues{(_, v)-> Ch.vm.viewmodel(v)}.filter ch@{ (k, v)->
-                propVal?.let{
-                    it[k]?.let{if(it == v) return@ch false}
-                    it.put(k, v)
-                    isRender = true
+            prop?.let{
+                it.forEach {(k, _v) ->
+                    val v = Ch.vm.viewmodel(_v)
+                    if(k[0] == '@'){
+                        collector[k._shift()] = v
+                        isRender = true
+                    }else propVal?.let{
+                        if(it[k] == null || it[k] != v) collector[k] = v
+                        it[k] = v
+                        isRender = true
+                    }
                 }
-                return@ch true
-            })}
+            }
             record?.let{record->
                 recordViewModel?.let{collector.putAll(record.mapValues{ (_, v)->
                     Ch.vm.record(v, it)

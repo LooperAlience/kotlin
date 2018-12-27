@@ -12,6 +12,8 @@ class ChItem{
     @JvmField internal var isTurn = false
     @JvmField internal var loop = 1
     @JvmField internal var isPaused = false
+    @JvmField internal var isInfinity = false
+
     @JvmField internal var block: ItemBlock = empty
     @JvmField internal var ended: ItemBlock = empty
     @JvmField internal var next: ChItem? = null
