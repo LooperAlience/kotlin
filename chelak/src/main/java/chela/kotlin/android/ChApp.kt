@@ -9,6 +9,9 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.view.inputmethod.InputMethodManager
 
+/**
+ * Base object for accessing an application's resource and converting display unit.
+ */
 object ChApp{
     @JvmStatic lateinit var app: Application
     @JvmStatic lateinit var res: Resources
@@ -31,6 +34,12 @@ object ChApp{
         toDp = DisplayMetrics.DENSITY_DEFAULT / m
         imm = app.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
+
+    /**
+     * @param type Resource type to find. For example, "string".
+     * @param name The name of the desired resource. For example, "app_icon".
+     * @return int The associated resource identifier. For example, R.string.app_icon.
+     */
     @JvmStatic fun resS2I(type:String, name:String):Int = res.getIdentifier(name, type, packName)
     @JvmStatic fun drawable(v: String): Drawable{
         return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) res.getDrawable(resS2I("drawable", v), null)

@@ -2,6 +2,10 @@ package chela.kotlin.validation.rule
 
 import chela.kotlin.validation.ChRule
 
+/**
+ * Child class of ChRule.
+ * All rules are stored as MutableMap in Abstract class.
+ */
 class BaseRules: ChRule(){
     fun NoRule(v:Any, arg:List<String>) = v
     fun MinLength(v:Any, arg:List<String>) = if (v is String && arg.size == 1 && v.length >= arg[0].toInt()) v else this
