@@ -6,6 +6,9 @@ import android.view.View
 import chela.kotlin.Ch
 import java.util.*
 
+/**
+ * Base object for view event.
+ */
 object PropEvent:Property(){
     @JvmStatic fun click(view: View, v:Any){
         if(v !is View.OnClickListener) return
@@ -43,6 +46,11 @@ object PropEvent:Property(){
     }
     @JvmStatic private val touches = WeakHashMap<View, MutableMap<String, Ch.Touch>>()
     @JvmStatic private val hasTouch = WeakHashMap<View, Boolean>()
+    /**
+     * @param view Attach to the view if there is no touch listener.
+     * @param v Only works if its type is Ch.Touch.
+     * @return MutableMap contains MotionEvent type as key and interface as value.
+     */
     @JvmStatic private fun touch(view:View, v:Any):MutableMap<String, Ch.Touch>?{
         if(v !is Ch.Touch) return null
         if(hasTouch[view] == null){

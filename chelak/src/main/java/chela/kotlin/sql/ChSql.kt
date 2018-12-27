@@ -124,6 +124,11 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         c.close()
         return r
     }
+    /**
+     * @param key
+     * @param db
+     * @param param With param, check whether query values follow the {@link ChRuleSet}.
+     */
     @SuppressLint("Recycle")
     private fun getQuery(key:String, db:Char, vararg param:Pair<String, Any>):Cursor?{
         ChSql.queries[key]?.let {
