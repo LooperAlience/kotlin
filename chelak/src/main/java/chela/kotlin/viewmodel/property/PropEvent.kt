@@ -3,6 +3,7 @@ package chela.kotlin.viewmodel.property
 import android.os.Build
 import android.view.MotionEvent
 import android.view.View
+import android.widget.EditText
 import chela.kotlin.Ch
 import java.util.*
 
@@ -15,6 +16,11 @@ object PropEvent:Property(){
         view.isClickable = true
         view.setOnClickListener(v)
     }
+    @JvmStatic fun longClick(view: View, v:Any){
+        if(v !is View.OnLongClickListener) return
+        view.isLongClickable = true
+        view.setOnLongClickListener(v)
+    }
     @JvmStatic fun clickable(view: View, v:Any){
         if(v !is Boolean) return
         view.isClickable = true
@@ -22,6 +28,10 @@ object PropEvent:Property(){
     @JvmStatic fun longClickable(view: View, v:Any){
         if(v !is Boolean) return
         view.isLongClickable = true
+    }
+    @JvmStatic fun focusChange(view:View, v:Any){
+        if(v !is View.OnFocusChangeListener || view !is EditText) return
+        view.setOnFocusChangeListener(v)
     }
     @JvmStatic fun focusable(view:View, v:Any){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){

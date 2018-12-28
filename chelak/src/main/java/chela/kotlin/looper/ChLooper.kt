@@ -114,7 +114,7 @@ class ChLooper:LifecycleObserver{
             if(add.isNotEmpty()) items += add
         }
     }
-    fun add(vararg param: Item, block: ItemBlock = empty): Sequence {
+    operator fun invoke(vararg param: Item, block: ItemBlock = empty): Sequence {
         val item = getItem(*param, block = block)
         item.start += now()
         item.end = if(item.term == -1.0) -1.0 else item.start + item.term

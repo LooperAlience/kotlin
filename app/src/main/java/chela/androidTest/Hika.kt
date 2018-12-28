@@ -12,6 +12,7 @@ class Hika:AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.hika)
         Log.i("ch", HikaVM.title)
+        Ch.prop.view.background(root, "#0000ff")
         Ch.scanner.scan("hika", root).render()
     }
 }

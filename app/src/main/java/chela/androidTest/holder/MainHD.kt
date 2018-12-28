@@ -27,7 +27,7 @@ object MainHD: ChHolder<View>(){
             main.x = 0.0
             Ch.scanner[this]?.render()
         }else{
-            looper.add(Time(700)) {
+            looper.invoke(Time(700)) {
                 main.x = it.circleOut(main.width, 0.0)
                 Ch.scanner[this]?.renderSync()
             }.next(Time(700), Ended{router.unlockPush()}) {

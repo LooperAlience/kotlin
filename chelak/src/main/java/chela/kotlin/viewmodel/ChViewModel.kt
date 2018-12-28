@@ -18,11 +18,22 @@ object viewmodel{
         return find(v, record)
     }
     @JvmStatic private fun find(v: List<String>, it: ChViewModel): Any {
-        var target = it
+        var vm:ChViewModel? = it
+        var list:MutableList<Any>? = null
         var r: Any = 0
-        for (idx in 1 until v.size) {
-            r = target[v[idx]]
-            if (r is ChViewModel) target = r
+        for(idx in 1 until v.size) {
+            r = vm?.get(v[idx]) ?: list?.get(v[idx].toInt()) ?: throw Exception("invalid key:${v[idx]} in $v")
+            when(r){
+                is ChViewModel->{
+                    vm = r
+                    list = null
+                }
+                is List<*>->{
+                    vm = null
+                    @Suppress("UNCHECKED_CAST")
+                    list = r as MutableList<Any>
+                }
+            }
         }
         return r
     }
@@ -61,10 +72,12 @@ abstract class ChViewModel{
         @Suppress("LeakingThis")
         val cls = this::class
         if(!isTypeChecked.contains(cls)) cls.simpleName?.let{
+            isTypeChecked.add(cls)
             try {
-                val v = cls.java.getDeclaredField("INSTANCE")
+                cls.java.getDeclaredField("INSTANCE")
                 if(viewmodel.repo[it] == null) viewmodel.repo[it] = this else throw Exception("exist key:$it")
             }catch(e:Exception){
+                Log.i("ch", "aa$cls")
             }
         }
     }
@@ -105,18 +118,18 @@ abstract class ChViewModel{
                         it.groups[3]?.let{
                             val v = it.value
                             isOk = set(key, when{
-                                v.endsWith("dp")->v.substring(0, v.length - 2).toDouble() * Ch.app.toDp
-                                v.endsWith("%w")->v.substring(0, v.length - 2).toDouble() * Ch.app.width
-                                v.endsWith("%w")->v.substring(0, v.length - 2).toDouble() * Ch.app.height
+                                v.endsWith("dp")->v.substring(0, v.length - 2).toDouble() * Ch.window.toDp
+                                v.endsWith("%w")->v.substring(0, v.length - 2).toDouble() * Ch.window.width
+                                v.endsWith("%w")->v.substring(0, v.length - 2).toDouble() * Ch.window.height
                                 else->v.toDouble()
                             })
                         } ?:
                         it.groups[4]?.let{
                             val v = it.value
                             isOk = set(key, when{
-                                v.endsWith("dp")->(v.substring(0, v.length - 2).toDouble() * Ch.app.toDp).toLong()
-                                v.endsWith("%w")->(v.substring(0, v.length - 2).toDouble() * Ch.app.width).toLong()
-                                v.endsWith("%w")->(v.substring(0, v.length - 2).toDouble() * Ch.app.height).toLong()
+                                v.endsWith("dp")->(v.substring(0, v.length - 2).toDouble() * Ch.window.toDp).toLong()
+                                v.endsWith("%w")->(v.substring(0, v.length - 2).toDouble() * Ch.window.width).toLong()
+                                v.endsWith("%w")->(v.substring(0, v.length - 2).toDouble() * Ch.window.height).toLong()
                                 else->v.toLong()
                             })
                         } ?:
