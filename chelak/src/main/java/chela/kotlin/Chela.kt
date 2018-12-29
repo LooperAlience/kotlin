@@ -2,13 +2,14 @@ package chela.kotlin
 
 import android.app.Application
 import android.os.StrictMode
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.MotionEvent
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
 import chela.kotlin.core.ChDate
 import chela.kotlin.core.ChReflect
-import chela.kotlin.http.ChHttp
-import chela.kotlin.http.ChHttpOk3
 import chela.kotlin.looper.ChItem
 import chela.kotlin.looper.ChLooper
 import chela.kotlin.sql.ChSql
@@ -20,7 +21,8 @@ import chela.kotlin.viewmodel.holder.ChHolderBase
 import chela.kotlin.viewmodel.property.ChProperty
 import chela.kotlin.viewmodel.scanner.ChScanner
 import chela.kotlin.viewmodel.viewmodel
-import okhttp3.Request
+import java.io.File
+
 /**
  * Chela base object
  */
@@ -30,6 +32,14 @@ object Ch{
      */
     interface Touch{fun onTouch(e: MotionEvent):Boolean}
     interface Value
+    abstract class OnTextChanged:TextWatcher{
+        lateinit var text: EditText
+        override fun afterTextChanged(s:Editable?){}
+        override fun beforeTextChanged(s:CharSequence?, start:Int, count:Int, after:Int){}
+        override fun onTextChanged(s:CharSequence?, start:Int, before:Int, count:Int) = onChanged(text, s ?: "", start, before, count)
+        abstract fun onChanged(view:EditText, s:CharSequence, start:Int, before:Int, count:Int)
+        fun pos() = ChView.cursorPos(text)
+    }
     /**
      * set base application
      */
@@ -55,7 +65,7 @@ object Ch{
     @JvmStatic val permission = ChPermission
     @JvmStatic val vm = viewmodel
     @JvmStatic val sql = ChSql
-
+    @JvmStatic val view = ChView
     @JvmStatic fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
 
     @JvmStatic fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, block:()->Unit){
@@ -73,6 +83,7 @@ object Ch{
         }
     }
     @JvmStatic fun finish(act:AppCompatActivity){
+        act.cacheDir?.let{it.deleteRecursively()}
         act.finish()
         System.exit(0)
     }

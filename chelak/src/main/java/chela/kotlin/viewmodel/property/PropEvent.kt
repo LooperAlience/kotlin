@@ -1,6 +1,7 @@
 package chela.kotlin.viewmodel.property
 
 import android.os.Build
+import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
@@ -54,6 +55,12 @@ object PropEvent:Property(){
         if(v) view.requestFocus()
         focusableInTouchMode(view, v)
     }
+    @JvmStatic fun textChanged(view: View, v:Any){
+        if(v !is Ch.OnTextChanged || view !is EditText) return
+        v.text = view
+        view.addTextChangedListener(v)
+    }
+
     @JvmStatic private val touches = WeakHashMap<View, MutableMap<String, Ch.Touch>>()
     @JvmStatic private val hasTouch = WeakHashMap<View, Boolean>()
     /**

@@ -54,6 +54,10 @@ object PropView:Property(){
         if(v !is Number) return
         view.scaleY = v.toFloat()
     }
+    @JvmStatic fun rotation(view:View, v:Any){
+        if(v !is Number) return
+        view.rotation = v.toFloat()
+    }
     @JvmStatic fun alpha(view:View, v:Any){
         if(v !is Number) return
         view.alpha = v.toFloat()

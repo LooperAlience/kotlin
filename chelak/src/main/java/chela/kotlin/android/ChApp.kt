@@ -15,6 +15,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.*
 import android.provider.Settings
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.content.res.AppCompatResources
 
@@ -41,8 +42,10 @@ object ChApp{
         cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         dm = res.displayMetrics
         val m = dm.densityDpi.toDouble()
-        ChWindow.toPx = m / DisplayMetrics.DENSITY_DEFAULT
-        ChWindow.toDp = DisplayMetrics.DENSITY_DEFAULT / m
+        val d = DisplayMetrics.DENSITY_DEFAULT.toDouble()
+        ChWindow.toPx = m / d
+        ChWindow.toDp = d / m
+        Log.i("ch", "px${ChWindow.toPx} dp${ChWindow.toDp}")
     }
     @JvmStatic fun appVersion():String = app.packageManager.getPackageInfo(app.packageName, 0).versionName
 

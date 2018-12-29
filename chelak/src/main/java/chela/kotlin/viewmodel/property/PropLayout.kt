@@ -1,23 +1,24 @@
 package chela.kotlin.viewmodel.property
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 
 object PropLayout:Property(){
     @JvmStatic private inline fun param(view: View, block:(ViewGroup.LayoutParams)->ViewGroup.LayoutParams){
-        view.layoutParams = block(view.layoutParams)
+        view.layoutParams = block(view.layoutParams ?: ViewGroup.MarginLayoutParams(-1, -1))
     }
     @JvmStatic fun width(view: View, v:Any){
-        if(v !is Int) return
+        if(v !is Number) return
         param(view){
-            it.width = v
+            it.width = v.toInt()
             it
         }
     }
     @JvmStatic fun height(view: View, v:Any){
-        if(v !is Int) return
+        if(v !is Number) return
         param(view){
-            it.height = v
+            it.height = v.toInt()
             it
         }
     }

@@ -2,6 +2,7 @@ package chela.kotlin.android
 
 import android.content.pm.ActivityInfo
 import android.content.pm.ActivityInfo.*
+import android.view.View
 import android.view.Window
 import android.view.Window.*
 import android.view.WindowManager
@@ -14,6 +15,9 @@ object ChWindow{
     @JvmStatic var toDp = 0.0
     @JvmStatic val width:Int get() = ChApp.dm.widthPixels
     @JvmStatic val height:Int get() = ChApp.dm.heightPixels
+
+    @JvmStatic fun topOffset(view:View) = ChView.getActivity(view)?.let{topOffset(it)} ?: 0
+    @JvmStatic fun topOffset(act:AppCompatActivity) = height - act.findViewById<View>(android.R.id.content).measuredHeight
 
     @JvmStatic fun fullOn(act: AppCompatActivity) = act.window.addFlags(FLAG_FULLSCREEN)
     @JvmStatic fun fullOff(act: AppCompatActivity) = act.window.clearFlags(FLAG_FULLSCREEN)
