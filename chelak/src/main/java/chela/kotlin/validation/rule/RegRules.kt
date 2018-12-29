@@ -14,7 +14,9 @@ class RegRules:ChRule() {
     private val num = """^(?:-?(?:0|[1-9]\d*)(?:\.\d+)(?:[eE][-+]?\d+)?)|(?:-?(?:0|[1-9]\d*))$""".toRegex()
     private val intnum = """^(?:-?(?:0|[1-9]\d*))$""".toRegex()
     private val doublenum = """^(?:-?(?:0|[1-9]\d*)(?:\.\d+)(?:[eE][-+]?\d+)?)$""".toRegex()
-    private val alphanum = """^[a-z0-9]+$""".toRegex()
+    private val lowernum = """^[a-z0-9]+$""".toRegex()
+    private val uppernum = """^[A-Z0-9]+$""".toRegex()
+    private val alphanum = """^[a-zA-Z0-9]+$""".toRegex()
     private val firstlower = """^[a-z]""".toRegex()
     private val firstUpper = """^[A-Z]""".toRegex()
 
@@ -28,6 +30,8 @@ class RegRules:ChRule() {
     fun num(v: Any, arg: List<String>) = if (v is String && num.find(v) != null) v else this
     fun intnum(v: Any, arg: List<String>) = if (v is String && intnum.find(v) != null) v else this
     fun doublenum(v: Any, arg: List<String>) = if (v is String && doublenum.find(v) != null) v else this
+    fun lowernum(v: Any, arg: List<String>) = if (v is String && lowernum.find(v) != null) v else this
+    fun uppernum(v: Any, arg: List<String>) = if (v is String && uppernum.find(v) != null) v else this
     fun alphanum(v: Any, arg: List<String>) = if (v is String && alphanum.find(v) != null) v else this
     fun firstlower(v: Any, arg: List<String>) = if (v is String && firstlower.find(v) != null) v else this
     fun firstUpper(v: Any, arg: List<String>) = if (v is String && firstUpper.find(v) != null) v else this

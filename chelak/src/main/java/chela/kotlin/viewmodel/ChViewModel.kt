@@ -77,7 +77,6 @@ abstract class ChViewModel{
                 cls.java.getDeclaredField("INSTANCE")
                 if(viewmodel.repo[it] == null) viewmodel.repo[it] = this else throw Exception("exist key:$it")
             }catch(e:Exception){
-                Log.i("ch", "aa$cls")
             }
         }
     }

@@ -43,8 +43,8 @@ object ChApp{
         dm = res.displayMetrics
         val m = dm.densityDpi.toDouble()
         val d = DisplayMetrics.DENSITY_DEFAULT.toDouble()
-        ChWindow.toPx = m / d
-        ChWindow.toDp = d / m
+        ChWindow.toPx = d / m
+        ChWindow.toDp = m / d
         Log.i("ch", "px${ChWindow.toPx} dp${ChWindow.toDp}")
     }
     @JvmStatic fun appVersion():String = app.packageManager.getPackageInfo(app.packageName, 0).versionName

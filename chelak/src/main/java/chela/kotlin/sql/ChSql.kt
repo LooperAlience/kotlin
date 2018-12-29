@@ -26,7 +26,7 @@ object ChSql{
     @JvmStatic private val sql = mutableMapOf<Any, Sql>()
     @JvmStatic internal val rulesets = mutableMapOf<String, ChRuleSet>()
     @JvmStatic internal val queries = mutableMapOf<String, ChQuery>()
-
+    @JvmStatic fun ruleSet(k:String):ChRuleSet? = rulesets[k]
     @JvmStatic fun load(vararg files:String) = files.forEach {
         it.replace(regComment, "").split("#").forEach ch@{
             if(it.isBlank()) return@ch

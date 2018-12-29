@@ -29,7 +29,7 @@ class ChRuleSet(rule:String, private val msg:msg = dmsg){
             ChRule.rules[k]?.let { (f, t)->{ it:Any->f.call(t, it, arg)!!}} ?: throw Exception("invalid key:$k")
         }
     }
-    internal fun check(v: Any):Any{
+    fun check(v: Any):Any{
         result = v
         return if(rules.any{
             it.all{
