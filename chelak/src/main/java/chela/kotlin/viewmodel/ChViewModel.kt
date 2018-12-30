@@ -1,11 +1,12 @@
 package chela.kotlin.viewmodel
 
-import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.core._allStack
 import chela.kotlin.core._notBlank
 import chela.kotlin.core._shift
 import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
 
 object viewmodel{
     @JvmStatic internal val repo: MutableMap<String, ChViewModel> = HashMap()
@@ -62,6 +63,7 @@ private class St(val p: St?, val t:Char, v:String, val k: String = "", val i:Int
     fun clone(p: St? = null, t:Char? = null, v:String? = null, k:String? = null, i:Int? = null): St =
         St(p ?: this.p, t ?: this.t, v ?: this.v, k ?: this.k, i ?: this.i)
 }
+
 abstract class ChViewModel{
     companion object {
         @JvmField val OBJECT = object{}
@@ -90,6 +92,36 @@ abstract class ChViewModel{
     } ?: false
     open fun viewmodel(k:String, v:List<String>):Boolean{throw Exception("override")}
     open fun record(k:String, v:List<String>):Boolean{throw Exception("override")}
+    fun stringify():String{
+        val r = mutableListOf<String>()
+        this::class.memberProperties.forEach{p->
+            var k = ""
+            val v = p.getter.call(this)
+            when(
+                p.findAnnotation<Ch.STRING>()?.let {k = it.name;'s'} ?:
+                p.findAnnotation<Ch.NUMBER>()?.let {k = it.name;'n'} ?:
+                p.findAnnotation<Ch.BOOLEAN>()?.let {k = it.name;'b'} ?:
+                p.findAnnotation<Ch.SHA256>()?.let {k = it.name;'2'} ?:
+                p.findAnnotation<Ch.OUT>()?.let {k = it.name
+                    when(v) {
+                        is String -> 's'
+                        is Boolean -> 'b'
+                        is Number -> 'n'
+                        is ChViewModel -> 'v'
+                        else -> '-'
+                    }
+                }
+            ) {
+                's'->"\"${if(v is String) v.replace("\"", "\\\"") else "$v"}\""
+                '2'->"\"${if(v is String) Ch.crypto.sha256(v) else ""}\""
+                'n'->"${if(v is Number) v else 0}"
+                'b'->"${if(v is Boolean) v else false}"
+                'v'-> (v as ChViewModel).stringify()
+                else -> null
+            }?.let {r += "\"${if (k.isNotBlank()) k else p.name}\":$it"}
+        }
+        return "{${r.joinToString(",")}}"
+    }
     fun fromJson(v:String){
         isSet = true
         if(v.isBlank()) return

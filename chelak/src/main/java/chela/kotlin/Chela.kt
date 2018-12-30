@@ -27,6 +27,11 @@ import java.io.File
  * Chela base object
  */
 object Ch{
+    @Target(AnnotationTarget.PROPERTY) annotation class STRING(val name:String = "")
+    @Target(AnnotationTarget.PROPERTY) annotation class NUMBER(val name:String = "")
+    @Target(AnnotationTarget.PROPERTY) annotation class BOOLEAN(val name:String = "")
+    @Target(AnnotationTarget.PROPERTY) annotation class SHA256(val name:String = "")
+    @Target(AnnotationTarget.PROPERTY) annotation class OUT(val name:String = "")
     /**
      * Interface for touch event(ex down, up, move)
      */

@@ -19,6 +19,7 @@ class RegRules:ChRule() {
     private val alphanum = """^[a-zA-Z0-9]+$""".toRegex()
     private val firstlower = """^[a-z]""".toRegex()
     private val firstUpper = """^[A-Z]""".toRegex()
+    private val noblank = """\s""".toRegex()
 
     fun ip(v: Any, arg: List<String>) = if (v is String && ip.find(v) != null) v else this
     fun url(v: Any, arg: List<String>) = if (v is String && url.find(v) != null) v else this
@@ -35,4 +36,5 @@ class RegRules:ChRule() {
     fun alphanum(v: Any, arg: List<String>) = if (v is String && alphanum.find(v) != null) v else this
     fun firstlower(v: Any, arg: List<String>) = if (v is String && firstlower.find(v) != null) v else this
     fun firstUpper(v: Any, arg: List<String>) = if (v is String && firstUpper.find(v) != null) v else this
+    fun noblank(v: Any, arg: List<String>) = if (v is String && noblank.find(v) == null) v else this
 }
