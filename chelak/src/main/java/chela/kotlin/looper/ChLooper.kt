@@ -14,6 +14,9 @@ import kotlin.concurrent.read
 import kotlin.concurrent.write
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
+/**
+ * This class execute UI update about its Item type on main thread.
+ */
 typealias ItemBlock = (ChItem)->Unit
 typealias Now = ()->Double
 internal val empty: ItemBlock = {}
@@ -26,6 +29,11 @@ class ChLooper:LifecycleObserver{
         class Ended(val block:(ChItem)->Unit): Item()
         class Infinity:Item()
     }
+    /**
+     * Makes ChLooper run on the main thread
+     * @param ctx activity context
+     * @param looper its loop() execute on main thread
+     */
     private class Ani(ctx: Context, private val looper: ChLooper): View(ctx){
         init{tag = "CHELA_ANI"}
         override fun onDraw(canvas: Canvas?){
@@ -52,6 +60,10 @@ class ChLooper:LifecycleObserver{
     private val add = mutableListOf<ChItem>()
     private val itemPool = mutableListOf<ChItem>()
     private val lock =  ReentrantReadWriteLock()
+    /**
+     * set Looper
+     * @param act activity context
+     */
     fun act(act: AppCompatActivity){
         val root = act.window.decorView as ViewGroup
         if(root.findViewWithTag<Ani>("CHELA_ANI") == null){
