@@ -5,6 +5,7 @@ import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
@@ -56,9 +57,10 @@ object Ch{
     /**
      * set base application
      */
-    @JvmStatic operator fun invoke(application:Application):Ch{
+    @JvmStatic operator fun invoke(application:Application, settingJSON:String? = null):Ch{
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         app(application)
+        settingJSON?.let{setting(it)}
         return this
     }
     @JvmStatic fun setting(setting:String){

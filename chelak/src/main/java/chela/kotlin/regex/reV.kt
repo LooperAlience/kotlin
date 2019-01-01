@@ -23,7 +23,7 @@ object reV: ChRegex(
             v.endsWith("dp") -> v.substring(0, v.length - 2).toDouble().DptoPx
             v.endsWith("sp") -> v.substring(0, v.length - 2).toDouble().SptoPx
             v.endsWith("%w") -> v.substring(0, v.length - 2).toDouble() * Ch.window.width
-            v.endsWith("%w") -> v.substring(0, v.length - 2).toDouble() * Ch.window.height
+            v.endsWith("%h") -> v.substring(0, v.length - 2).toDouble() * Ch.window.height
             else -> v.toDouble()
         }
     }
@@ -33,7 +33,7 @@ object reV: ChRegex(
             v.endsWith("dp")->(v.substring(0, v.length - 2).toDouble().DptoPx).toLong()
             v.endsWith("sp")->(v.substring(0, v.length - 2).toDouble().SptoPx).toLong()
             v.endsWith("%w")->(v.substring(0, v.length - 2).toDouble() * Ch.window.width).toLong()
-            v.endsWith("%w")->(v.substring(0, v.length - 2).toDouble() * Ch.window.height).toLong()
+            v.endsWith("%h")->(v.substring(0, v.length - 2).toDouble() * Ch.window.height).toLong()
             else->v.toLong()
         }
     }

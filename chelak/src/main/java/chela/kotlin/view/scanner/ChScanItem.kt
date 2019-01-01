@@ -7,6 +7,10 @@ import chela.kotlin.Ch
 import chela.kotlin.core._shift
 import chela.kotlin.view.ChStyle
 import chela.kotlin.model.Model
+import chela.kotlin.view.ChStyleModel
+import chela.kotlin.view.ChViewModel
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
 
 class ChScanItem internal constructor(@JvmField var view: View, private val pos:List<Int>): Model(){
     @JvmField internal val collector = mutableMapOf<String, Any>()
@@ -26,7 +30,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         recordVal?.clear()
         isOnce = false
     }
-    private fun style(v:String) = ChStyle[v]?.let {
+    private fun style(it:Map<String,Any>){
         it.forEach {(k, v) ->
             when {
                 v is String && v[0] == '@' -> viewmodel(k, v.substring(2, v.length - 1).split("."))
@@ -37,7 +41,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
     override operator fun set(k:String, v:Any):Boolean{
         if(v === OBJECT ||v === ARRAY) return true
         when {
-            k.toLowerCase() == "style" -> style("$v")
+            k.toLowerCase() == "style" -> ChStyle["$v"]?.let{style(it)}
             k[0] == '@' -> {
                 if(updater == null) updater = mutableMapOf()
                 updater?.put(k._shift(), v)
@@ -50,9 +54,22 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         return true
     }
     override fun viewmodel(k:String, v: List<String>):Boolean{
-        if(k[0] == '-'){
-            if(once == null) once = mutableMapOf()
+        if(k[0] == '-') {
+            if (once == null) once = mutableMapOf()
             once?.put(k._shift(), Ch.model.get(v))
+        }else if(k == "style"){
+            val m = mutableMapOf<String, Any>()
+            val key = "@{" + v.joinToString(".")
+            (Ch.model.get(v) as? ChStyleModel)?.let{model->
+                model::class.memberProperties.forEach { p->
+                    if(p.findAnnotation<ChStyleModel.Exclude>() == null) m[p.name.toLowerCase()] = "$key.${p.name}}"
+                }
+            } ?: (Ch.model.get(v) as? ChViewModel)?.let{model->
+                model::class.memberProperties.forEach { p->
+                    p.findAnnotation<ChViewModel.Prop>()?.let{m[it.name.toLowerCase()] = "$key.${p.name}}"}
+                }
+            }
+            if(m.isNotEmpty()) style(m)
         }else{
             if(prop == null){
                 prop = mutableMapOf()

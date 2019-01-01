@@ -45,7 +45,7 @@ abstract class Model{
         }
     }
     @JvmField @Suppress("LeakingThis")
-    protected val ref = Ch.reflect.fields(this::class)
+    val ref = Ch.reflect.fields(this::class)
     @JvmField var isSet = false
     open operator fun get(k:String):Any = ref.getter[k]?.call(this) ?: Ch.NONE
     open operator fun set(k:String, v:Any):Boolean = ref.setter[k]?.let {
