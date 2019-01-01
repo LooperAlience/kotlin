@@ -1,9 +1,9 @@
-package chela.kotlin.viewmodel
+package chela.kotlin.view.router
 
 import chela.kotlin.core._allStack
 import chela.kotlin.core._pop
-import chela.kotlin.viewmodel.holder.ChHolder
-import chela.kotlin.viewmodel.holder.ChHolderBase
+import chela.kotlin.view.router.holder.ChHolder
+import chela.kotlin.view.router.holder.ChHolderBase
 
 class ChRouter<T>(private val base: ChHolderBase<T>){
     private val stack = mutableListOf<ChHolder<T>>()

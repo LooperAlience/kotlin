@@ -1,9 +1,9 @@
 package chela.test.viewmodel
 
-import chela.kotlin.viewmodel.ChViewModel
+import chela.kotlin.model.Model
 
 
-object Step1VM: ChViewModel(){
+object Step1VM: Model(){
     var userid = ""
     override fun set(k: String, v: Any):Boolean{
         if(userid.isNotEmpty()) return false

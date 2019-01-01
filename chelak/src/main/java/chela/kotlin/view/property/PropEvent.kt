@@ -1,7 +1,6 @@
-package chela.kotlin.viewmodel.property
+package chela.kotlin.view.property
 
 import android.os.Build
-import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText

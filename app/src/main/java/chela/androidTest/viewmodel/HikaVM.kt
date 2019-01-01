@@ -2,9 +2,9 @@ package chela.androidTest.viewmodel
 
 import android.view.MotionEvent
 import chela.kotlin.Ch
-import chela.kotlin.viewmodel.ChViewModel
+import chela.kotlin.model.Model
 
-object HikaVM: ChViewModel(){
+object HikaVM: Model(){
     var title = "touch test"
     var fontSize = 15.0
     val move = object:Ch.Touch{

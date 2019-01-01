@@ -1,4 +1,4 @@
-package chela.kotlin.viewmodel.holder
+package chela.kotlin.view.router.holder
 
 import androidx.fragment.app.Fragment
 

@@ -3,9 +3,9 @@ package chela.androidTest.viewmodel
 import android.view.View
 import chela.androidTest.holder.Step1HD
 import chela.androidTest.router
-import chela.kotlin.viewmodel.ChViewModel
+import chela.kotlin.model.Model
 
-object MainVM: ChViewModel(){
+object MainVM: Model(){
     var width = 0.0
     var x = 0.0
     var visible = false

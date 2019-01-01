@@ -3,14 +3,14 @@ package chela.kotlin.thread
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import chela.kotlin.viewmodel.property.ChProperty
-import chela.kotlin.viewmodel.scanner.ChScanner
+import chela.kotlin.view.property.ChProperty
+import chela.kotlin.view.scanner.ChScanItem
 import java.util.concurrent.Executors
 sealed class MsgType(val idx:Int){internal abstract fun f(it:Any)}
 object Prop:MsgType(0){override fun f(it: Any){
     if(it !is Set<*>) return
     it.forEach {
-        if(it !is ChScanner.Item) return
+        if(it !is ChScanItem) return
         val view = it.view
         it.collector.forEach{(k, v)-> ChProperty.f(view, k.toLowerCase(), v)}
     }

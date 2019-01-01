@@ -1,13 +1,11 @@
-package chela.kotlin.android
+package chela.kotlin.view
 
 import android.content.ContextWrapper
 import android.graphics.Rect
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import chela.kotlin.Ch
 
 
 object ChView {

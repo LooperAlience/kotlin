@@ -9,9 +9,9 @@ import chela.androidTest.viewmodel.MainVM
 import chela.kotlin.Ch
 import chela.kotlin.looper.ChLooper.Item.Ended
 import chela.kotlin.looper.ChLooper.Item.Time
-import chela.kotlin.viewmodel.holder.ChGroupBase
-import chela.kotlin.viewmodel.holder.ChHolder
-import chela.kotlin.viewmodel.holder.ChHolderBase
+import chela.kotlin.view.router.holder.ChGroupBase
+import chela.kotlin.view.router.holder.ChHolder
+import chela.kotlin.view.router.holder.ChHolderBase
 
 object MainHD: ChHolder<View>(){
     private val main = MainVM

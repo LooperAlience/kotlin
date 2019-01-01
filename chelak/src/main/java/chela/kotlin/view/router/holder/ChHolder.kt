@@ -1,6 +1,6 @@
-package chela.kotlin.viewmodel.holder
+package chela.kotlin.view.router.holder
 
-import chela.kotlin.viewmodel.ChRouter
+import chela.kotlin.view.router.ChRouter
 
 abstract class ChHolderBase<T>{
     internal lateinit var router: ChRouter<T>

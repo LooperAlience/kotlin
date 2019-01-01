@@ -13,8 +13,8 @@ class ChCursor internal constructor(c: Cursor, isRecord:Boolean): Cursor {
     private val fields = c.columnNames
     private val columeCount = c.columnCount
     private val fieldTypes = c.columnNames.mapIndexed{idx, _->c.getType(idx)}
-    private val range = (0..c.columnCount)
-    private val rs:Array<Array<Any?>> = Array(c.count) ch@{
+    private val range = (0 until c.columnCount)
+    val rs:Array<Array<Any?>> = Array(c.count) ch@{
         if(it == 0) c.moveToFirst()
         val r = range.map {
             when(c.getType(it)){
@@ -28,6 +28,7 @@ class ChCursor internal constructor(c: Cursor, isRecord:Boolean): Cursor {
         c.moveToNext()
         r
     }
+    inline fun forEach(block:(Int, Array<Any?>)->Unit) = rs.forEachIndexed(block)
     private var cursor = 0
     private var row:Array<Any?> = rs[0]
     private fun setRow(c: Int): Boolean {

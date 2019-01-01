@@ -1,6 +1,5 @@
 package chela.kotlin.core
 
-import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.sql.ChSql
 import chela.kotlin.validation.ChRuleSet
@@ -12,7 +11,7 @@ object ChRules {
             !k.contains(".") -> ChRuleSet[k]
             else ->
                 ChSql.rulesets[k] ?:
-                Ch.vm.viewmodel(k.split(".")) as? ChRuleSet ?:
+                Ch.model.get(k.split(".")) as? ChRuleSet ?:
                 ChRuleSet["string"]
         }
         r.check(v) !is ChRuleSet

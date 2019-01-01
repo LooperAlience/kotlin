@@ -1,22 +1,25 @@
-package chela.kotlin.android
+package chela.kotlin.view
 
 import android.content.pm.ActivityInfo.*
-import android.util.Log
 import android.view.View
 import android.view.Window.FEATURE_NO_TITLE
 import android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import chela.kotlin.Ch
+import chela.kotlin.android.ChApp
 
 object ChWindow{
-    @JvmStatic var toPx = 0.0
-    @JvmStatic var toDp = 0.0
+
+
+    @JvmStatic var DptoPx = 0.0
+    @JvmStatic var PxtoDp = 0.0
+    @JvmStatic var PxtoSp = 0.0
+    @JvmStatic var SptoPx = 0.0
     @JvmStatic val width:Int get() = ChApp.dm.widthPixels
     @JvmStatic val height:Int get() = ChApp.dm.heightPixels
 
-    @JvmStatic fun topOffset(view:View) = ChView.getActivity(view)?.let{topOffset(it)} ?: 0
+    @JvmStatic fun topOffset(view:View) = ChView.getActivity(view)?.let{ topOffset(it) } ?: 0
     @JvmStatic fun topOffset(act:AppCompatActivity) = height - act.findViewById<View>(android.R.id.content).measuredHeight
 
     @JvmStatic fun fullOn(act: AppCompatActivity) = act.window.addFlags(FLAG_FULLSCREEN)

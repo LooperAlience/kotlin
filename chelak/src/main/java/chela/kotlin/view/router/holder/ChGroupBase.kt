@@ -1,11 +1,9 @@
-package chela.kotlin.viewmodel.holder
+package chela.kotlin.view.router.holder
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import chela.kotlin.viewmodel.holder.ChHolder
-import chela.kotlin.viewmodel.holder.ChHolderBase
 
 class ChGroupBase: ChHolderBase<View>(){
     private lateinit var inflater:LayoutInflater

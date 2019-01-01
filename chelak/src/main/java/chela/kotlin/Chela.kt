@@ -9,20 +9,28 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
 import chela.kotlin.core.*
+import chela.kotlin.i18n.ChI18n
 import chela.kotlin.looper.ChItem
 import chela.kotlin.looper.ChLooper
 import chela.kotlin.sql.ChSql
 import chela.kotlin.thread.ChThread
-import chela.kotlin.validation.ChRuleSet
-import chela.kotlin.viewmodel.ChRouter
-import chela.kotlin.viewmodel.holder.ChFragmentBase
-import chela.kotlin.viewmodel.holder.ChGroupBase
-import chela.kotlin.viewmodel.holder.ChHolderBase
-import chela.kotlin.viewmodel.property.ChProperty
-import chela.kotlin.viewmodel.scanner.ChScanner
-import chela.kotlin.viewmodel.viewmodel
-import java.io.File
+import chela.kotlin.view.ChStyle
+import chela.kotlin.view.ChView
+import chela.kotlin.view.ChWindow
+import chela.kotlin.view.router.ChRouter
+import chela.kotlin.view.router.holder.ChFragmentBase
+import chela.kotlin.view.router.holder.ChGroupBase
+import chela.kotlin.view.router.holder.ChHolderBase
+import chela.kotlin.view.property.ChProperty
+import chela.kotlin.view.scanner.ChScanner
+import chela.kotlin.model.ChModel
+import org.json.JSONObject
 
+
+inline val Number.DptoPx get() = this.toDouble() * ChWindow.SptoPx
+inline val Number.PxtoDp get() = this.toDouble() * ChWindow.PxtoDp
+inline val Number.PxtoSp get() = this.toDouble() * ChWindow.PxtoSp
+inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
 /**
  * Chela base object
  */
@@ -48,10 +56,20 @@ object Ch{
     /**
      * set base application
      */
-    operator fun invoke(application:Application):Ch{
+    @JvmStatic operator fun invoke(application:Application):Ch{
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         app(application)
         return this
+    }
+    @JvmStatic fun setting(setting:String){
+        val v = JSONObject(ChAsset.string(setting))
+        v.getJSONObject("db")?.let{ChSql.load(it)}
+        v.getJSONArray("style")?.let{arr->ChStyle.load((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
+        v.getJSONObject("i18n")?.let{
+            ChI18n(it.getString("db"), it.getString("lang"), it.getInt("ver"))
+            it.getJSONArray("data")?.let{arr->ChI18n.load((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
+        }
+        v.getJSONArray("api")?.let{arr->ChNet.load((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
     }
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}
@@ -69,10 +87,12 @@ object Ch{
     @JvmStatic val keyboard = ChKeyboard
     @JvmStatic val date = ChDate
     @JvmStatic val permission = ChPermission
-    @JvmStatic val vm = viewmodel
+    @JvmStatic val model = ChModel
     @JvmStatic val sql = ChSql
     @JvmStatic val rules = ChRules
     @JvmStatic val view = ChView
+    @JvmStatic val style = ChStyle
+    @JvmStatic val i18n = ChI18n
     @JvmStatic val crypto = ChCrypto
     @JvmStatic fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
 
@@ -96,7 +116,6 @@ object Ch{
         System.exit(0)
     }
 
-
     @JvmStatic fun looper():ChLooper = ChLooper()
     @JvmStatic fun time(ms:Int):ChLooper.Item.Time = ChLooper.Item.Time(ms)
     @JvmStatic fun delay(ms:Int):ChLooper.Item.Delay = ChLooper.Item.Delay(ms)
@@ -110,7 +129,6 @@ object Ch{
     @JvmStatic fun <T>router(base: ChHolderBase<T>): ChRouter<T> = ChRouter(base)
     @JvmStatic fun groupBase():ChGroupBase = ChGroupBase()
     @JvmStatic fun fragmentBase():ChFragmentBase = ChFragmentBase()
-
 
     @JvmStatic val scanner = ChScanner
     @JvmStatic val prop = ChProperty

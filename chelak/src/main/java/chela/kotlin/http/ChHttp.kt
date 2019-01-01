@@ -4,8 +4,7 @@ import chela.kotlin.Ch
 import okhttp3.*
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-
-typealias httpCallBack = (String?, String?, Int)->Unit
+typealias httpCallBack = (body:String?, err:String?, state:Int)->Unit
 
 interface ChHttp{
     fun header(key:String, value:String): ChHttp

@@ -1,7 +1,9 @@
-package chela.kotlin.viewmodel.property
+package chela.kotlin.view.property
 
+import android.util.Log
 import android.view.View
 import android.widget.TextView
+import chela.kotlin.PxtoSp
 
 object PropText:Property(){
     @JvmStatic fun text(view:View, v:Any){
@@ -10,7 +12,7 @@ object PropText:Property(){
     }
     @JvmStatic fun textSize(view:View, v:Any){
         if(v !is Number || view !is TextView) return
-        view.textSize = v.toFloat()
+        view.textSize = v.PxtoSp.toFloat()
     }
     @JvmStatic fun textScaleX(view:View, v:Any){
         if(v !is Number || view !is TextView) return

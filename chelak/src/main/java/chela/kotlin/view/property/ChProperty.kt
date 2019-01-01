@@ -1,4 +1,4 @@
-package chela.kotlin.viewmodel.property
+package chela.kotlin.view.property
 
 import android.graphics.Color
 import android.view.View

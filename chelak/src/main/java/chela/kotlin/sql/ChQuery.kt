@@ -16,19 +16,19 @@ internal class ChQuery(body: String){
             !v.contains(".") -> ChRuleSet[v]
             else ->
                 ChSql.rulesets[v] ?:
-                Ch.vm.viewmodel(v.split(".")) as? ChRuleSet ?:
+                Ch.model.get(v.split(".")) as? ChRuleSet ?:
                 ChRuleSet["string"]
         })
          "?"
     }, " ").trim()
     internal fun param(param:Array<out Pair<String, Any>>):Array<String>{
-        val r = mutableListOf<String>()
+        val r = MutableList(items.size){""}
         var cnt = 0
         param.forEach {(k, v)->
             items[k]?.let {
                 val c = it.ruleSet.check(v)
                 if(ChRuleSet.isOk(c)){
-                    r.add(it.i, c.toString())
+                    r[it.i] = c.toString()
                     cnt++
                 }else throw Exception("invalid type:$k - ${it.ruleSet} - $c")
             }

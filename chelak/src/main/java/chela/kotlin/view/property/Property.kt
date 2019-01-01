@@ -1,4 +1,4 @@
-package chela.kotlin.viewmodel.property
+package chela.kotlin.view.property
 
 import kotlin.reflect.KFunction
 

@@ -1,4 +1,4 @@
-package chela.kotlin.viewmodel.property
+package chela.kotlin.view.property
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
