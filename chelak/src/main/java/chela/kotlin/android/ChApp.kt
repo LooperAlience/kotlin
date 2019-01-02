@@ -1,6 +1,5 @@
 package chela.kotlin.android
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ClipboardManager
 import android.content.Context
@@ -11,13 +10,13 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.os.Build
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.*
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.content.res.AppCompatResources
+import chela.kotlin.view.ChWindow
 
 /**
  * Base object for accessing an application's resource and converting display unit.
@@ -41,11 +40,13 @@ object ChApp{
         clip = app.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         dm = res.displayMetrics
-        val m = dm.densityDpi.toDouble()
-        val d = DisplayMetrics.DENSITY_DEFAULT.toDouble()
-        ChWindow.toPx = d / m
-        ChWindow.toDp = m / d
-        Log.i("ch", "px${ChWindow.toPx} dp${ChWindow.toDp}")
+        val d = dm.density.toDouble()
+        ChWindow.DptoPx = d
+        ChWindow.PxtoDp = 1 / d
+        val s = dm.scaledDensity.toDouble()
+        Log.i("ch", "d:$d, s:$s")
+        ChWindow.SptoPx = s
+        ChWindow.PxtoSp = 1 / s
     }
     @JvmStatic fun appVersion():String = app.packageManager.getPackageInfo(app.packageName, 0).versionName
 

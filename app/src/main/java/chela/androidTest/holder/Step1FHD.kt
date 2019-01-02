@@ -9,11 +9,10 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import chela.androidTest.Hika
 import chela.androidTest.R
-import chela.androidTest.routerf
 import chela.kotlin.Ch
-import chela.kotlin.viewmodel.holder.ChFragmentInfo
-import chela.kotlin.viewmodel.holder.ChHolder
-import chela.kotlin.viewmodel.holder.ChHolderBase
+import chela.kotlin.view.router.holder.ChFragmentInfo
+import chela.kotlin.view.router.holder.ChHolder
+import chela.kotlin.view.router.holder.ChHolderBase
 
 class F1:Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?):View{

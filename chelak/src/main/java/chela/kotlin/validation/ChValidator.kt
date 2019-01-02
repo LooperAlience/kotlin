@@ -1,10 +1,10 @@
 package chela.kotlin.validation
 
-import chela.kotlin.viewmodel.ChViewModel
+import chela.kotlin.model.Model
 import kotlin.reflect.full.createType
 
 internal typealias msg = (ChRuleSet)->String
-abstract class ChValidator:ChViewModel(){
+abstract class ChValidator: Model(){
     companion object{
         @JvmStatic private val ruleSetType = ChRuleSet::class.createType()
         @JvmStatic val dmsg:msg = {"invalid value"}

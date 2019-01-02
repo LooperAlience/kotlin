@@ -5,11 +5,13 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.core._pop
 import chela.kotlin.validation.ChRuleSet
 import chela.kotlin.validation.ChValidator
-import chela.kotlin.viewmodel.ChViewModel
+import chela.kotlin.model.Model
+import org.json.JSONObject
 
 object ChSql{
     interface Watcher{
@@ -17,9 +19,9 @@ object ChSql{
         fun onCreate(sql: Sql) {}
         fun onUpgrade(sql: Sql, oldVersion: Int, newVersion: Int) {}
     }
-    class RulesetVm(val key:String):ChViewModel(){
+    class RulesetVm(val key:String): Model(){
         override fun set(k: String, v:Any):Boolean{
-            if(v is String) ChSql.rulesets["$key.$k"] = ChRuleSet(v, ChValidator.dmsg)
+            if(v is String) ChSql.rulesets["$key.$k"] = ChRuleSet(v)
             return true
         }
     }
@@ -27,7 +29,16 @@ object ChSql{
     @JvmStatic internal val rulesets = mutableMapOf<String, ChRuleSet>()
     @JvmStatic internal val queries = mutableMapOf<String, ChQuery>()
     @JvmStatic fun ruleSet(k:String):ChRuleSet? = rulesets[k]
-    @JvmStatic fun load(vararg files:String) = files.forEach {
+    @JvmStatic fun load(v:JSONObject){
+        v.keys().forEach{k->
+            val db = v.getJSONObject(k)
+            val sql = db.getJSONArray("sql")
+            val length = sql.length()
+            if(length > 0) loadSql((0 until length).map{Ch.asset.string(sql.getString(it))})
+            Ch.sql.addDb(k, k, db.getInt("ver"), db.getString("create"), db.getString("update"))
+        }
+    }
+    @JvmStatic fun loadSql(files:List<String>) = files.forEach {
         it.replace(regComment, "").split("#").forEach ch@{
             if(it.isBlank()) return@ch
             val i = it.indexOf("\n")
@@ -88,14 +99,15 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         c.close()
         return r
     }
-    fun select(k:String, isRecord:Boolean, vararg arg:Pair<String, Any>):ChCursor{
-        val c = getQuery(k, 'r', *arg)!!
-        val offCursor = ChCursor(c, isRecord)
-        c.close()
-        return offCursor
-    }
-    fun <T: ChViewModel> select(k:String, vararg arg:Pair<String, Any>, block:()->T):List<T>{
-        val c = getQuery(k, 'r', *arg)!!
+    fun select(k:String, isRecord:Boolean = false, vararg arg:Pair<String, Any>):ChCursor?
+        = getQuery(k, 'r', *arg)?.let{
+            it.moveToFirst()
+            val offCursor = ChCursor(it, isRecord)
+            it.close()
+            offCursor
+        }
+    fun <T: Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T):List<T>{
+        val c = getQuery(k, 'r', *arg) ?: throw Exception("invalid query result:$k")
         c.moveToFirst()
         val r = (0 until c.count).map {
             val v = block()
@@ -145,14 +157,13 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
      */
     @SuppressLint("Recycle")
     private fun getQuery(key:String, db:Char, vararg param:Pair<String, Any>):Cursor?{
-        ChSql.queries[key]?.let {
-            val arg = it.param(param)
-            return if(db == 'r') reader.rawQuery(it.query, if(arg.isEmpty()) null else arg)
+        val it = ChSql.queries[key] ?: throw Exception("invalid param:$key")
+        val arg = it.param(param)
+        return if(db == 'r') reader.rawQuery(it.query, if(arg.isEmpty()) null else arg)
             else{
                 if(arg.isEmpty()) writer.execSQL(it.query)
                 else writer.execSQL(it.query, arg)
                 null
             }
-        } ?: throw Exception("invalid param:$key")
     }
 }
