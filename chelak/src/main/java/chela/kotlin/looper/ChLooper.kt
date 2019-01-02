@@ -15,7 +15,13 @@ import kotlin.concurrent.write
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
 /**
- * This class execute UI update about its Item type on main thread.
+ * This class executes UI update about its Item type on main thread.
+ * Asynchronous execution is also possible.
+ * <pre>
+ *   App.looper(Ch.infinity()) { item ->
+ *      ...
+ *   }
+ * </pre>
  */
 typealias ItemBlock = (ChItem)->Unit
 typealias Now = ()->Double
@@ -154,11 +160,18 @@ class ChLooper:LifecycleObserver{
         }
         return item
     }
+    /**
+     * LifecycleObserver detect life cycle event.
+     *
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun clear(){
         itemPool += items
         items.clear()
     }
+    /**
+     * It handle time offset between pause and resume.
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private fun pause(){
         if(pauseStart != 0.0) pauseStart = now()
