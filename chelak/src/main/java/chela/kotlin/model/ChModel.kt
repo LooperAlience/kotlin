@@ -1,6 +1,9 @@
 package chela.kotlin.model
 
 import chela.kotlin.i18n.ChI18n
+import org.json.JSONArray
+import org.json.JSONObject
+import kotlin.reflect.full.createInstance
 
 object ChModel{
     @JvmStatic internal val repo: MutableMap<String, Model> = HashMap()
@@ -33,5 +36,40 @@ object ChModel{
         }
         return r
     }
+    @JvmStatic private fun arr(o:JSONArray, target:MutableList<Any>){
+        (0 until o.length()).forEach {
+            val v = o[it]
+            @Suppress("UNCHECKED_CAST")
+            when (v) {
+                is JSONObject -> obj(v, (target[it] as? Model) ?: throw Exception("invalid model idx:$it"))
+                is JSONArray -> arr(v, (target[it] as? MutableList<Any>) ?: throw Exception("invalid key $it"))
+                else -> target.add(v)
+            }
+        }
+    }
+    @JvmStatic private fun obj(o:JSONObject, target:Model){
+        val setter = target.ref.setter
+        val getter = target.ref.getter
+        o.keys().forEach {k->
+            setter[k]?.let { s ->
+                val v = o.get(k)
+                @Suppress("UNCHECKED_CAST")
+                when (v) {
+                    is JSONObject -> obj(v, (getter[k]?.call(target) as? Model) ?: throw Exception("invalid key $k"))
+                    is JSONArray -> arr(v, (getter[k]?.call(target) as? MutableList<Any>) ?: throw Exception("invalid key $k"))
+                    else -> s.call(target, v)
+                }
+            }
+        }
+    }
+    @JvmStatic fun jsonToModel(json:JSONObject, model:String):Model? =
+        try {
+            (Class.forName(model).kotlin.createInstance() as? Model)?.let {
+                obj(json, it)
+                it
+            }
+        }catch(e:Exception){
+            null
+        }
 }
 

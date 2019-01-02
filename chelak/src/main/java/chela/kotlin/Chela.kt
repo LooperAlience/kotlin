@@ -5,7 +5,6 @@ import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
-import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
@@ -25,6 +24,8 @@ import chela.kotlin.view.router.holder.ChHolderBase
 import chela.kotlin.view.property.ChProperty
 import chela.kotlin.view.scanner.ChScanner
 import chela.kotlin.model.ChModel
+import chela.kotlin.net.ChNet
+import chela.kotlin.validation.ChRules
 import org.json.JSONObject
 
 
@@ -36,6 +37,10 @@ inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
  * Chela base object
  */
 object Ch{
+    sealed class ApiResult{
+        object ok:ApiResult()
+        class fail(val msg:String):ApiResult()
+    }
     @Target(AnnotationTarget.PROPERTY) annotation class STRING(val name:String = "")
     @Target(AnnotationTarget.PROPERTY) annotation class NUMBER(val name:String = "")
     @Target(AnnotationTarget.PROPERTY) annotation class BOOLEAN(val name:String = "")
@@ -71,7 +76,7 @@ object Ch{
             ChI18n(it.getString("db"), it.getString("lang"), it.getInt("ver"))
             it.getJSONArray("data")?.let{arr->ChI18n.load((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
         }
-        v.getJSONArray("api")?.let{arr->ChNet.load((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
+        v.getJSONArray("api")?.let{arr-> ChNet.loadApi((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
     }
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}

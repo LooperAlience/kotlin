@@ -21,7 +21,7 @@ object ChSql{
     }
     class RulesetVm(val key:String): Model(){
         override fun set(k: String, v:Any):Boolean{
-            if(v is String) ChSql.rulesets["$key.$k"] = ChRuleSet(v, ChValidator.dmsg)
+            if(v is String) ChSql.rulesets["$key.$k"] = ChRuleSet(v)
             return true
         }
     }
