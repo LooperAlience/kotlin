@@ -3,8 +3,25 @@ package chela.kotlin.view
 import chela.kotlin.regex.reV
 import org.json.JSONObject
 
+/**
+ * This object cached style property on [items].
+ */
 object ChStyle {
     @JvmStatic private val items = mutableMapOf<String, Map<String, Any>>()
+    /**
+     * Parse json file list to MutableMap.
+     * @files json format file list
+     * <pre> For example, style.json
+     * {
+     *   "footer":{
+     *     "textColor":"#ffffff",
+     *     "textSize":"10sp",
+     *     "text":["footer/footer", 1, {}]
+     *    }
+     *   ...
+     * }
+     * </pre>
+     */
     @JvmStatic fun load(files:List<String>) = files.map{JSONObject(it)}.forEach{v->
         v.keys().forEach{k->
             if(items[k] != null) throw Exception("exist key:$k")
