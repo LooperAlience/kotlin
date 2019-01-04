@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS ch_i18nData(
     contents TEXT NOT null,
     UNIQUE(i18n_rowid, lang, title)
 )""", false)
-        ChSql.addQuery("ch3", "CREATE INDEX ch_i18nData_idx0 ON i18nData(title ASC,lang ASC)")
+        ChSql.addQuery("ch3", "CREATE INDEX ch_i18nData_idx0 ON ch_i18nData(title ASC,lang ASC)")
         ChSql.addQuery("ch4","""
 CREATE TABLE IF NOT EXISTS ch_style(
     style_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
                 select
                 a.title,a.url,a.method,a.requestTask,a.responseTask,
                 r.title,r.name,r.rule,r.task
-                from ch_apiRequest r inner join ch_api a on r.api_rowid = a.api.rowid
+                from ch_apiRequest r inner join ch_api a on r.api_rowid = a.api_rowid
                 order by a.title
             """, false)
         }
@@ -252,7 +252,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
         private var id = 0
         private var isLoaded = false
         operator fun invoke(){
-            ChSql.addQuery("ch_style_add", "REPLACE into ch_style(title)values(@title:string@)",false)
+            ChSql.addQuery("ch_style_add", "insert into ch_style(title)values(@title:string@)",false)
             ChSql.addQuery("ch_styleData_add", "REPLACE into ch_styleData(style_rowid,title,contents)values(@styleid:int@, @title:string@, @contents:string@)",false)
             ChSql.addQuery("ch_style_get", """
                 select s.title,d.title,d.contents
@@ -296,7 +296,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
     object ruleset{
         private var isLoaded = false
         operator fun invoke(){
-            ChSql.addQuery("ch_ruleset_get", "select title, contents from ch_ruleset", false)
+            ChSql.addQuery("ch_ruleset_get", "select title,contents from ch_ruleset", false)
             ChSql.addQuery("ch_ruleset_add", "REPLACE into ch_ruleset(title, contents)values(@title:string@,@contents:string@)",false)
         }
         fun add(key:String, body:String){
