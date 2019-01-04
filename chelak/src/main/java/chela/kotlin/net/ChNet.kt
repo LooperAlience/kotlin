@@ -7,10 +7,13 @@ import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.os.Build.VERSION.SDK_INT
 import chela.kotlin.Ch
 import chela.kotlin.android.ChApp
-import chela.kotlin.core.*
+import chela.kotlin.core._forObject
+import chela.kotlin.core._string
+import chela.kotlin.core._try
+import chela.kotlin.net.ChNet.apis
 import chela.kotlin.regex.reParam
-import chela.kotlin.sql.ChBaseDB.id
 import chela.kotlin.sql.ChBaseDB.api
+import chela.kotlin.sql.ChBaseDB.id
 import chela.kotlin.validation.ChRuleSet
 import okhttp3.Request
 import org.json.JSONObject
@@ -19,7 +22,10 @@ typealias httpCallBack = (response: ChResponse)->Unit
 typealias requestTaskF = (ChHttp, List<Pair<String, Any>>)->Boolean
 typealias responseTaskF = (response:ChResponse)-> Boolean
 
-<<<<<<< HEAD
+/**
+ * This object handles send HTTP request and read response.
+ * It cached Api information on [apis].
+ */
 object ChNet {
     class Api(
         val url: String,
@@ -27,19 +33,6 @@ object ChNet {
         val requestTask: List<String>,
         val responseTask: List<String>,
         val request: Map<String, ApiRequest>
-=======
-/**
- * This object handles send HTTP request and read response.
- * It cached Api information on [apis].
- */
-object ChNet{
-    private class Api(
-        val url:String,
-        val method:String,
-        val requestTask:List<String>,
-        val request:Map<String, ApiRequest>,
-        val responseTask:List<String>
->>>>>>> bf93f68ecdccc7cbeed2506b450c0eb25b37b0b9
     )
 
     class ApiRequest(
