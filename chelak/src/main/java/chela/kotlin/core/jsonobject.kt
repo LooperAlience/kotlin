@@ -38,9 +38,3 @@ fun JSONObject._long(key:String) = try{this.getLong(key)}catch(e:Throwable){null
 fun JSONObject._float(key:String) = try{this.getDouble(key).toFloat()}catch(e:Throwable){null}
 fun JSONObject._double(key:String) = try{this.getDouble(key)}catch(e:Throwable){null}
 fun JSONObject._boolean(key:String) = try{this.getBoolean(key)}catch(e:Throwable){null}
-
-
-
-
-
-

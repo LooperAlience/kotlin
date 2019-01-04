@@ -15,16 +15,17 @@ class ChRuleSet(rule:String){
         @JvmStatic fun set(k:String, rule:String, isWriteDB:Boolean = true){
             if(k.isBlank()) return
             ChBaseDB.ruleset.get()
-            if (_defined[k] != null) throw Exception("exist ruleset:$k")
-            _defined[k] = ChRuleSet(rule)
-            if(isWriteDB) ChBaseDB.ruleset.add(k, rule)
+            val key = k.trim().toLowerCase()
+            if (_defined[key] != null) throw Exception("exist ruleset:$key")
+            _defined[key] = ChRuleSet(rule)
+            if(isWriteDB) ChBaseDB.ruleset.add(key, rule)
         }
         @JvmStatic operator fun get(k:String):ChRuleSet?{
             ChBaseDB.ruleset.get()
             return _defined[k]
         }
         @JvmStatic fun fromJson(k:String, json:String){
-            JsonRuleset.jsonKey = k.trim().toLowerCase()
+            JsonRuleset.jsonKey = k.trim()
             JsonRuleset.fromJson(json)
         }
         object JsonRuleset:Model(){

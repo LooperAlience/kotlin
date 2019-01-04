@@ -79,9 +79,7 @@ object Ch{
         it._list<String>("api")?.let{ChNet.loadApi(it.map{ChAsset.string(it)})}
 
         it._object("i18n")?.let{
-            val db = it._string("db")
-            val lang = it._string("lang")
-            if(db != null && lang != null) ChI18n(db, lang)
+            it._string("lang")?.let{ChI18n(it)}
             it._list<String>("data")?.let{ChI18n.load(it.map{ChAsset.string(it)})}
         }
     }

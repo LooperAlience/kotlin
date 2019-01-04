@@ -41,14 +41,10 @@ object ChNet {
         val task: List<String>
     )
 
-    @JvmStatic
-    private val apis = mutableMapOf<String, Api>()
-    @JvmStatic
-    private val requestTask = mutableMapOf<String, requestTaskF>()
-    @JvmStatic
-    private val requestItemTask = mutableMapOf<String, (Any) -> Any?>()
-    @JvmStatic
-    private val responseTask = mutableMapOf<String, responseTaskF>()
+    @JvmStatic private val apis = mutableMapOf<String, Api>()
+    @JvmStatic private val requestTask = mutableMapOf<String, requestTaskF>()
+    @JvmStatic private val requestItemTask = mutableMapOf<String, (Any) -> Any?>()
+    @JvmStatic private val responseTask = mutableMapOf<String, responseTaskF>()
 
     @JvmStatic
     fun apiRequestTask(key: String, block: requestTaskF) {
@@ -98,10 +94,10 @@ object ChNet {
                 setApi(k,
                     obj._string(api.URL) ?: throw Exception("no url: $k"),
                     obj._string(api.METHOD) ?: "POST",
-                    obj._string(api.RESPONSETASK) ?: "",
+                    obj._string(api.REQUESTTASK) ?: "",
                     obj._string(api.RESPONSETASK) ?: "",
                     with(mutableMapOf<String, List<String>>()) {
-                        obj._forObject { rk, item ->
+                        obj._forObject(api.REQUEST){ rk, item ->
                             this[rk] = listOf(
                                 item._string(api.REQUEST_NAME) ?: rk,
                                 item._string(api.REQUEST_RULES) ?: "",

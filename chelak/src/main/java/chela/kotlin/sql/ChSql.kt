@@ -30,22 +30,22 @@ object ChSql{
             val v = db._int("ver")
             val c = db._string("create")
             val u = db._string("update")
-            _isNotNull(v, c, u){
+            _requiredNotNull(v, c, u){
                 val ver = v!!
                 var create = c!!
                 var update = u!!
                 db._list<String>("base")?.let{loadSql(it.map{Ch.asset.string(it)})}
                 if(db._boolean("isDefault") == true){
                     defaultDB = k
-                    ChBaseDB.base(create, update).let { (c, u)->
-                        create = if(create.isBlank()) c else "$c,$create"
-                        update = if(update.isBlank()) u else "$u,$update"
+                    ChBaseDB.base().let { (c, u)->
+                        create = "$c,$create"
+                        update = "$u,$update"
                     }
                 }
                 Ch.sql.addDb(k, k, ver, create, update)
             }
         }
-        ChBaseDB.baseQuery()
+        if(defaultDB != "") ChBaseDB.baseQuery()
     }
     @JvmStatic private val regComment =  "\\/\\*.*\\*\\/".toRegex()
     @JvmStatic fun loadSql(files:List<String>) = files.forEach {
