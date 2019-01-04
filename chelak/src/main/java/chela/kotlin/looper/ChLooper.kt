@@ -14,6 +14,15 @@ import kotlin.concurrent.read
 import kotlin.concurrent.write
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
+/**
+ * This class executes UI update about its Item type on main thread.
+ * Asynchronous execution is also possible.
+ * <pre>
+ *   App.looper(Ch.infinity()) { item ->
+ *      ...
+ *   }
+ * </pre>
+ */
 typealias ItemBlock = (ChItem)->Unit
 typealias Now = ()->Double
 internal val empty: ItemBlock = {}
@@ -26,6 +35,11 @@ class ChLooper:LifecycleObserver{
         class Ended(val block:(ChItem)->Unit): Item()
         class Infinity:Item()
     }
+    /**
+     * Makes ChLooper run on the main thread
+     * @param ctx activity context
+     * @param looper its loop() execute on main thread
+     */
     private class Ani(ctx: Context, private val looper: ChLooper): View(ctx){
         init{tag = "CHELA_ANI"}
         override fun onDraw(canvas: Canvas?){
@@ -52,6 +66,10 @@ class ChLooper:LifecycleObserver{
     private val add = mutableListOf<ChItem>()
     private val itemPool = mutableListOf<ChItem>()
     private val lock =  ReentrantReadWriteLock()
+    /**
+     * set Looper
+     * @param act activity context
+     */
     fun act(act: AppCompatActivity){
         val root = act.window.decorView as ViewGroup
         if(root.findViewWithTag<Ani>("CHELA_ANI") == null){
@@ -142,11 +160,18 @@ class ChLooper:LifecycleObserver{
         }
         return item
     }
+    /**
+     * LifecycleObserver detect life cycle event.
+     *
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     private fun clear(){
         itemPool += items
         items.clear()
     }
+    /**
+     * It handle time offset between pause and resume.
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private fun pause(){
         if(pauseStart != 0.0) pauseStart = now()

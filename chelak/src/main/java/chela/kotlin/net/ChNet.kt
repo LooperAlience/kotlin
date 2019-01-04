@@ -19,6 +19,7 @@ typealias httpCallBack = (response: ChResponse)->Unit
 typealias requestTaskF = (ChHttp, List<Pair<String, Any>>)->Boolean
 typealias responseTaskF = (response:ChResponse)-> Boolean
 
+<<<<<<< HEAD
 object ChNet {
     class Api(
         val url: String,
@@ -26,6 +27,19 @@ object ChNet {
         val requestTask: List<String>,
         val responseTask: List<String>,
         val request: Map<String, ApiRequest>
+=======
+/**
+ * This object handles send HTTP request and read response.
+ * It cached Api information on [apis].
+ */
+object ChNet{
+    private class Api(
+        val url:String,
+        val method:String,
+        val requestTask:List<String>,
+        val request:Map<String, ApiRequest>,
+        val responseTask:List<String>
+>>>>>>> bf93f68ecdccc7cbeed2506b450c0eb25b37b0b9
     )
 
     class ApiRequest(
@@ -80,9 +94,11 @@ object ChNet {
             }
         )
     }
-
-    @JvmStatic
-    fun loadApi(files: List<String>) = files.forEach { v ->
+    /**
+     * Parse json file list to MutableMap, and cached on [apis].
+     * @param files json format file list.
+     */
+    @JvmStatic fun loadApi(files: List<String>) = files.forEach { v ->
         _try { JSONObject(v) }?.let { v ->
             if (id.isExist(v._string(id.ID) ?: "")) return@let
             v._forObject { k, obj ->
@@ -105,6 +121,16 @@ object ChNet {
             }
         }
     }
+
+    /**
+     * @key json object key on Api
+     * @arg Pair you want to validate and send HTTP request.
+     * <pre>
+     *     Ch.net.api(jsonObjectKey, key to value...) { response ->
+     *        App.data = response.result
+     *     }
+     * </pre>
+     */
     @JvmStatic fun api(key:String, vararg arg:Pair<String, Any>, block:(ChResponse)->Unit):Ch.ApiResult{
         val api = getApi(key) ?: return Ch.ApiResult.fail("invalid api:$key")
         if(arg.size != api.request.size) return Ch.ApiResult.fail("invalid arg count0")

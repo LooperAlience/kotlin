@@ -6,8 +6,25 @@ import chela.kotlin.regex.reV
 import chela.kotlin.sql.ChBaseDB
 import org.json.JSONObject
 
+/**
+ * This object cached style property on [items].
+ */
 object ChStyle{
     @JvmStatic val items = mutableMapOf<String, Map<String, Any>>()
+    /**
+     * Parse json file list to MutableMap.
+     * @files json format file list
+     * <pre> For example, style.json
+     * {
+     *   "footer":{
+     *     "textColor":"#ffffff",
+     *     "textSize":"10sp",
+     *     "text":["footer/footer", 1, {}]
+     *    }
+     *   ...
+     * }
+     * </pre>
+     */
     @JvmStatic fun load(files:List<String>) = files.forEach{v->
         _try{JSONObject(v)}?.let {v->
             if(ChBaseDB.id.isExist(v._string(Setting.ID) ?: "")) return@let

@@ -55,8 +55,8 @@ object ChApp{
     @JvmStatic fun deviceVersion() = Build.VERSION.RELEASE
     /**
      * @param type Resource type to find. For example, "string".
-     * @param name The name of the desired resource. For example, "app_icon".
-     * @return int The associated resource identifier. For example, R.string.app_icon.
+     * @param name The name of the desired resource. For example, "app_name".
+     * @return int The associated resource identifier. For example, R.string.app_name.
      */
     @JvmStatic fun resS2I(type:String, name:String):Int = res.getIdentifier(name, type, packName)
     @JvmStatic fun resDrawable(v: String):Int = resS2I("drawable", v)
