@@ -4,7 +4,7 @@ import chela.kotlin.validation.ChRule
 
 /**
  * Child class of ChRule.
- * All rules are stored as MutableMap in Abstract class.
+ * All _defined are stored as MutableMap in Abstract class.
  */
 class TypeRules: ChRule(){
     fun INT(v:Any, arg:List<String>) = if (v is Int) v else this

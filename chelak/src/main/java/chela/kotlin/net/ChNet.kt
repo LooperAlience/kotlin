@@ -7,8 +7,10 @@ import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.os.Build.VERSION.SDK_INT
 import chela.kotlin.Ch
 import chela.kotlin.android.ChApp
-import chela.kotlin.core.toList
+import chela.kotlin.core.*
 import chela.kotlin.regex.reParam
+import chela.kotlin.sql.ChBaseDB.id
+import chela.kotlin.sql.ChBaseDB.api
 import chela.kotlin.validation.ChRuleSet
 import okhttp3.Request
 import org.json.JSONObject
@@ -17,76 +19,101 @@ typealias httpCallBack = (response: ChResponse)->Unit
 typealias requestTaskF = (ChHttp, List<Pair<String, Any>>)->Boolean
 typealias responseTaskF = (response:ChResponse)-> Boolean
 
-object ChNet{
-    private class Api(
-        val url:String,
-        val method:String,
-        val requestTask:List<String>,
-        val request:Map<String, ApiRequest>,
-        val responseTask:List<String>
-    )
-    private class ApiRequest(
-        val name:String,
-        val rules:String,
-        val task:List<String>
+object ChNet {
+    class Api(
+        val url: String,
+        val method: String,
+        val requestTask: List<String>,
+        val responseTask: List<String>,
+        val request: Map<String, ApiRequest>
     )
 
-    @JvmStatic private val URL = "url"
-    @JvmStatic private val METHOD = "method"
-    @JvmStatic private val REQUESTTASK = "requestTsk"
-    @JvmStatic private val REQUEST = "request"
-    @JvmStatic private val REQUEST_NAME = "name"
-    @JvmStatic private val REQUEST_RULES = "rules"
-    @JvmStatic private val REQUEST_TASK = "task"
-    @JvmStatic private val RESPONSETASK = "responseTask"
+    class ApiRequest(
+        val name: String,
+        val rules: String,
+        val task: List<String>
+    )
 
-    @JvmStatic val ruleSet = mutableMapOf<String, ChRuleSet>()
-    @JvmStatic private val apis = mutableMapOf<String, Api>()
-    @JvmStatic private val requestTask = mutableMapOf<String, requestTaskF>()
-    @JvmStatic private val requestItemTask = mutableMapOf<String, (Any)->Any?>()
-    @JvmStatic private val responseTask = mutableMapOf<String, responseTaskF>()
+    @JvmStatic
+    private val apis = mutableMapOf<String, Api>()
+    @JvmStatic
+    private val requestTask = mutableMapOf<String, requestTaskF>()
+    @JvmStatic
+    private val requestItemTask = mutableMapOf<String, (Any) -> Any?>()
+    @JvmStatic
+    private val responseTask = mutableMapOf<String, responseTaskF>()
 
-    @JvmStatic fun apiRequestTask(key:String, block: requestTaskF){requestTask[key] = block}
-    @JvmStatic fun apiRequestItemTask(key:String, block:(Any)->Any?){requestItemTask[key] = block}
-    @JvmStatic fun apiResponseTask(key:String, block: responseTaskF){responseTask[key] = block}
+    @JvmStatic
+    fun apiRequestTask(key: String, block: requestTaskF) {
+        requestTask[key] = block
+    }
 
-    @JvmStatic fun loadApi(files:List<String>) = files.map{JSONObject(it)}.forEach{ v->
-        v.keys().forEach{k->
-            v.getJSONObject(k)?.let{json->
-                apis[k] = Api(
-                    json.getString(URL) ?: throw Exception("no url: $k"),
-                    json.getString(METHOD)?.toUpperCase() ?: "POST",
-                    json.getJSONArray(REQUESTTASK).toList(),
-                    with(mutableMapOf<String, ApiRequest>()) {
-                        json.getJSONObject(REQUEST)?.let { req ->
-                            req.keys().forEach { rk ->
-                                req.getJSONObject(rk)?.let { item ->
-                                    val rule = item.getString(REQUEST_RULES)?.toUpperCase() ?: ""
-                                    if(ruleSet["$k.$rk"] == null && !rule.contains(".")) ruleSet["$k.$rk"] = ChRuleSet(rule)
-                                    this[rk] = ApiRequest(
-                                        item.getString(REQUEST_NAME)?.toUpperCase() ?: rk,
-                                        rule,
-                                        item.getJSONArray(REQUEST_TASK).toList()
-                                    )
-                                }
-                            }
+    @JvmStatic
+    fun apiRequestItemTask(key: String, block: (Any) -> Any?) {
+        requestItemTask[key] = block
+    }
+
+    @JvmStatic
+    fun apiResponseTask(key: String, block: responseTaskF) {
+        responseTask[key] = block
+    }
+
+    @JvmStatic
+    fun getApi(k: String): Api? {
+        api.get()
+        return apis[k]
+    }
+    @JvmStatic
+    fun setApi(k: String, url: String, method: String, reqTask: String, resTask: String, req: Map<String, List<String>>, isWriteDB: Boolean = true){
+        if (isWriteDB) api.addApi(k, url, method, reqTask, resTask)
+        apis[k] = Api(url, method,
+            reqTask.split("|").map { it.trim() },
+            resTask.split("|").map { it.trim() },
+            with(mutableMapOf<String, ApiRequest>()) {
+                req.forEach { (rk, v) ->
+                    val (name, rule, task) = v
+                    if (isWriteDB) api.addItem(rk, name, rule, task)
+                    if (rule.isNotBlank() && rule.indexOf(".") == -1) ChRuleSet.set("$k.$rk", rule)
+                    this[rk] = ApiRequest(name, rule, task.split("|").map { it.trim() })
+                }
+                this
+            }
+        )
+    }
+
+    @JvmStatic
+    fun loadApi(files: List<String>) = files.forEach { v ->
+        _try { JSONObject(v) }?.let { v ->
+            if (id.isExist(v._string(id.ID) ?: "")) return@let
+            v._forObject { k, obj ->
+                setApi(k,
+                    obj._string(api.URL) ?: throw Exception("no url: $k"),
+                    obj._string(api.METHOD) ?: "POST",
+                    obj._string(api.RESPONSETASK) ?: "",
+                    obj._string(api.RESPONSETASK) ?: "",
+                    with(mutableMapOf<String, List<String>>()) {
+                        obj._forObject { rk, item ->
+                            this[rk] = listOf(
+                                item._string(api.REQUEST_NAME) ?: rk,
+                                item._string(api.REQUEST_RULES) ?: "",
+                                item._string(api.REQUEST_TASK) ?: ""
+                            )
                         }
                         this
-                    },
-                    json.getJSONArray(RESPONSETASK).toList()
+                    }
                 )
             }
         }
     }
     @JvmStatic fun api(key:String, vararg arg:Pair<String, Any>, block:(ChResponse)->Unit):Ch.ApiResult{
-        val api = apis[key] ?: return Ch.ApiResult.fail("invalid api:$key")
+        val api = getApi(key) ?: return Ch.ApiResult.fail("invalid api:$key")
         if(arg.size != api.request.size) return Ch.ApiResult.fail("invalid arg count0")
         val reqItem = mutableListOf<Pair<String, Any>>()
         arg.forEach{(k, v)->
             val req = api.request[k] ?: return Ch.ApiResult.fail("invalid request param:$k")
             var r = v
             if(req.rules.isNotBlank()){
-                r = Ch.rules.isOk(req.rules, r)
+                r = Ch.ruleset.isOk(req.rules, r)
                 if(r is ChRuleSet) return Ch.ApiResult.fail("rule check fail $k : $v")
             }
             req.task.forEach{

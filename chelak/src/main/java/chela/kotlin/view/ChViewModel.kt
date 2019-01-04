@@ -10,6 +10,7 @@ abstract class ChViewModel: Model(){
     open fun resumeAnimation(it: ChItem){}
     open fun pauseAnimation(it: ChItem){}
 }
+
 abstract class ChStyleModel: ChViewModel(){
     @Target(AnnotationTarget.PROPERTY) annotation class Exclude
 }

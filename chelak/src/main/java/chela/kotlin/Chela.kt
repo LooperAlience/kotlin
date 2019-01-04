@@ -9,25 +9,25 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
 import chela.kotlin.core.*
+import chela.kotlin.core.ChSchema.Setting
 import chela.kotlin.i18n.ChI18n
 import chela.kotlin.looper.ChItem
 import chela.kotlin.looper.ChLooper
+import chela.kotlin.model.ChModel
+import chela.kotlin.net.ChNet
 import chela.kotlin.sql.ChSql
 import chela.kotlin.thread.ChThread
+import chela.kotlin.validation.ChRuleSet
 import chela.kotlin.view.ChStyle
 import chela.kotlin.view.ChView
 import chela.kotlin.view.ChWindow
+import chela.kotlin.view.property.ChProperty
 import chela.kotlin.view.router.ChRouter
 import chela.kotlin.view.router.holder.ChFragmentBase
 import chela.kotlin.view.router.holder.ChGroupBase
 import chela.kotlin.view.router.holder.ChHolderBase
-import chela.kotlin.view.property.ChProperty
 import chela.kotlin.view.scanner.ChScanner
-import chela.kotlin.model.ChModel
-import chela.kotlin.net.ChNet
-import chela.kotlin.validation.ChRules
 import org.json.JSONObject
-
 
 inline val Number.DptoPx get() = this.toDouble() * ChWindow.SptoPx
 inline val Number.PxtoDp get() = this.toDouble() * ChWindow.PxtoDp
@@ -68,20 +68,29 @@ object Ch{
         settingJSON?.let{setting(it)}
         return this
     }
-    @JvmStatic fun setting(setting:String){
-        val v = JSONObject(ChAsset.string(setting))
-        v.getJSONObject("db")?.let{ChSql.load(it)}
-        v.getJSONArray("style")?.let{arr->ChStyle.load((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
-        v.getJSONObject("i18n")?.let{
-            ChI18n(it.getString("db"), it.getString("lang"), it.getInt("ver"))
-            it.getJSONArray("data")?.let{arr->ChI18n.load((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
+    @JvmStatic private val settingLoaded = mutableSetOf<String>()
+    @JvmStatic fun setting(setting:String) = _try{JSONObject(ChAsset.string(setting))}?.let{
+        val id = it._string(Setting.ID) ?: ""
+        if(settingLoaded.contains(id)) return@let
+        settingLoaded += id
+        it._object(Setting.DB)?.let{ChSql.load(it)}
+
+        it._list<String>("style")?.let{ChStyle.load(it.map{ChAsset.string(it)})}
+        it._list<String>("api")?.let{ChNet.loadApi(it.map{ChAsset.string(it)})}
+
+        it._object("i18n")?.let{
+            val db = it._string("db")
+            val lang = it._string("lang")
+            if(db != null && lang != null) ChI18n(db, lang)
+            it._list<String>("data")?.let{ChI18n.load(it.map{ChAsset.string(it)})}
         }
-        v.getJSONArray("api")?.let{arr-> ChNet.loadApi((0 until arr.length()).map{ChAsset.string(arr.getString(it))})}
     }
+
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}
     @JvmStatic val NONE = object:Value{}
     @JvmStatic val NONE_BA = ByteArray(0)
+    @JvmStatic val schema = ChSchema
     @JvmStatic val math = ChMath
     @JvmStatic val reflect = ChReflect
     @JvmStatic val thread = ChThread
@@ -96,7 +105,7 @@ object Ch{
     @JvmStatic val permission = ChPermission
     @JvmStatic val model = ChModel
     @JvmStatic val sql = ChSql
-    @JvmStatic val rules = ChRules
+    @JvmStatic val ruleset = ChRuleSet
     @JvmStatic val view = ChView
     @JvmStatic val style = ChStyle
     @JvmStatic val i18n = ChI18n

@@ -1,29 +1,43 @@
 package chela.kotlin.view
 
+import chela.kotlin.core.*
+import chela.kotlin.core.ChSchema.Setting
 import chela.kotlin.regex.reV
+import chela.kotlin.sql.ChBaseDB
 import org.json.JSONObject
 
-object ChStyle {
-    @JvmStatic private val items = mutableMapOf<String, Map<String, Any>>()
-    @JvmStatic fun load(files:List<String>) = files.map{JSONObject(it)}.forEach{v->
-        v.keys().forEach{k->
-            if(items[k] != null) throw Exception("exist key:$k")
-            val m = mutableMapOf<String, Any>()
-            val t = v.getJSONObject(k)
-            items[k] = m
-            t.keys().forEach{
-                val tv = t.get(it)
-                m[it] = when(tv){
-                    is String -> {
-                        val s = t.getString(it)
-                        reV.match(s)?.let {
-                            it.groups[3]?.let {reV.group3(it)} ?: it.groups[4]?.let {reV.group4(it)}
-                        } ?: s
+object ChStyle{
+    @JvmStatic val items = mutableMapOf<String, Map<String, Any>>()
+    @JvmStatic fun load(files:List<String>) = files.forEach{v->
+        _try{JSONObject(v)}?.let {v->
+            if(ChBaseDB.id.isExist(v._string(Setting.ID) ?: "")) return@let
+            v._forObject{k, obj->
+                if (items[k] != null) throw Exception("exist style:$k")
+                val m = mutableMapOf<String, Any>()
+                items[k] = m
+                ChBaseDB.style.addStyle(k)
+                obj._forValue{k, v->
+                    val r = when(v){
+                        is String -> {
+                            "s" + (reV.match(v)?.let {
+                                it.groups[3]?.let { reV.group3(it) } ?: it.groups[4]?.let { reV.group4(it) }
+                            } ?: v)
+                        }
+                        is Int -> "i$v"
+                        is Float -> "f$v"
+                        is Long -> "l$v"
+                        is Double -> "d$v"
+                        is Boolean -> "b$v"
+                        else -> "s$v"
                     }
-                    else -> tv
+                    m[k] = r
+                    ChBaseDB.style.addData(k, r)
                 }
             }
         }
     }
-    @JvmStatic operator fun get(k:String):Map<String, Any>? = items[k]
+    @JvmStatic operator fun get(k:String):Map<String, Any>?{
+        ChBaseDB.style.get()
+        return items[k]
+    }
 }

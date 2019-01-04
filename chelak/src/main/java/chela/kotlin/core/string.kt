@@ -9,3 +9,4 @@ inline fun String._notBlank(block:(String)->Unit){
     val v = this.trim()
     if(v.isNotBlank()) block(v)
 }
+fun String._split(s:String):List<String> = this.split(s).map{it.trim()}

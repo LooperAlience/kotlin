@@ -5,12 +5,10 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import chela.kotlin.Ch
-import chela.kotlin.core._pop
-import chela.kotlin.validation.ChRuleSet
-import chela.kotlin.validation.ChValidator
+import chela.kotlin.core.*
 import chela.kotlin.model.Model
+import chela.kotlin.validation.ChRuleSet
 import org.json.JSONObject
 
 object ChSql{
@@ -19,37 +17,57 @@ object ChSql{
         fun onCreate(sql: Sql) {}
         fun onUpgrade(sql: Sql, oldVersion: Int, newVersion: Int) {}
     }
-    class RulesetVm(val key:String): Model(){
-        override fun set(k: String, v:Any):Boolean{
-            if(v is String) ChSql.rulesets["$key.$k"] = ChRuleSet(v)
-            return true
-        }
-    }
+
     @JvmStatic private val sql = mutableMapOf<Any, Sql>()
-    @JvmStatic internal val rulesets = mutableMapOf<String, ChRuleSet>()
-    @JvmStatic internal val queries = mutableMapOf<String, ChQuery>()
-    @JvmStatic fun ruleSet(k:String):ChRuleSet? = rulesets[k]
+    @JvmStatic private var defaultDB = ""
+    @JvmStatic val DB = get{sql[defaultDB]}
+
+    @JvmStatic val queries = mutableMapOf<String, ChQuery>()
+    @JvmStatic internal fun query(key:String) = queries[key]
+
     @JvmStatic fun load(v:JSONObject){
-        v.keys().forEach{k->
-            val db = v.getJSONObject(k)
-            val sql = db.getJSONArray("sql")
-            val length = sql.length()
-            if(length > 0) loadSql((0 until length).map{Ch.asset.string(sql.getString(it))})
-            Ch.sql.addDb(k, k, db.getInt("ver"), db.getString("create"), db.getString("update"))
+        v._forObject{k, db->
+            val v = db._int("ver")
+            val c = db._string("create")
+            val u = db._string("update")
+            _isNotNull(v, c, u){
+                val ver = v!!
+                var create = c!!
+                var update = u!!
+                db._list<String>("base")?.let{loadSql(it.map{Ch.asset.string(it)})}
+                if(db._boolean("isDefault") == true){
+                    defaultDB = k
+                    ChBaseDB.base(create, update).let { (c, u)->
+                        create = if(create.isBlank()) c else "$c,$create"
+                        update = if(update.isBlank()) u else "$u,$update"
+                    }
+                }
+                Ch.sql.addDb(k, k, ver, create, update)
+            }
         }
+        ChBaseDB.baseQuery()
     }
+    @JvmStatic private val regComment =  "\\/\\*.*\\*\\/".toRegex()
     @JvmStatic fun loadSql(files:List<String>) = files.forEach {
-        it.replace(regComment, "").split("#").forEach ch@{
+        var i = it.indexOf("\n")
+        val id = it.substring(0, i).trim()
+        if(ChBaseDB.id.isExist(id)) return@forEach
+        it.substring(i + 1).trim().replace(regComment, "").split("#").forEach ch@{
             if(it.isBlank()) return@ch
-            val i = it.indexOf("\n")
-            val k = it.substring(0, i).trim().toLowerCase()
-            val v = it.substring(i + 1).trim().replace("\n", " ")
-            if(k[k.length - 1] == '{') RulesetVm(k._pop().toLowerCase().trim()).fromJson("{$v")
-            else addQuery(k, v)
+            val t = it.trim()
+            i = t.indexOf("\n")
+            if(i == -1) return@ch
+            val k = t.substring(0, i).trim().toLowerCase()
+            val v = t.substring(i + 1).trim().replace("\n", " ")
+            i = k.indexOf("{")
+            if(i == -1) addQuery(k, v) else ChRuleSet.fromJson(k.substring(0, i), k.substring(i) + v)
         }
     }
-    @JvmStatic fun addQuery(key:String, body:String){
-        if(key.isNotBlank()) queries.put(key, ChQuery(body))
+    @JvmStatic fun addQuery(k:String, body:String, isWriteDB:Boolean = true){
+        if(k.isNotBlank()){
+            queries.put(k, ChQuery(body))
+            if(isWriteDB) ChBaseDB.sql.add(k, body)
+        }
     }
     @JvmStatic operator fun get(id:Any):Sql? = sql[id]
     @JvmStatic fun addDb(id: Any, db: String, ver: Int, c: Watcher?): Sql {
@@ -61,7 +79,6 @@ object ChSql{
         return sql[id]!!
     }
 }
-private val regComment =  "\\/\\*.*\\*\\/".toRegex()
 class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher? = null): SQLiteOpenHelper(ctx, db, null, ver){
     internal constructor(ctx:Context, db:String, ver:Int, create:String = "", upgrade:String = ""):
             this(ctx, db, ver, object:ChSql.Watcher{
@@ -150,6 +167,7 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         c.close()
         return r
     }
+
     /**
      * @param key
      * @param db
@@ -157,7 +175,7 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
      */
     @SuppressLint("Recycle")
     private fun getQuery(key:String, db:Char, vararg param:Pair<String, Any>):Cursor?{
-        val it = ChSql.queries[key] ?: throw Exception("invalid param:$key")
+        val it = ChSql.query(key) ?: throw Exception("invalid param:$key")
         val arg = it.param(param)
         return if(db == 'r') reader.rawQuery(it.query, if(arg.isEmpty()) null else arg)
             else{

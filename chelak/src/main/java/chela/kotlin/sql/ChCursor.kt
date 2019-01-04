@@ -14,7 +14,7 @@ class ChCursor internal constructor(c: Cursor, isRecord:Boolean): Cursor {
     private val columeCount = c.columnCount
     private val fieldTypes = c.columnNames.mapIndexed{idx, _->c.getType(idx)}
     private val range = (0 until c.columnCount)
-    val rs:Array<Array<Any?>> = Array(c.count) ch@{
+    val rs:Array<Array<Any?>> = Array(if(isRecord) 1 else c.count) ch@{
         if(it == 0) c.moveToFirst()
         val r = range.map {
             when(c.getType(it)){
