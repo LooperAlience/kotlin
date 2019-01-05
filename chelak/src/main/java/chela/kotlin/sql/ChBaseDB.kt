@@ -1,5 +1,6 @@
 package chela.kotlin.sql
 
+import android.util.Log
 import chela.kotlin.i18n.ChI18n
 import chela.kotlin.net.ChNet
 import chela.kotlin.validation.ChRuleSet
@@ -95,6 +96,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
         sql()
         style()
         ruleset()
+        i18n()
     }
     object id{
         @JvmStatic val ID = "id"
@@ -103,8 +105,9 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             ChSql.addQuery("ch_id_add", "insert into ch_id(id)values(@id:string@)", false)
         }
         fun isExist(id:String):Boolean{
-            val r = ChSql.DB?.i("ch_id_exist", "id" to id) == 1
-            if(!r) ChSql.DB?.exec("ch_id_add", "id" to id)
+            Log.i("ch", "DB"+ChSql.DB())
+            val r = ChSql.DB()?.i("ch_id_exist", "id" to id) == 1
+            if(!r) ChSql.DB()?.exec("ch_id_add", "id" to id)
             return r
         }
     }
@@ -112,12 +115,12 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
         operator fun invoke(){
             ChSql.addQuery("ch_query_get", "select title, contents from ch_query", false)
             ChSql.addQuery("ch_query_add", "REPLACE into ch_query(title, contents)values(@title:string@,@contents:string@)",false)
-            ChSql.DB?.select("ch_query_get", false)?.forEach { _, arr ->
+            ChSql.DB()?.select("ch_query_get", false)?.forEach { _, arr ->
                 ChSql.addQuery("${arr[0]}", "${arr[1]}", false)
             }
         }
         fun add(key:String, body:String){
-            ChSql.DB?.exec("ch_query_add", "title" to key, "contents" to body.trim())
+            ChSql.DB()?.exec("ch_query_add", "title" to key, "contents" to body.trim())
         }
     }
     object api{
@@ -147,12 +150,12 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             """, false)
         }
         fun addApi(k:String, url:String, method:String, requestTask:String, responseTask:String){
-            ChSql.DB?.exec("ch_api_add", "title" to k, "url" to url, "method" to method, "requestTask" to requestTask, "responseTask" to responseTask)
-            id = ChSql.DB?.lastId() ?: 0
+            ChSql.DB()?.exec("ch_api_add", "title" to k, "url" to url, "method" to method, "requestTask" to requestTask, "responseTask" to responseTask)
+            id = ChSql.DB()?.lastId() ?: 0
         }
         fun addItem(k:String, name:String, rule:String, task:String){
             if(id == 0) return
-            ChSql.DB?.exec("ch_apiRequster_add", "id" to id, "title" to k, "name" to name, "rule" to rule, "task" to task)
+            ChSql.DB()?.exec("ch_apiRequster_add", "id" to id, "title" to k, "name" to name, "rule" to rule, "task" to task)
         }
         fun get(){
             if(isLoaded) return
@@ -164,7 +167,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             var reqTask = ""
             var resTask = ""
             var m = mutableMapOf<String, List<String>>()
-            ChSql.DB?.select("ch_api_get", false)?.forEach{ _, arr->
+            ChSql.DB()?.select("ch_api_get", false)?.forEach{ _, arr->
                 val a = arr.map { "$it" }
                 val k = a[0]
                 if(k != prev){
@@ -207,12 +210,12 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             """, false)
         }
         fun addKey(k:String, ver:Int, isOne:String){
-            ChSql.DB?.exec("ch_i18n_add", "title" to k, "ver" to ver, "isOne" to isOne)
-            id = ChSql.DB?.lastId() ?: 0
+            ChSql.DB()?.exec("ch_i18n_add", "title" to k, "ver" to ver, "isOne" to isOne)
+            id = ChSql.DB()?.lastId() ?: 0
         }
         fun addData(lang:String, k:String, v:String){
             if(id == 0) return
-            ChSql.DB?.exec("ch_i18nData_add", "id" to id, "lang" to lang, "title" to k, "contents" to v)
+            ChSql.DB()?.exec("ch_i18nData_add", "id" to id, "lang" to lang, "title" to k, "contents" to v)
         }
         fun get(){
             if(isLoaded) return
@@ -225,7 +228,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             var lang = ""
             var m = mutableMapOf<String,Map<String, String>>()
             var lm = mutableMapOf<String,String>()
-            ChSql.DB?.select("ch_i18n_get", false)?.forEach{ _, arr->
+            ChSql.DB()?.select("ch_i18n_get", false)?.forEach{ _, arr->
                 val k = "${arr[0]}"
                 if(k != prev){
                     if(prev.isNotBlank()) ChI18n.set(key, ver, isOne, m, false)
@@ -261,19 +264,19 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             """, false)
         }
         fun addStyle(k:String){
-            ChSql.DB?.exec("ch_style_add", "title" to k)
-            id = ChSql.DB?.lastId() ?: 0
+            ChSql.DB()?.exec("ch_style_add", "title" to k)
+            id = ChSql.DB()?.lastId() ?: 0
         }
         fun addData(k:String, v:String){
             if(id == 0) return
-            ChSql.DB?.exec("ch_styleData_add", "styleid" to id, "title" to k, "contents" to v)
+            ChSql.DB()?.exec("ch_styleData_add", "styleid" to id, "title" to k, "contents" to v)
         }
         fun get(){
             if(isLoaded) return
             isLoaded = true
             var prev = ""
             var m = mutableMapOf<String, Any>()
-            ChSql.DB?.select("ch_style_get", false)?.forEach{ _, arr->
+            ChSql.DB()?.select("ch_style_get", false)?.forEach{ _, arr->
                 val style = "${arr[0]}"
                 if(style != prev){
                     m = mutableMapOf()
@@ -300,12 +303,12 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             ChSql.addQuery("ch_ruleset_add", "REPLACE into ch_ruleset(title, contents)values(@title:string@,@contents:string@)",false)
         }
         fun add(key:String, body:String){
-            ChSql.DB?.exec("ch_ruleset_add", "title" to key, "contents" to body.trim())
+            ChSql.DB()?.exec("ch_ruleset_add", "title" to key, "contents" to body.trim())
         }
         fun get(){
             if(isLoaded) return
             isLoaded = true
-            ChSql.DB?.select("ch_ruleset_get", false)?.forEach { _, arr ->
+            ChSql.DB()?.select("ch_ruleset_get", false)?.forEach { _, arr ->
                 ChRuleSet.set("${arr[0]}", "${arr[1]}", false)
             }
         }

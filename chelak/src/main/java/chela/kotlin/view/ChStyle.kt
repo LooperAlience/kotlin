@@ -1,5 +1,6 @@
 package chela.kotlin.view
 
+import android.util.Log
 import chela.kotlin.core.*
 import chela.kotlin.regex.reV
 import chela.kotlin.sql.ChBaseDB
@@ -26,9 +27,12 @@ object ChStyle{
      * </pre>
      */
     @JvmStatic fun load(files:List<String>){
+        Log.i("ch", "styleLoad")
         files.forEach{v->
             _try{JSONObject(v)}?.let {v->
+                Log.i("ch", "styleLoad1")
                 if(id.isExist(v._string(id.ID) ?: "")) return@let
+                Log.i("ch", "styleLoad2")
                 v._forObject{k, obj->
                     val m = mutableMapOf<String, Any>()
                     items[k] = m

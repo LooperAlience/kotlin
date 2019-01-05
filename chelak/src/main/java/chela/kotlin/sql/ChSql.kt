@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.core.*
 import chela.kotlin.model.Model
@@ -20,7 +21,7 @@ object ChSql{
 
     @JvmStatic private val sql = mutableMapOf<Any, Sql>()
     @JvmStatic private var defaultDB = ""
-    @JvmStatic val DB = get{sql[defaultDB]}
+    @JvmStatic fun DB() = sql[defaultDB]
 
     @JvmStatic val queries = mutableMapOf<String, ChQuery>()
     @JvmStatic internal fun query(key:String) = queries[key]
@@ -36,6 +37,7 @@ object ChSql{
                 var update = u!!
                 db._list<String>("base")?.let{loadSql(it.map{Ch.asset.string(it)})}
                 if(db._boolean("isDefault") == true){
+                    Log.i("ch", "defaultDB:$k")
                     defaultDB = k
                     ChBaseDB.base().let { (c, u)->
                         create = "$c,$create"
@@ -45,18 +47,21 @@ object ChSql{
                 Ch.sql.addDb(k, k, ver, create, update)
             }
         }
+        Log.i("ch", "defaultDB2:${DB()}, ${sql[defaultDB]}, $sql")
+
         if(defaultDB != "") ChBaseDB.baseQuery()
     }
     @JvmStatic private val regComment =  "\\/\\*.*\\*\\/".toRegex()
-    @JvmStatic fun loadSql(files:List<String>) = files.forEach {
+    @JvmStatic fun loadSql(files:List<String>) = files.forEach {loadSql(it)}
+    @JvmStatic fun loadSql(it:String){
         var i = it.indexOf("\n")
         val id = it.substring(0, i).trim()
-        if(ChBaseDB.id.isExist(id)) return@forEach
-        it.substring(i + 1).trim().replace(regComment, "").split("#").forEach ch@{
-            if(it.isBlank()) return@ch
+        if(ChBaseDB.id.isExist(id)) return
+        it.substring(i + 1).trim().replace(regComment, "").split("#").forEach{
+            if(it.isBlank()) return@forEach
             val t = it.trim()
             i = t.indexOf("\n")
-            if(i == -1) return@ch
+            if(i == -1) return@forEach
             val k = t.substring(0, i).trim().toLowerCase()
             val v = t.substring(i + 1).trim().replace("\n", " ")
             i = k.indexOf("{")
@@ -83,6 +88,7 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
     internal constructor(ctx:Context, db:String, ver:Int, create:String = "", upgrade:String = ""):
             this(ctx, db, ver, object:ChSql.Watcher{
                 override fun onCreate(sql: Sql){
+                    Log.i("ch", "create:$create")
                     if(create.isNotBlank()) create.split(",").forEach{sql.exec(it)}
                 }
                 override fun onUpgrade(sql: Sql, oldVersion: Int, newVersion: Int) {
@@ -97,8 +103,10 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
     private var oldV = 0
     private var newV = 0
     init{
+        Log.i("ch", "dbinit")
         c?.let{
             c.onInit(this)
+            Log.i("ch", "dbinit2")
             if(isOnCreate) c.onCreate(this)
             else if(isOnUpgrade) c.onUpgrade(this, oldV, newV)
         }
@@ -110,6 +118,7 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         newV = newVersion
     }
     fun exec(k: String, vararg arg:Pair<String, Any>):Int{
+        Log.i("ch", "exec$k")
         getQuery(k, 'w', *arg)
         val c = reader.rawQuery("SELECT changes()", null)
         val r = if(c != null && c.count > 0 && c.moveToFirst()) c.getInt(0) else 0
@@ -118,10 +127,11 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
     }
     fun select(k:String, isRecord:Boolean = false, vararg arg:Pair<String, Any>):ChCursor?
         = getQuery(k, 'r', *arg)?.let{
-            it.moveToFirst()
-            val offCursor = ChCursor(it, isRecord)
-            it.close()
-            offCursor
+            if(it.count > 0 && it.moveToFirst()) {
+                val offCursor = ChCursor(it, isRecord)
+                it.close()
+                offCursor
+            }else null
         }
     fun <T: Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T):List<T>{
         val c = getQuery(k, 'r', *arg) ?: throw Exception("invalid query result:$k")
@@ -175,10 +185,11 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
      */
     @SuppressLint("Recycle")
     private fun getQuery(key:String, db:Char, vararg param:Pair<String, Any>):Cursor?{
-        val it = ChSql.query(key) ?: throw Exception("invalid param:$key")
+        val it = ChSql.query(key) ?: throw Exception("invalid query:$key")
         val arg = it.param(param)
         return if(db == 'r') reader.rawQuery(it.query, if(arg.isEmpty()) null else arg)
             else{
+            Log.i("ch", "query:"+it.query)
                 if(arg.isEmpty()) writer.execSQL(it.query)
                 else writer.execSQL(it.query, arg)
                 null

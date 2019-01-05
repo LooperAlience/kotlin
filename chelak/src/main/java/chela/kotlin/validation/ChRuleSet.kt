@@ -9,8 +9,8 @@ import chela.kotlin.validation.rule.TypeRules
 
 class ChRuleSet(rule:String){
     companion object{
-        @JvmStatic private val baseRule = listOf(BaseRules(), TypeRules(), RegRules())
         @JvmStatic private val _defined = mutableMapOf<String, ChRuleSet>()
+        @JvmStatic private val baseRule = listOf(BaseRules(), TypeRules(), RegRules())
         @JvmStatic val string get() = ChRuleSet["string"]!!
         @JvmStatic fun set(k:String, rule:String, isWriteDB:Boolean = true){
             if(k.isBlank()) return
