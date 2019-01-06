@@ -5,6 +5,7 @@ import android.net.ConnectivityManager.TYPE_WIFI
 import android.net.NetworkCapabilities.TRANSPORT_CELLULAR
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.android.ChApp
 import chela.kotlin.core._forObject
@@ -76,7 +77,7 @@ object ChNet {
                 req.forEach { (rk, v) ->
                     val (name, rule, task) = v
                     if (isWriteDB) api.addItem(rk, name, rule, task)
-                    if (rule.isNotBlank() && rule.indexOf(".") == -1) ChRuleSet.set("$k.$rk", rule)
+                    if (rule.isNotBlank() && rule.indexOf(".") == -1 && ChRuleSet["$k.$rk"] == null) ChRuleSet.set("$k.$rk", rule)
                     this[rk] = ApiRequest(name, rule, task.split("|").map { it.trim() })
                 }
                 this
@@ -122,7 +123,7 @@ object ChNet {
      */
     @JvmStatic fun api(key:String, vararg arg:Pair<String, Any>, block:(ChResponse)->Unit):Ch.ApiResult{
         val api = getApi(key) ?: return Ch.ApiResult.fail("invalid api:$key")
-        if(arg.size != api.request.size) return Ch.ApiResult.fail("invalid arg count0")
+        if(arg.size != api.request.size) return Ch.ApiResult.fail("invalid arg count:arg ${arg.size}, api ${api.request.size}")
         val reqItem = mutableListOf<Pair<String, Any>>()
         arg.forEach{(k, v)->
             val req = api.request[k] ?: return Ch.ApiResult.fail("invalid request param:$k")
@@ -131,7 +132,8 @@ object ChNet {
                 r = Ch.ruleset.isOk(req.rules, r)
                 if(r is ChRuleSet) return Ch.ApiResult.fail("rule check fail $k : $v")
             }
-            req.task.forEach{
+            req.task.forEach ch@{
+                if(it.isBlank()) return@ch
                 val task = requestItemTask[it] ?: return Ch.ApiResult.fail("invalid request item task:$it for $k")
                 r = task(r) ?: return Ch.ApiResult.fail("request item task stop:$it for $k")
             }

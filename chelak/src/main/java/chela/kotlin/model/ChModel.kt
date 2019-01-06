@@ -1,5 +1,7 @@
 package chela.kotlin.model
 
+import android.util.Log
+import chela.kotlin.core._for
 import chela.kotlin.i18n.ChI18n
 import org.json.JSONArray
 import org.json.JSONObject
@@ -51,9 +53,8 @@ object ChModel{
     @JvmStatic private fun obj(o:JSONObject, target:Model){
         val setter = target.ref.setter
         val getter = target.ref.getter
-        o.keys().forEach {k->
+        o._for{k, v ->
             setter[k]?.let { s ->
-                val v = o.get(k)
                 @Suppress("UNCHECKED_CAST")
                 when (v) {
                     is JSONObject -> obj(v, (getter[k]?.call(target) as? Model) ?: throw Exception("invalid key $k"))

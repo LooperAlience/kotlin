@@ -7,6 +7,10 @@ inline fun JSONObject._keys(key:String? = null, block:(key:String, obj:JSONObjec
     val t = if(key != null) this.getJSONObject(key) else this
     t.keys().forEach{k->block(k, t)}
 }catch(e:Throwable){}
+inline fun JSONObject._for(key:String? = null, block:(key:String, v:Any)->Unit) = try{
+    val t = if(key != null) this.getJSONObject(key) else this
+    t.keys().forEach{k->block(k, t.get(k))}
+}catch(e:Throwable){}
 inline fun JSONObject._forObject(key:String? = null, block:(key:String, obj:JSONObject)->Unit) = try{
     val t = if(key != null) this.getJSONObject(key) else this
     t.keys().forEach{k->t._object(k)?.let{block(k, it)}}
@@ -22,6 +26,7 @@ inline fun JSONObject._forValue(key:String? = null, block:(key:String, v:Any)->U
         when(v){is String, is Number, is Boolean -> block(k, v)}
     }
 }catch(e:Throwable){}
+
 @Suppress("UNCHECKED_CAST")
 fun<T> JSONArray._toList():List<T> = (0 until this.length()).map{this[it] as T}
 fun<T> JSONObject._list(key:String) = try{

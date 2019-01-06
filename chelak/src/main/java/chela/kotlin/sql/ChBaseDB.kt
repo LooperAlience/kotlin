@@ -116,6 +116,7 @@ drop table ch_ruleset
         sql()
         style()
         ruleset()
+        api()
         i18n()
     }
     object id{
