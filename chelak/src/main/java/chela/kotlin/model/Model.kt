@@ -1,17 +1,18 @@
 package chela.kotlin.model
 
 import chela.kotlin.Ch
-import chela.kotlin.PxtoDp
-import chela.kotlin.PxtoSp
 import chela.kotlin.core._allStack
 import chela.kotlin.core._notBlank
 import chela.kotlin.core._shift
+import chela.kotlin.core._try
 import chela.kotlin.regex.reK
 import chela.kotlin.regex.reV
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 abstract class Model{
+    @Target(AnnotationTarget.CLASS) annotation class Unknown()
+    @Target(AnnotationTarget.CLASS) annotation class Name(val name:String)
     private class St(val p: St?, val t:Char, v:String, val k: String = "", val i:Int = 0){
         @JvmField internal val v:String = v.trim()
         internal val key:String
@@ -35,12 +36,15 @@ abstract class Model{
     init{
         @Suppress("LeakingThis")
         val cls = this::class
-        if(!isTypeChecked.contains(cls)) cls.simpleName?.let{
-            isTypeChecked.add(cls)
-            try {
-                cls.java.getDeclaredField("INSTANCE")
-                if(ChModel.repo[it] == null) ChModel.repo[it] = this else throw Exception("exist key:$it")
-            }catch(e:Exception){
+        if(cls.findAnnotation<Unknown>() == null){
+            if(!isTypeChecked.contains(cls)){
+                isTypeChecked.add(cls)
+                _try{cls.java.getDeclaredField("INSTANCE")}?.let{
+                    (cls.findAnnotation<Name>()?.let{it.name} ?: cls.simpleName)?.let {
+                        if(ChModel.repo.containsKey(it)) throw Exception("exist key:$it")
+                        ChModel.repo[it] = this
+                    }
+                }
             }
         }
     }

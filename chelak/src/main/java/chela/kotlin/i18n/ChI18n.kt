@@ -24,14 +24,15 @@ object ChI18n{
         }
         items[k] = I18n(ver, isOne, data)
     }
-    @JvmStatic operator fun get(k:String):I18n?{
+    @JvmStatic fun getItem(k:String):I18n?{
         i18n.get()
         return items[k]
     }
-    @JvmStatic fun get(k:List<String>):String{
+    @JvmStatic operator fun get(k:String):String = get("i18n.$k".split(".").map {it.trim()})
+    @JvmStatic operator fun get(k:List<String>):String{
         if(k.size < 3) throw Exception("invalid key:$k")
         val (_, key, subKey) = k
-        val i = get(key) ?: return "no data:$key"
+        val i = getItem(key) ?: return "no data:$key"
         val ln = if(k.size == 4) k[3] else ""
         return i.data[
                 if(i.isOne.isNotBlank()) i.isOne

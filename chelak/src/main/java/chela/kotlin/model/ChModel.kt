@@ -7,7 +7,8 @@ import kotlin.reflect.full.createInstance
 
 object ChModel{
     @JvmStatic internal val repo: MutableMap<String, Model> = HashMap()
-    @JvmStatic fun get(v: List<String>):Any{
+    @JvmStatic fun get(v:String):Any = get(v.split(".").map { it.trim() })
+    @JvmStatic fun get(v:List<String>):Any{
         if(v.isEmpty()) throw Exception("invalid list size == 0")
         if(v[0] == "i18n") return ChI18n.get(v)
         repo[v[0]]?.let { return find(v, it) } ?: throw Exception("invalid key:" + v[0])

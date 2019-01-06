@@ -44,7 +44,6 @@ object ChApp{
         ChWindow.DptoPx = d
         ChWindow.PxtoDp = 1 / d
         val s = dm.scaledDensity.toDouble()
-        Log.i("ch", "d:$d, s:$s")
         ChWindow.SptoPx = s
         ChWindow.PxtoSp = 1 / s
     }

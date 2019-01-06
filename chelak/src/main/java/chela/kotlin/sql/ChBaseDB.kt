@@ -8,20 +8,26 @@ import chela.kotlin.view.ChStyle
 
 object ChBaseDB{
     fun base():Pair<String, String>{
-        ChSql.addQuery("ch0", """
+        val c = mutableListOf<String>()
+        val u = mutableListOf<String>()
+        listOf("""
 CREATE TABLE IF NOT EXISTS ch_id(
     id VARCHAR(255) NOT null,
     UNIQUE(id)
-)""", false)
-        ChSql.addQuery("ch1","""
+)
+--
+drop table ch_id
+""", """
 CREATE TABLE IF NOT EXISTS ch_i18n(
     i18n_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(255) NOT null,
     ver INTEGER NOT null,
     isOne VARCHAR(2) NOT null,
     UNIQUE(title)
-)""", false)
-        ChSql.addQuery("ch2", """
+)
+--
+drop table ch_i18n
+""", """
 CREATE TABLE IF NOT EXISTS ch_i18nData(
     i18nData_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
     i18n_rowid INTEGER REFERENCES ch_i18n(i18n_rowid) on delete restrict on update restrict,
@@ -29,23 +35,32 @@ CREATE TABLE IF NOT EXISTS ch_i18nData(
     title VARCHAR(255) NOT null,
     contents TEXT NOT null,
     UNIQUE(i18n_rowid, lang, title)
-)""", false)
-        ChSql.addQuery("ch3", "CREATE INDEX ch_i18nData_idx0 ON ch_i18nData(title ASC,lang ASC)")
-        ChSql.addQuery("ch4","""
+)
+--
+drop table ch_i18nData
+""", """
+CREATE INDEX ch_i18nData_idx0 ON ch_i18nData(title ASC,lang ASC)
+--
+drop index ch_i18nData_idx0
+""", """
 CREATE TABLE IF NOT EXISTS ch_style(
     style_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(255) NOT null,
     UNIQUE(title)
-)""", false)
-        ChSql.addQuery("ch5", """
+)
+--
+drop table ch_style
+""", """
 CREATE TABLE IF NOT EXISTS ch_styleData(
     styleData_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
     style_rowid INTEGER REFERENCES ch_style(style_rowid) on delete restrict on update restrict,
     title VARCHAR(255) NOT null,
     contents VARCHAR(255) NOT null,
     UNIQUE(style_rowid,title)
-)""", false)
-        ChSql.addQuery("ch6","""
+)
+--
+drop table ch_styleData
+""", """
 CREATE TABLE IF NOT EXISTS ch_api(
     api_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(255) NOT null,
@@ -54,8 +69,10 @@ CREATE TABLE IF NOT EXISTS ch_api(
     requestTask VARCHAR(255) NOT null,
     responseTask VARCHAR(255) NOT null,
     UNIQUE(title)
-)""", false)
-        ChSql.addQuery("ch7", """
+)
+--
+drop table ch_api
+""", """
 CREATE TABLE IF NOT EXISTS ch_apiRequest(
     apiRequest_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
     api_rowid INTEGER REFERENCES ch_api(api_rowid) on delete restrict on update restrict,
@@ -64,32 +81,35 @@ CREATE TABLE IF NOT EXISTS ch_apiRequest(
     rule VARCHAR(255) NOT null,
     task VARCHAR(255) NOT null,
     UNIQUE(api_rowid, title)
-)""", false)
-        ChSql.addQuery("ch8","""
+)
+--
+drop table ch_apiRequest
+""", """
 CREATE TABLE IF NOT EXISTS ch_query(
     query_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(255) NOT null,
     contents text NOT null,
     UNIQUE(title)
-)""", false)
-        ChSql.addQuery("ch9", """
+)
+--
+drop table ch_query
+""", """
 CREATE TABLE IF NOT EXISTS ch_ruleset(
     ruleset_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(255) NOT null,
     contents VARCHAR(255) NOT null,
     UNIQUE(title)
-)""", false)
-        ChSql.addQuery("d0", "drop table ch_id", false)
-        ChSql.addQuery("d1", "drop table ch_i18n", false)
-        ChSql.addQuery("d2", "drop table ch_i18nData", false)
-        ChSql.addQuery("d3", "drop INDEX ch_i18nData_idx0", false)
-        ChSql.addQuery("d4", "drop table ch_style", false)
-        ChSql.addQuery("d5", "drop table ch_styleData", false)
-        ChSql.addQuery("d6", "drop table ch_api", false)
-        ChSql.addQuery("d7", "drop table ch_apiRequest", false)
-        ChSql.addQuery("d8", "drop table ch_query", false)
-        ChSql.addQuery("d9", "drop table ch_ruleset", false)
-        return "ch0,ch1,ch2,ch3,ch4,ch5,ch6,ch7,ch8,ch9" to "d0,d1,d2,d3,d4,d5,d6,d7"
+)
+--
+drop table ch_ruleset
+""").forEachIndexed { i, it ->
+            val q = it.split("--")
+            ChSql.addQuery("chc$i", q[0], false)
+            ChSql.addQuery("chu$i", q[1], false)
+            c += "chc$i"
+            u += "chu$i"
+        }
+        return c.joinToString(",") to u.joinToString(",")
     }
     fun baseQuery(){
         id()
@@ -105,7 +125,6 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             ChSql.addQuery("ch_id_add", "insert into ch_id(id)values(@id:string@)", false)
         }
         fun isExist(id:String):Boolean{
-            Log.i("ch", "DB"+ChSql.DB())
             val r = ChSql.DB()?.i("ch_id_exist", "id" to id) == 1
             if(!r) ChSql.DB()?.exec("ch_id_add", "id" to id)
             return r
@@ -138,6 +157,8 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             ChSql.addQuery("ch_api_add", """
                 REPLACE into ch_api(title,url,method,requestTask,responseTask)values
                 (@title:string@,@url:string@,@method:string@,@requestTask:string@,@responseTask:string@)""",false)
+            ChSql.addQuery("ch_api_idGet", """
+                select api_rowid from ch_api where title=@title:string@""",false)
             ChSql.addQuery("ch_apiRequster_add", """
                 REPLACE into ch_apiRequest(api_rowid,title,name,rule,task)values
                 (@id:int@,@title:string@,@name:string@,@rule:string@,@task:string@)""", false)
@@ -152,6 +173,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
         fun addApi(k:String, url:String, method:String, requestTask:String, responseTask:String){
             ChSql.DB()?.exec("ch_api_add", "title" to k, "url" to url, "method" to method, "requestTask" to requestTask, "responseTask" to responseTask)
             id = ChSql.DB()?.lastId() ?: 0
+            if(id == 0) id = ChSql.DB()?.i("ch_api_idGet", "title" to k) ?: 0
         }
         fun addItem(k:String, name:String, rule:String, task:String){
             if(id == 0) return
@@ -193,11 +215,12 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
         private var id = 0
         private var isLoaded = false
 
-
         operator fun invoke(){
             ChSql.addQuery("ch_i18n_add", """
                 REPLACE into ch_i18n(title,ver,isOne)values
                 (@title:string@,@ver:int@,@isOne:string@)""",false)
+            ChSql.addQuery("ch_i18n_idGet", """
+                select i18n_rowid from ch_i18n where title=@title:string@""",false)
             ChSql.addQuery("ch_i18nData_add", """
                 REPLACE into ch_i18nData(i18n_rowid,lang,title,contents)values
                 (@id:int@,@lang:string@,@title:string@,@contents:string@)""",false)
@@ -212,6 +235,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
         fun addKey(k:String, ver:Int, isOne:String){
             ChSql.DB()?.exec("ch_i18n_add", "title" to k, "ver" to ver, "isOne" to isOne)
             id = ChSql.DB()?.lastId() ?: 0
+            if(id == 0) id = ChSql.DB()?.i("ch_i18n_idGet", "title" to k) ?: 0
         }
         fun addData(lang:String, k:String, v:String){
             if(id == 0) return
@@ -256,6 +280,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
         private var isLoaded = false
         operator fun invoke(){
             ChSql.addQuery("ch_style_add", "insert into ch_style(title)values(@title:string@)",false)
+            ChSql.addQuery("ch_style_idGet", "select style_rowid from ch_style where title=@title:string@",false)
             ChSql.addQuery("ch_styleData_add", "REPLACE into ch_styleData(style_rowid,title,contents)values(@styleid:int@, @title:string@, @contents:string@)",false)
             ChSql.addQuery("ch_style_get", """
                 select s.title,d.title,d.contents
@@ -266,6 +291,7 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
         fun addStyle(k:String){
             ChSql.DB()?.exec("ch_style_add", "title" to k)
             id = ChSql.DB()?.lastId() ?: 0
+            if(id == 0) id = ChSql.DB()?.i("ch_style_idGet", "title" to k) ?: 0
         }
         fun addData(k:String, v:String){
             if(id == 0) return
@@ -306,7 +332,8 @@ CREATE TABLE IF NOT EXISTS ch_ruleset(
             ChSql.DB()?.exec("ch_ruleset_add", "title" to key, "contents" to body.trim())
         }
         fun get(){
-            if(isLoaded) return
+            val db = ChSql.DB()
+            if(ChSql.query("ch_ruleset_get") == null || db == null || isLoaded) return
             isLoaded = true
             ChSql.DB()?.select("ch_ruleset_get", false)?.forEach { _, arr ->
                 ChRuleSet.set("${arr[0]}", "${arr[1]}", false)

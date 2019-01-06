@@ -41,7 +41,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
     override operator fun set(k:String, v:Any):Boolean{
         if(v === OBJECT ||v === ARRAY) return true
         when {
-            k.toLowerCase() == "style" -> ChStyle["$v"]?.let{style(it)}
+            k.toLowerCase() == "style" ->"$v".split(",").map{it.trim()}.forEach{ChStyle[it]?.let{style(it)}}
             k[0] == '@' -> {
                 if(updater == null) updater = mutableMapOf()
                 updater?.put(k._shift(), v)
@@ -60,13 +60,20 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         }else if(k == "style"){
             val m = mutableMapOf<String, Any>()
             val key = "@{" + v.joinToString(".")
-            (Ch.model.get(v) as? ChStyleModel)?.let{model->
+            val target = Ch.model.get(v)
+            (target as? ChStyleModel)?.let{model->
                 model::class.memberProperties.forEach { p->
-                    if(p.findAnnotation<ChStyleModel.Exclude>() == null) m[p.name.toLowerCase()] = "$key.${p.name}}"
+                    if(p.findAnnotation<ChStyleModel.Exclude>() == null){
+                        val name = p.name.toLowerCase()
+                        m[name] = if(name == "style") target[p.name] else "$key.${p.name}}"
+                    }
                 }
-            } ?: (Ch.model.get(v) as? ChViewModel)?.let{model->
+            } ?: (target as? ChViewModel)?.let{model->
                 model::class.memberProperties.forEach { p->
-                    p.findAnnotation<ChViewModel.Prop>()?.let{m[it.name.toLowerCase()] = "$key.${p.name}}"}
+                    p.findAnnotation<ChViewModel.Prop>()?.let{
+                        val name = it.name.toLowerCase()
+                        m[name] = if(name == "style") target[p.name] else "$key.${p.name}}"
+                    }
                 }
             }
             if(m.isNotEmpty()) style(m)

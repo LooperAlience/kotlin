@@ -8,8 +8,9 @@ import chela.kotlin.model.Model
  */
 abstract class ChViewModel: Model(){
     @Target(AnnotationTarget.PROPERTY) annotation class Prop(val name:String = "")
-    abstract fun start()
-    abstract fun end()
+    open fun start(){}
+    open fun end(){}
+    open fun paused(){}
     open fun resumeAnimation(it: ChItem){}
     open fun pauseAnimation(it: ChItem){}
 }

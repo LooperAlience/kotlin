@@ -24,7 +24,7 @@ object ChSql{
     @JvmStatic fun DB() = sql[defaultDB]
 
     @JvmStatic val queries = mutableMapOf<String, ChQuery>()
-    @JvmStatic internal fun query(key:String) = queries[key]
+    @JvmStatic fun query(key:String) = queries[key]
 
     @JvmStatic fun load(v:JSONObject){
         v._forObject{k, db->
@@ -37,7 +37,6 @@ object ChSql{
                 var update = u!!
                 db._list<String>("base")?.let{loadSql(it.map{Ch.asset.string(it)})}
                 if(db._boolean("isDefault") == true){
-                    Log.i("ch", "defaultDB:$k")
                     defaultDB = k
                     ChBaseDB.base().let { (c, u)->
                         create = "$c,$create"
@@ -47,8 +46,6 @@ object ChSql{
                 Ch.sql.addDb(k, k, ver, create, update)
             }
         }
-        Log.i("ch", "defaultDB2:${DB()}, ${sql[defaultDB]}, $sql")
-
         if(defaultDB != "") ChBaseDB.baseQuery()
     }
     @JvmStatic private val regComment =  "\\/\\*.*\\*\\/".toRegex()
@@ -88,7 +85,6 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
     internal constructor(ctx:Context, db:String, ver:Int, create:String = "", upgrade:String = ""):
             this(ctx, db, ver, object:ChSql.Watcher{
                 override fun onCreate(sql: Sql){
-                    Log.i("ch", "create:$create")
                     if(create.isNotBlank()) create.split(",").forEach{sql.exec(it)}
                 }
                 override fun onUpgrade(sql: Sql, oldVersion: Int, newVersion: Int) {
@@ -103,10 +99,8 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
     private var oldV = 0
     private var newV = 0
     init{
-        Log.i("ch", "dbinit")
         c?.let{
             c.onInit(this)
-            Log.i("ch", "dbinit2")
             if(isOnCreate) c.onCreate(this)
             else if(isOnUpgrade) c.onUpgrade(this, oldV, newV)
         }
@@ -118,7 +112,6 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         newV = newVersion
     }
     fun exec(k: String, vararg arg:Pair<String, Any>):Int{
-        Log.i("ch", "exec$k")
         getQuery(k, 'w', *arg)
         val c = reader.rawQuery("SELECT changes()", null)
         val r = if(c != null && c.count > 0 && c.moveToFirst()) c.getInt(0) else 0
@@ -189,7 +182,6 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         val arg = it.param(param)
         return if(db == 'r') reader.rawQuery(it.query, if(arg.isEmpty()) null else arg)
             else{
-            Log.i("ch", "query:"+it.query)
                 if(arg.isEmpty()) writer.execSQL(it.query)
                 else writer.execSQL(it.query, arg)
                 null

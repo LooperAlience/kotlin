@@ -1,5 +1,6 @@
 package chela.kotlin.validation
 
+import android.util.Log
 import chela.kotlin.model.Model
 import chela.kotlin.regex.reParam
 import chela.kotlin.sql.ChBaseDB
@@ -22,7 +23,7 @@ class ChRuleSet(rule:String){
         }
         @JvmStatic operator fun get(k:String):ChRuleSet?{
             ChBaseDB.ruleset.get()
-            return _defined[k]
+            return _defined[k.toLowerCase()]
         }
         @JvmStatic fun fromJson(k:String, json:String){
             JsonRuleset.jsonKey = k.trim()
@@ -35,7 +36,7 @@ class ChRuleSet(rule:String){
                 return true
             }
         }
-        @JvmStatic fun isOk(k:String, v:Any) = (_defined[k] ?: string).check(v)
+        @JvmStatic fun isOk(k:String, v:Any) = (get(k) ?: string).check(v)
         @JvmStatic fun isOk(vararg kv:Pair<String, Any>) = kv.all {(k, v)->isOk(k, v) !is ChRuleSet}
     }
     private val rules = rule.split("-or-").map{

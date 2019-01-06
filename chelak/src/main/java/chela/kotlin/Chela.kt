@@ -68,21 +68,7 @@ object Ch{
         settingJSON?.let{setting(it)}
         return this
     }
-    @JvmStatic private val settingLoaded = mutableSetOf<String>()
-    @JvmStatic fun setting(setting:String) = _try{JSONObject(ChAsset.string(setting))}?.let{
-        val id = it._string(Setting.ID) ?: ""
-        if(settingLoaded.contains(id)) return@let
-        settingLoaded += id
-        it._object(Setting.DB)?.let{ChSql.load(it)}
 
-        it._list<String>("style")?.let{ChStyle.load(it.map{ChAsset.string(it)})}
-        it._list<String>("api")?.let{ChNet.loadApi(it.map{ChAsset.string(it)})}
-
-        it._object("i18n")?.let{
-            it._string("lang")?.let{ChI18n(it)}
-            it._list<String>("data")?.let{ChI18n.load(it.map{ChAsset.string(it)})}
-        }
-    }
 
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}
@@ -110,6 +96,21 @@ object Ch{
     @JvmStatic val crypto = ChCrypto
     @JvmStatic fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
 
+    @JvmStatic private val settingLoaded = mutableSetOf<String>()
+    @JvmStatic fun setting(setting:String) = _try{JSONObject(ChAsset.string(setting))}?.let{
+        val id = it._string(Setting.ID) ?: ""
+        if(settingLoaded.contains(id)) return@let
+        settingLoaded += id
+        it._object(Setting.DB)?.let{ChSql.load(it)}
+
+        it._list<String>("style")?.let{ChStyle.load(it.map{ChAsset.string(it)})}
+        it._list<String>("api")?.let{ChNet.loadApi(it.map{ChAsset.string(it)})}
+
+        it._object("i18n")?.let{
+            it._string("lang")?.let{ChI18n(it)}
+            it._list<String>("data")?.let{ChI18n.load(it.map{ChAsset.string(it)})}
+        }
+    }
     @JvmStatic fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, block:()->Unit){
         with(if(looper == null){
             val l = Ch.looper()
