@@ -7,6 +7,7 @@ import chela.kotlin.core._shift
 import chela.kotlin.core._try
 import chela.kotlin.regex.reK
 import chela.kotlin.regex.reV
+import chela.kotlin.view.ChStyleModel
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
@@ -37,12 +38,14 @@ abstract class Model{
         @Suppress("LeakingThis")
         val cls = this::class
         if(cls.findAnnotation<Unknown>() == null){
-            if(!isTypeChecked.contains(cls)){
-                isTypeChecked.add(cls)
-                _try{cls.java.getDeclaredField("INSTANCE")}?.let{
-                    (cls.findAnnotation<Name>()?.let{it.name} ?: cls.simpleName)?.let {
-                        if(ChModel.repo.containsKey(it)) throw Exception("exist key:$it")
-                        ChModel.repo[it] = this
+            if(this !is ChStyleModel || this.isRegister) {
+                if (!isTypeChecked.contains(cls)) {
+                    isTypeChecked.add(cls)
+                    _try { cls.java.getDeclaredField("INSTANCE") }?.let {
+                        (cls.findAnnotation<Name>()?.let { it.name } ?: cls.simpleName)?.let {
+                            if (ChModel.repo.containsKey(it)) throw Exception("exist key:$it")
+                            ChModel.repo[it] = this
+                        }
                     }
                 }
             }

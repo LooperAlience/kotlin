@@ -18,6 +18,6 @@ abstract class ChViewModel: Model(){
  * This class represent viewmodel UI style.
  * Exclude annotation helps you remove that style in the list.
  */
-abstract class ChStyleModel: ChViewModel(){
+abstract class ChStyleModel(@Exclude val isRegister:Boolean = false): ChViewModel(){
     @Target(AnnotationTarget.PROPERTY) annotation class Exclude
 }
