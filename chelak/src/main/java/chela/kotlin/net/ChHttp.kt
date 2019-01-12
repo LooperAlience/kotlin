@@ -6,6 +6,10 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 abstract class ChHttp{
+    companion object {
+        val EXTRA_JSON = "json"
+        val EXTRA_REQUEST = "request"
+    }
     val extra = mutableMapOf<String, Any>()
     abstract fun header(key:String, value:String): ChHttp
     abstract fun form(key:String, value:String): ChHttp

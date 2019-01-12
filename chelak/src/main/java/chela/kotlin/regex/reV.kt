@@ -37,4 +37,8 @@ object reV: ChRegex(
             else->v.toLong()
         }
     }
+    @JvmStatic fun num(it:String):Number? = reV.match(it)?.let{
+        it.groups[3]?.let{reV.group3(it)} ?:
+        it.groups[4]?.let{reV.group4(it)}
+    }
 }

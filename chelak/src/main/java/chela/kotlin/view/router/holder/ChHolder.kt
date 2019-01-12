@@ -28,11 +28,6 @@ abstract class ChHolderBase<T>{
     protected open fun resume(holder: ChHolder<T>){}
 }
 abstract class ChHolder<T>{
-    @JvmField internal var key:String = ""
-    init{
-        @Suppress("LeakingThis")
-        this::class.simpleName?.let{key = it}
-    }
     abstract fun create(base: ChHolderBase<T>):T
     open fun push(base: ChHolderBase<T>, isRestore:Boolean){}
     open fun resume(base: ChHolderBase<T>, isRestore:Boolean){}

@@ -32,7 +32,13 @@ object ChStyle{
                 if(id.isExist(v._string(id.ID) ?: "")) return@let
                 v._forObject{k, obj->
                     val m = mutableMapOf<String, Any>()
-                    items[k] = m
+                    var type = 0
+                    if(k.startsWith("shape:")){
+                        type = 1
+                        ChDrawable.shape(k.substring(6), obj)
+                    }else{
+                        items[k] = m
+                    }
                     ChBaseDB.style.addStyle(k)
                     obj._forValue{k, v->
                         val r = when(v){
@@ -48,7 +54,7 @@ object ChStyle{
                             is Boolean -> "b$v"
                             else -> "s$v"
                         }
-                        m[k] = r
+                        if(type == 0) m[k] = r
                         ChBaseDB.style.addData(k, r)
                     }
                 }

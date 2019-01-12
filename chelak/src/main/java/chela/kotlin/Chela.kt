@@ -18,6 +18,7 @@ import chela.kotlin.net.ChNet
 import chela.kotlin.sql.ChSql
 import chela.kotlin.thread.ChThread
 import chela.kotlin.validation.ChRuleSet
+import chela.kotlin.view.ChDrawable
 import chela.kotlin.view.ChStyle
 import chela.kotlin.view.ChView
 import chela.kotlin.view.ChWindow
@@ -38,6 +39,7 @@ inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
  */
 object Ch{
     sealed class ApiResult{
+        fun isFail() = this is fail
         object ok:ApiResult()
         class fail(val msg:String):ApiResult()
     }
@@ -69,7 +71,6 @@ object Ch{
         return this
     }
 
-
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}
     @JvmStatic val NONE = object:Value{}
@@ -91,6 +92,7 @@ object Ch{
     @JvmStatic val sql = ChSql
     @JvmStatic val ruleset = ChRuleSet
     @JvmStatic val view = ChView
+    @JvmStatic val drawable = ChDrawable
     @JvmStatic val style = ChStyle
     @JvmStatic val i18n = ChI18n
     @JvmStatic val crypto = ChCrypto

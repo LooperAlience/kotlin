@@ -22,7 +22,7 @@ inline fun JSONObject._forString(key:String? = null, block:(key:String, v:String
 inline fun JSONObject._forValue(key:String? = null, block:(key:String, v:Any)->Unit) = try{
     val t = if(key != null) this.getJSONObject(key) else this
     t.keys().forEach{k->
-        val v = t.get(k)
+        val v = t._get(k)
         when(v){is String, is Number, is Boolean -> block(k, v)}
     }
 }catch(e:Throwable){}

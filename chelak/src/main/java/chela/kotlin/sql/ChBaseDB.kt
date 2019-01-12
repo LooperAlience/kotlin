@@ -4,7 +4,9 @@ import android.util.Log
 import chela.kotlin.i18n.ChI18n
 import chela.kotlin.net.ChNet
 import chela.kotlin.validation.ChRuleSet
+import chela.kotlin.view.ChDrawable
 import chela.kotlin.view.ChStyle
+import org.json.JSONObject
 
 object ChBaseDB{
     fun base():Pair<String, String>{
@@ -60,6 +62,13 @@ CREATE TABLE IF NOT EXISTS ch_styleData(
 )
 --
 drop table ch_styleData
+""", """
+CREATE TABLE IF NOT EXISTS ch_baseUrl(
+    baseUrl_rowid INTEGER PRIMARY KEY,
+    title VARCHAR(255) NOT null
+)
+--
+drop table ch_baseUrl
 """, """
 CREATE TABLE IF NOT EXISTS ch_api(
     api_rowid INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -167,9 +176,15 @@ drop table ch_ruleset
                 select
                 a.title,a.url,a.method,a.requestTask,a.responseTask,
                 r.title,r.name,r.rule,r.task
-                from ch_apiRequest r inner join ch_api a on r.api_rowid = a.api_rowid
+                from ch_api a left join ch_apiRequest r on r.api_rowid = a.api_rowid
                 order by a.title
             """, false)
+            ChSql.addQuery("ch_baseUrl_set", """REPLACE into ch_baseUrl(baseUrl_rowid,title)values
+                 (1,@title:string@)""",false)
+            ChSql.addQuery("ch_baseUrl_get", """select title from ch_baseUrl""",false)
+        }
+        fun baseUrl(url:String){
+            ChSql.DB()?.exec("ch_baseUrl_set", "title" to url)
         }
         fun addApi(k:String, url:String, method:String, requestTask:String, responseTask:String){
             ChSql.DB()?.exec("ch_api_add", "title" to k, "url" to url, "method" to method, "requestTask" to requestTask, "responseTask" to responseTask)
@@ -203,9 +218,11 @@ drop table ch_ruleset
                     resTask = a[4]
                     m = mutableMapOf()
                 }
-                m[a[5]] = listOf(a[6],a[7],a[8])
+                arr[5]?.let{m[a[5]] = listOf(a[6],a[7],a[8])}
+
             }
             if(prev.isNotBlank()) ChNet.setApi(key, url, method, reqTask, resTask, m, false)
+            ChSql.DB()?.s("ch_baseUrl_get")?.let{if(it.isNotBlank()) ChNet.apiBaseURL(it)}
         }
     }
     object i18n{
@@ -303,24 +320,40 @@ drop table ch_ruleset
             isLoaded = true
             var prev = ""
             var m = mutableMapOf<String, Any>()
+            var j = JSONObject()
+            var type = 0
             ChSql.DB()?.select("ch_style_get", false)?.forEach{ _, arr->
                 val style = "${arr[0]}"
                 if(style != prev){
-                    m = mutableMapOf()
-                    ChStyle.items[style] = m
+                    if(type == 1) ChDrawable.shape(prev, j)
+                    if(style.startsWith("shape:")){
+                        j = JSONObject()
+                        type = 1
+                    }else{
+                        m = mutableMapOf()
+                        ChStyle.items[style] = m
+                        type = 0
+                    }
                     prev = style
                 }
                 val data = "${arr[2]}"
-                val v = data.substring(1)
-                m["${arr[1]}"] = when(data[0]){
-                    'i'->v.toInt()
-                    'f'->v.toFloat()
-                    'l'->v.toLong()
-                    'd'->v.toDouble()
-                    'b'->v.toBoolean()
-                    else->v
+                val _v = data.substring(1)
+                @Suppress("IMPLICIT_CAST_TO_ANY")
+                val v = when(data[0]){
+                    'i'->_v.toInt()
+                    'f'->_v.toFloat()
+                    'l'->_v.toLong()
+                    'd'->_v.toDouble()
+                    'b'->_v.toBoolean()
+                    else->_v
+                }
+                val k = "${arr[1]}"
+                when(type) {
+                    0 -> m[k] = v
+                    1 -> j.put(k, v)
                 }
             }
+            if(type == 1) ChDrawable.shape(prev, j)
         }
     }
     object ruleset{

@@ -6,6 +6,8 @@ import android.os.Build
 import android.util.Log
 import android.view.View
 import chela.kotlin.Ch
+import chela.kotlin.android.ChApp
+import chela.kotlin.view.ChDrawable
 
 object PropView:Property(){
     @JvmStatic fun tag(view:View, v:Any){
@@ -28,12 +30,15 @@ object PropView:Property(){
             is String ->{
                 when(v[0]){
                     '#'->view.setBackgroundColor(ChProperty.color(v))
-                    else->view.setBackgroundResource(Ch.app.resDrawable(v))
+                    else-> {
+                        ChDrawable.drawable("shape:$v")?.let { view.background = it }
+                            ?: view.setBackgroundResource(ChApp.resDrawable(v))
+                    }
                 }
             }
             is Int -> view.setBackgroundResource(v)
             is Drawable -> view.background = v
-            is Bitmap -> view.background = Ch.app.bitmap2Drawable(v)
+            is Bitmap -> view.background = ChApp.bitmap2Drawable(v)
         }
     }
     @JvmStatic fun shadow(view:View, v:Any){

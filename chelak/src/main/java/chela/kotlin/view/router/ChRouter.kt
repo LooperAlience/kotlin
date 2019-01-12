@@ -16,7 +16,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
     fun push(holder: ChHolder<T>, isAutoUnlock:Boolean = true){
         if(pushLock) return
         if(!isAutoUnlock) pushLock = true
-        if(stack.isNotEmpty()) base._pause(stack.last(), false)
+        if(stack.isNotEmpty()) base._pause(stack.last(), true)
         base._push(holder, false)
         stack += holder
     }
@@ -27,11 +27,11 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
         val h = stack.last()
         base._pop(h, false)
         stack._pop()
-        if(stack.isNotEmpty()) base._resume(stack.last(), false)
+        if(stack.isNotEmpty()) base._resume(stack.last(), true)
         return stack.size
     }
-    fun jump(key:String) = stack._allStack { holder, _ ->
-        if(holder.key == key){
+    fun jump(holder: ChHolder<T>) = stack._allStack { v, _ ->
+        if(holder === v){
             base._resume(holder, false)
             false
         }else{
