@@ -41,6 +41,7 @@ object ChI18n{
             ]?.get(subKey) ?: "no data:$k"
     }
     @JvmStatic operator fun invoke(ln:String){lang = ln}
+    @JvmStatic operator fun invoke() = lang
     @JvmStatic fun load(files:List<String>) = files.forEach{v->
         _try{JSONObject(v)}?.let ch@{v->
             if(ChBaseDB.id.isExist(v._string(ChBaseDB.id.ID) ?: "")) return@ch

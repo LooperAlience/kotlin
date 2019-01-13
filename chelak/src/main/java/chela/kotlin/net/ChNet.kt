@@ -60,7 +60,7 @@ object ChNet {
         "json" to { http, arg, _->http.extra[EXTRA_JSON] = arg._stringify()
             true
         },
-        "jsonBody" to { http, arg, _->
+        "jsonbody" to { http, arg, _->
             http.json(http.extra[EXTRA_JSON]?.toString() ?: arg._stringify())
             true
         },
@@ -189,18 +189,17 @@ object ChNet {
             }
             reqItem += (req.name) to r
         }
-        if(reqItem.size != arg.size) return Ch.ApiResult.fail("invalid request param expected:${reqItem.size} actual:${arg.size}")
         val net = http(api.method, apiBaseURL + api.url)
         var msg = ""
         if(!api.requestTask.all {
             val (k, arg) = reParam.parse(it)
             return@all requestTask[k]?.let{
                 if(!it(net, reqItem, arg)){
-                    msg = "request task stop:$it for $key"
+                    msg = "request task stop:$k for $key"
                     false
                 }else true
             } ?: run{
-                msg = "invalid request task:$it for $key"
+                msg = "invalid request task:$k for $key"
                 false
             }
         }) return Ch.ApiResult.fail(msg)

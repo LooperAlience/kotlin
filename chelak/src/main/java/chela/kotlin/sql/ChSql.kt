@@ -118,6 +118,18 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         c.close()
         return r
     }
+    fun exec(k: String, model:Model):Int{
+        val query = ChSql.query(k) ?: throw Exception("invalid query:$k")
+        val arg = mutableListOf<Pair<String, Any>>()
+        Log.i("ch", "exec:$model")
+        query.items.forEach { (k, v) -> arg += k to model[k] }
+        Log.i("ch", "exec:$arg")
+        getQuery(k, 'w', *arg.toTypedArray())
+        val c = reader.rawQuery("SELECT changes()", null)
+        val r = if(c != null && c.count > 0 && c.moveToFirst()) c.getInt(0) else 0
+        c.close()
+        return r
+    }
     fun select(k:String, isRecord:Boolean = false, vararg arg:Pair<String, Any>):ChCursor?
         = getQuery(k, 'r', *arg)?.let{
             if(it.count > 0 && it.moveToFirst()) {
@@ -183,7 +195,10 @@ class Sql internal constructor(ctx:Context, db:String, ver:Int, c:ChSql.Watcher?
         return if(db == 'r') reader.rawQuery(it.query, if(arg.isEmpty()) null else arg)
             else{
                 if(arg.isEmpty()) writer.execSQL(it.query)
-                else writer.execSQL(it.query, arg)
+                else{
+                    Log.i("ch", "exec:${it.query} - ${arg.joinToString(",")}")
+                    writer.execSQL(it.query, arg)
+                }
                 null
             }
     }
