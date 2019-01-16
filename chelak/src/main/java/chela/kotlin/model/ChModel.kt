@@ -55,7 +55,6 @@ object ChModel{
         val getter = target.ref.getter
         o._for{k, v ->
             setter[k]?.let { s ->
-                Log.i("ch", "obj set:$k, val:$v")
                 @Suppress("UNCHECKED_CAST")
                 when (v) {
                     is JSONObject -> obj(v, (getter[k]?.call(target) as? Model) ?: throw Exception("invalid key $k"))

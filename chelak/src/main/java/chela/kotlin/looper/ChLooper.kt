@@ -15,7 +15,7 @@ import kotlin.concurrent.write
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
 /**
- * This class executes UI update about its Item type on main thread.
+ * This class executes UI upgrade about its Item type on main thread.
  * Asynchronous execution is also possible.
  * <pre>
  *   App.looper(Ch.infinity()) { item ->
@@ -67,7 +67,7 @@ class ChLooper:LifecycleObserver{
     private val itemPool = mutableListOf<ChItem>()
     private val lock =  ReentrantReadWriteLock()
     /**
-     * set Looper
+     * add Looper
      * @param act activity context
      */
     fun act(act: AppCompatActivity){

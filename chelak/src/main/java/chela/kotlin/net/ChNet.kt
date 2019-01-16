@@ -5,16 +5,17 @@ import android.net.ConnectivityManager.TYPE_WIFI
 import android.net.NetworkCapabilities.TRANSPORT_CELLULAR
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.os.Build.VERSION.SDK_INT
-import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.android.ChApp
-import chela.kotlin.core.*
+import chela.kotlin.core._long
+import chela.kotlin.core._stringify
+import chela.kotlin.core._toString
+import chela.kotlin.core._try
 import chela.kotlin.net.ChHttp.Companion.EXTRA_JSON
 import chela.kotlin.net.ChHttp.Companion.EXTRA_REQUEST
 import chela.kotlin.net.ChNet.apis
 import chela.kotlin.regex.reParam
-import chela.kotlin.sql.ChBaseDB.api
-import chela.kotlin.sql.ChBaseDB.id
+import chela.kotlin.resource.Api
 import chela.kotlin.validation.ChRuleSet
 import okhttp3.Request
 import org.json.JSONObject
@@ -28,20 +29,6 @@ typealias responseTaskF = (response:ChResponse, taskArg:List<String>)-> Boolean
  * It cached Api information on [apis].
  */
 object ChNet {
-    class Api(
-        val url: String,
-        val method: String,
-        val requestTask: List<String>,
-        val responseTask: List<String>,
-        val request: Map<String, ApiRequest>
-    )
-
-    class ApiRequest(
-        val name: String,
-        val rules: String,
-        val task: List<String>
-    )
-
     @JvmStatic private val apis = mutableMapOf<String, Api>()
     @JvmStatic private var apiBaseURL = ""
     @JvmStatic private val requestItemTask = mutableMapOf<String, (Any) -> Any?>(
@@ -91,77 +78,13 @@ object ChNet {
         true
         }
     )
-    @JvmStatic fun apiBaseURL(url:String){
-        apiBaseURL = url
-        api.baseUrl(url)
-    }
-    @JvmStatic
-    fun apiRequestTask(key: String, block: requestTaskF) {
-        requestTask[key] = block
-    }
-
-    @JvmStatic
-    fun apiRequestItemTask(key: String, block: (Any) -> Any?) {
-        requestItemTask[key] = block
-    }
-
-    @JvmStatic
-    fun apiResponseTask(key: String, block: responseTaskF) {
-        responseTask[key] = block
-    }
-
-    @JvmStatic
-    fun getApi(k: String): Api? {
-        api.get()
-        return apis[k]
-    }
-    @JvmStatic
-    fun setApi(k: String, url: String, method: String, reqTask: String, resTask: String, req: Map<String, List<String>>, isWriteDB: Boolean = true){
-        if (isWriteDB) api.addApi(k, url, method, reqTask, resTask)
-        apis[k] = Api(url, method,
-            if(reqTask.isNotBlank()) reqTask.split("|").map { it.trim() } else listOf(),
-            if(resTask.isNotBlank()) resTask.split("|").map { it.trim() } else listOf(),
-            with(mutableMapOf<String, ApiRequest>()) {
-                req.forEach { (rk, v) ->
-                    val (name, rule, task) = v
-                    if (isWriteDB) api.addItem(rk, name, rule, task)
-                    if (rule.isNotBlank() && rule.indexOf(".") == -1 && ChRuleSet["$k.$rk"] == null) ChRuleSet.set("$k.$rk", rule)
-                    this[rk] = ApiRequest(name, rule, task.split("|").map { it.trim() })
-                }
-                this
-            }
-        )
-    }
-    /**
-     * Parse json file list to MutableMap, and cached on [apis].
-     * @param files json format file list.
-     */
-    @JvmStatic fun loadApi(files: List<String>) = files.forEach { v ->
-        _try { JSONObject(v) }?.let { v ->
-            if (id.isExist(v._string(id.ID) ?: "")) return@let
-            v._string("base")?.let{apiBaseURL(it)}
-            v._forObject { k, obj ->
-                setApi(k,
-                    obj._string(api.URL) ?: throw Exception("no url: $k"),
-                    obj._string(api.METHOD) ?: "POST",
-                    obj._string(api.REQUESTTASK) ?: "",
-                    obj._string(api.RESPONSETASK) ?: "",
-                    with(mutableMapOf<String, List<String>>()) {
-                        obj._forObject(api.REQUEST){ rk, item ->
-                            this[rk] = listOf(
-                                item._string(api.REQUEST_NAME) ?: rk,
-                                item._string(api.REQUEST_RULES) ?: "",
-                                item._string(api.REQUEST_TASK) ?: ""
-                            )
-                        }
-                        this
-                    }
-                )
-            }
-        }
-    }
-
-
+    @JvmStatic fun apiBaseURL(url:String){apiBaseURL = url}
+    @JvmStatic fun apiRequestTask(key: String, block: requestTaskF) {requestTask[key] = block}
+    @JvmStatic fun apiRequestItemTask(key: String, block: (Any) -> Any?){ requestItemTask[key] = block}
+    @JvmStatic fun apiResponseTask(key: String, block: responseTaskF){responseTask[key] = block}
+    @JvmStatic fun get(k: String):Api? = apis[k]
+    @JvmStatic fun add(k:String, api:Api){apis[k] = api}
+    @JvmStatic fun remove(k:String) = apis.remove(k)
     /**
      * @key json object key on Api
      * @arg Pair you want to validate and send HTTP request.
@@ -172,26 +95,30 @@ object ChNet {
      * </pre>
      */
     @JvmStatic fun api(key:String, vararg arg:Pair<String, Any>, block:(ChResponse)->Unit):Ch.ApiResult{
-        val api = getApi(key) ?: return Ch.ApiResult.fail("invalid api:$key")
-        if(arg.size != api.request.size) return Ch.ApiResult.fail("invalid arg count:arg ${arg.size}, api ${api.request.size}")
+        val api = get(key) ?: return Ch.ApiResult.fail("invalid api:$key")
         val reqItem = mutableListOf<Pair<String, Any>>()
-        arg.forEach{(k, v)->
-            val req = api.request[k] ?: return Ch.ApiResult.fail("invalid request param:$k")
-            var r = v
-            if(req.rules.isNotBlank()){
-                r = Ch.ruleset.isOk(req.rules, r)
-                if(r is ChRuleSet) return Ch.ApiResult.fail("rule check fail $k : $v")
+        api.request?.let{
+            if(arg.size != it.size) return Ch.ApiResult.fail("invalid arg count:arg ${arg.size}, api ${it.size}")
+            arg.forEach{(k, v)->
+                val req = it[k] ?: return Ch.ApiResult.fail("invalid request param:$k")
+                var r = v
+                req.rules?.let {
+                    if (it.isNotBlank()) {
+                        r = Ch.ruleset.check(req.rules, r)
+                        if (r is ChRuleSet) return Ch.ApiResult.fail("rule check fail $k:$v")
+                    }
+                }
+                req.task?.forEach ch@{
+                    if(it.isBlank()) return@ch
+                    val task = requestItemTask[it] ?: return Ch.ApiResult.fail("invalid request item task:$it for $k")
+                    r = task(r) ?: return Ch.ApiResult.fail("request item task stop:$it for $k")
+                }
+                reqItem += (req.name ?: k) to r
             }
-            req.task.forEach ch@{
-                if(it.isBlank()) return@ch
-                val task = requestItemTask[it] ?: return Ch.ApiResult.fail("invalid request item task:$it for $k")
-                r = task(r) ?: return Ch.ApiResult.fail("request item task stop:$it for $k")
-            }
-            reqItem += (req.name) to r
         }
         val net = http(api.method, apiBaseURL + api.url)
         var msg = ""
-        if(!api.requestTask.all {
+        if(false == api.requestTask?.all{
             val (k, arg) = reParam.parse(it)
             return@all requestTask[k]?.let{
                 if(!it(net, reqItem, arg)){
@@ -203,19 +130,18 @@ object ChNet {
                 false
             }
         }) return Ch.ApiResult.fail(msg)
-        net.send{
-            var response = it
-            response.key = key
-            response.arg = reqItem
-            api.responseTask.all {
+        net.send{res->
+            res.key = key
+            res.arg = reqItem
+            api.responseTask?.all {
                 val (k, arg) = reParam.parse(it)
-                responseTask[k]?.let {it(response, arg)} ?: run{
-                    response.body = null
-                    response.err = "invalid response task:$it for $key"
+                responseTask[k]?.let {it(res, arg)} ?: run{
+                    res.body = null
+                    res.err = "invalid response task:$it for $key"
                     false
                 }
             }
-            block(response)
+            block(res)
         }
         return Ch.ApiResult.ok
     }

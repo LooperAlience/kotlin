@@ -5,12 +5,16 @@ import chela.kotlin.validation.ChRuleSet
 private val regParam =  "@(?:([^@:]+)(?::([^@:]+))?)@".toRegex()
 private val regTrim =  """[\n\r]""".toRegex()
 internal class Item(val i:Int, val k:String, val ruleSet: ChRuleSet)
-class ChQuery(body: String){
+class ChQuery(key:String, body: String){
     internal val items = mutableMapOf<String, Item>()
     internal val query = regTrim.replace(regParam.replace(body){
         val k = it.groupValues[1]
-        var v = it.groupValues[2]
-        items[k] = Item(items.size, k, ChRuleSet[v] ?: ChRuleSet.string)
+        val v = it.groupValues[2]
+
+        items[k] = Item(items.size, k, ChRuleSet[v] ?: run{
+            ChRuleSet.add("$key.k", v)
+            ChRuleSet["$key.k"]!!
+        })
          "?"
     }, " ").trim()
     internal fun param(param:Array<out Pair<String, Any>>):Array<String>{

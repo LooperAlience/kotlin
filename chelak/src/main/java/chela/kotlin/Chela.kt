@@ -9,12 +9,12 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
 import chela.kotlin.core.*
-import chela.kotlin.core.ChSchema.Setting
 import chela.kotlin.i18n.ChI18n
 import chela.kotlin.looper.ChItem
 import chela.kotlin.looper.ChLooper
 import chela.kotlin.model.ChModel
 import chela.kotlin.net.ChNet
+import chela.kotlin.resource.ChRes
 import chela.kotlin.sql.ChSql
 import chela.kotlin.thread.ChThread
 import chela.kotlin.validation.ChRuleSet
@@ -38,44 +38,21 @@ inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
  * Chela base object
  */
 object Ch{
-    sealed class ApiResult{
-        fun isFail() = this is fail
-        object ok:ApiResult()
-        class fail(val msg:String):ApiResult()
-    }
-    @Target(AnnotationTarget.PROPERTY) annotation class STRING(val name:String = "")
-    @Target(AnnotationTarget.PROPERTY) annotation class NUMBER(val name:String = "")
-    @Target(AnnotationTarget.PROPERTY) annotation class BOOLEAN(val name:String = "")
-    @Target(AnnotationTarget.PROPERTY) annotation class SHA256(val name:String = "")
-    @Target(AnnotationTarget.PROPERTY) annotation class OUT(val name:String = "")
+    private var isInited = false
+    fun isInited() = isInited
     /**
-     * Interface for touch event(ex down, up, move)
+     * add base application & setting
      */
-    interface Touch{fun onTouch(e: MotionEvent):Boolean}
-    interface Value
-    abstract class OnTextChanged:TextWatcher{
-        lateinit var text: EditText
-        override fun afterTextChanged(s:Editable?){}
-        override fun beforeTextChanged(s:CharSequence?, start:Int, count:Int, after:Int){}
-        override fun onTextChanged(s:CharSequence?, start:Int, before:Int, count:Int) = onChanged(text, s ?: "", start, before, count)
-        abstract fun onChanged(view:EditText, s:CharSequence, start:Int, before:Int, count:Int)
-        fun pos() = ChView.cursorPos(text)
-    }
-    /**
-     * set base application
-     */
-    @JvmStatic operator fun invoke(application:Application, settingJSON:String? = null):Ch{
+    @JvmStatic operator fun invoke(application:Application, settingJSON:String? = null){
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         app(application)
-        settingJSON?.let{setting(it)}
-        return this
+        settingJSON?.let{_try{ChRes.load(JSONObject(it), true)}}
+        isInited = true
     }
-
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}
     @JvmStatic val NONE = object:Value{}
     @JvmStatic val NONE_BA = ByteArray(0)
-    @JvmStatic val schema = ChSchema
     @JvmStatic val math = ChMath
     @JvmStatic val reflect = ChReflect
     @JvmStatic val thread = ChThread
@@ -96,23 +73,10 @@ object Ch{
     @JvmStatic val style = ChStyle
     @JvmStatic val i18n = ChI18n
     @JvmStatic val crypto = ChCrypto
+    @JvmStatic val scanner = ChScanner
+    @JvmStatic val prop = ChProperty
     @JvmStatic fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
 
-    @JvmStatic private val settingLoaded = mutableSetOf<String>()
-    @JvmStatic fun setting(setting:String) = _try{JSONObject(ChAsset.string(setting))}?.let{
-        val id = it._string(Setting.ID) ?: ""
-        if(settingLoaded.contains(id)) return@let
-        settingLoaded += id
-        it._object(Setting.DB)?.let{ChSql.load(it)}
-
-        it._list<String>("style")?.let{ChStyle.load(it.map{ChAsset.string(it)})}
-        it._list<String>("api")?.let{ChNet.loadApi(it.map{ChAsset.string(it)})}
-
-        it._object("i18n")?.let{
-            it._string("lang")?.let{ChI18n(it)}
-            it._list<String>("data")?.let{ChI18n.load(it.map{ChAsset.string(it)})}
-        }
-    }
     @JvmStatic fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, block:()->Unit){
         with(if(looper == null){
             val l = Ch.looper()
@@ -147,6 +111,28 @@ object Ch{
     @JvmStatic fun groupBase():ChGroupBase = ChGroupBase()
     @JvmStatic fun fragmentBase():ChFragmentBase = ChFragmentBase()
 
-    @JvmStatic val scanner = ChScanner
-    @JvmStatic val prop = ChProperty
+
+    sealed class ApiResult{
+        fun isFail() = this is fail
+        object ok:ApiResult()
+        class fail(val msg:String):ApiResult()
+    }
+    @Target(AnnotationTarget.PROPERTY) annotation class STRING(val name:String = "")
+    @Target(AnnotationTarget.PROPERTY) annotation class NUMBER(val name:String = "")
+    @Target(AnnotationTarget.PROPERTY) annotation class BOOLEAN(val name:String = "")
+    @Target(AnnotationTarget.PROPERTY) annotation class SHA256(val name:String = "")
+    @Target(AnnotationTarget.PROPERTY) annotation class OUT(val name:String = "")
+    /**
+     * Interface for touch event(ex down, up, move)
+     */
+    interface Touch{fun onTouch(e: MotionEvent):Boolean}
+    interface Value
+    abstract class OnTextChanged:TextWatcher{
+        lateinit var text: EditText
+        override fun afterTextChanged(s:Editable?){}
+        override fun beforeTextChanged(s:CharSequence?, start:Int, count:Int, after:Int){}
+        override fun onTextChanged(s:CharSequence?, start:Int, before:Int, count:Int) = onChanged(text, s ?: "", start, before, count)
+        abstract fun onChanged(view:EditText, s:CharSequence, start:Int, before:Int, count:Int)
+        fun pos() = ChView.cursorPos(text)
+    }
 }
