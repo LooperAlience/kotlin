@@ -9,38 +9,28 @@ import chela.kotlin.android.ChApp
 import chela.kotlin.model.Model
 
 class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create:String = "", val upgrade:String = ""): SQLiteOpenHelper(ctx, db, null, ver){
+    var msg = ""
     private val writer = writableDatabase
     private val reader = readableDatabase
     override fun onCreate(db: SQLiteDatabase?){
-        if(create.isNotBlank()) create.split(",").forEach{exec(it)}
+        if(create.isNotBlank()) create.split(",").forEach{exec(it.trim())}
     }
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion:Int, newVersion:Int){
-        if(upgrade.isNotBlank()) upgrade.split(",").forEach{exec(it)}
-        if(create.isNotBlank()) create.split(",").forEach{exec(it)}
+        if(upgrade.isNotBlank()) upgrade.split(",").forEach{exec(it.trim())}
     }
     fun remove(){
         close()
         ChApp.app.deleteDatabase(databaseName)
     }
     fun exec(k: String, vararg arg:Pair<String, Any>):Int{
-        getQuery(k, 'w', *arg)
+        runQuery(k, *arg)
         val c = reader.rawQuery("SELECT changes()", null)
-        val r = if(c != null && c.count > 0 && c.moveToFirst()) c.getInt(0) else 0
-        c.close()
-        return r
-    }
-    fun exec(k: String, model: Model):Int{
-        val query = ChSql.query(k) ?: throw Exception("invalid query:$k")
-        val arg = mutableListOf<Pair<String, Any>>()
-        query.items.forEach { (k, v) -> arg += k to model[k] }
-        getQuery(k, 'w', *arg.toTypedArray())
-        val c = reader.rawQuery("SELECT changes()", null)
-        val r = if(c != null && c.count > 0 && c.moveToFirst()) c.getInt(0) else 0
+        val r = if (c != null && c.count > 0 && c.moveToFirst()) c.getInt(0) else 0
         c.close()
         return r
     }
     fun select(k:String, isRecord:Boolean = false, vararg arg:Pair<String, Any>): ChCursor?
-        = getQuery(k, 'r', *arg)?.let{
+        = runQuery(k, *arg)?.let{
             if(it.count > 0 && it.moveToFirst()) {
                 val offCursor = ChCursor(it, isRecord)
                 it.close()
@@ -48,7 +38,7 @@ class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create
             }else null
         }
     fun <T: Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T):List<T>{
-        val c = getQuery(k, 'r', *arg) ?: throw Exception("invalid query result:$k")
+        val c = runQuery(k, *arg) ?: throw Exception("invalid getQuery result:$k")
         c.moveToFirst()
         val r = (0 until c.count).map {
             val v = block()
@@ -74,19 +64,19 @@ class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create
         return r
     }
     fun i(k: String, vararg arg:Pair<String, Any>): Int {
-        val c = getQuery(k, 'r', *arg)!!
+        val c = runQuery(k, *arg)!!
         val r = if(c.count > 0 && c.moveToFirst()) c.getInt(0) else -1
         c.close()
         return r
     }
     fun f(k: String, vararg arg: Pair<String, Any>): Float {
-        val c = getQuery(k, 'r', *arg)!!
+        val c = runQuery(k, *arg)!!
         val r = if(c.count > 0 && c.moveToFirst()) c.getFloat(0) else -1F
         c.close()
         return r
     }
     fun s(k: String, vararg arg: Pair<String, Any>): String {
-        val c = getQuery(k, 'r', *arg)!!
+        val c = runQuery(k, *arg)!!
         val r = if(c.count > 0 && c.moveToFirst()) c.getString(0) else ""
         c.close()
         return r
@@ -95,17 +85,32 @@ class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create
     /**
      * @param key
      * @param db
-     * @param param With param, check whether query values follow the {@link ChRuleSet}.
+     * @param param With param, check whether getQuery values follow the {@link ChRuleSet}.
      */
     @SuppressLint("Recycle")
-    private fun getQuery(key:String, db:Char, vararg param:Pair<String, Any>): Cursor?{
-        val it = ChSql.query(key) ?: throw Exception("invalid query:$key")
-        val arg = it.param(param)
-        return if(db == 'r') reader.rawQuery(it.query, if(arg.isEmpty()) null else arg)
-            else{
-                if(arg.isEmpty()) writer.execSQL(it.query)
-                else writer.execSQL(it.query, arg)
-                null
-            }
+    private fun runQuery(key:String, vararg param:Pair<String, Any>):Cursor?{
+        val it = ChSql.getQuery(key) ?: run {
+            msg = "invalid query:$key"
+            return null
+        }
+        val arg = it.param(param) ?: run{
+            msg = it.msg
+            return null
+        }
+        var c:Cursor? = null
+        it.query.forEachIndexed { i, query ->
+            val a = arg[i]
+            val q = query.substring(1)
+            try {
+                when (query[0]) {
+                    'r' ->  c = reader.rawQuery(q, if (a.isEmpty()) null else a) ?: run{
+                        msg = "no result - $key"
+                        null
+                    }
+                    'w'->if(a.isEmpty()) writer.execSQL(q) else writer.execSQL(q, a)
+                }
+            }catch(e:Throwable){msg = "error - $e"}
+        }
+        return c
     }
 }

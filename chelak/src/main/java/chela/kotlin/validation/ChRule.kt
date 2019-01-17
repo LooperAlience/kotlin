@@ -21,7 +21,7 @@ abstract class ChRule{
                 val k = f.name.toLowerCase()
                 if (_defined[k] != null) throw Exception("exist rule:$k")
                 _defined[k] = { arg:List<String>->{ v:Any->f.call(this, v, arg)!!}}
-                ChRuleSet.add(k, k, false)
+                ChRuleSet.add(k, k)
             }
         }
     }

@@ -33,7 +33,7 @@ object ChRes{
             res.setRes()
         }
         if(isInited){
-            ChSql.DB?.select("ch_get")?.forEach{ i, arr ->
+            ChSql.DB?.select("ch_get")?.forEach{ _, arr ->
                 val v = arr.map{"$it"}
                 _try{JSONObject(v[1])}?.let{
                     val r = Res(v[0], it)

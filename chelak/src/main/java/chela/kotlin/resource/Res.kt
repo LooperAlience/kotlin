@@ -22,7 +22,7 @@ class Res(internal var id:String = "", v:JSONObject):toJSON {
                 "i18n"->i18n = it._mapObject{I18n(it)}
                 "style"->style = it._mapObject{Style(it)}
                 "ruleset"->ruleset = it._mapObject{Ruleset(it)}
-                "query"->query = it._map{
+                "getQuery"->query = it._map{
                     when(it){
                         is String->it
                         is JSONArray -> it._toList<String>()?.joinToString(" ")
@@ -66,15 +66,13 @@ class Res(internal var id:String = "", v:JSONObject):toJSON {
         }
     }
     fun setRes(){
-        api?.forEach{(k, v)->
-
-        }
+        api?.forEach{(k, v)->v.set(k)}
         style?.forEach{(k, v)->v.set(k)}
         i18n?.forEach{(k, v)->v.set(k)}
     }
     override fun toJSON():String = "{" + """
       ${ruleset?.let{",\"ruleset\":${it._toJSON()}"}}
-      ${query?.let{",\"query\":${it._toJSON()}"}}
+      ${query?.let{",\"getQuery\":${it._toJSON()}"}}
       ${db?.let{",\"db\":${it._toJSON()}"}}
       ${style?.let{",\"style\":${it._toJSON()}"}}
       ${api?.let{",\"api\":${it._toJSON()}"}}

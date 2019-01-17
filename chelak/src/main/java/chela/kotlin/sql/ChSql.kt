@@ -16,7 +16,7 @@ object ChSql{
         Dbs[k] = DataBase(Ch.app.app, k, ver, create, upgrade)
     }
     @JvmStatic fun removeDb(k:String) = Dbs[k]?.let{it.remove()}
-    @JvmStatic fun query(key:String) = queries[key]
+    @JvmStatic fun getQuery(key:String) = queries[key]
     @JvmStatic fun addQuery(k:String, body:String){if(k.isNotBlank()) queries[k] = ChQuery(k, body)}
     @JvmStatic fun removeQuery(k:String) = queries.remove(k)
 
