@@ -67,7 +67,8 @@ class Res(internal var id:String = "", v:JSONObject):toJSON{
                     c = if(c.isNotBlank()) "$cr,$c" else cr
                     u = if(u.isNotBlank()) "$up,$u" else up
                 }
-                ChSql.addDb(k, v.ver, c, u, isD)
+                if(v.asset.isNotBlank()) ChSql.addDb(k, v.asset, c, u, isD)
+                else ChSql.addDb(k, v.ver, c, u, isD)
                 if(isD) ChRes.baseQuery()
             }
         }

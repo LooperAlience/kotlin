@@ -23,5 +23,4 @@ object ChI18n{
         if(ln.isBlank()) return "no language"
         return i.data[ln]?.get(subKey) ?: "no data:$k"
     }
-
 }
