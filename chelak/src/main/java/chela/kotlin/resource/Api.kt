@@ -1,24 +1,22 @@
 package chela.kotlin.resource
 
+import android.util.Log
 import chela.kotlin.core._forObject
 import chela.kotlin.core._object
 import chela.kotlin.core._string
 import chela.kotlin.net.ChNet
 import org.json.JSONObject
 
-class ApiRequest(
-    val name: String?,
-    val rules: String?,
-    val task: List<String>?
-)
-class Api(v:JSONObject){
+
+class Api(v:JSONObject, base:String){
+    class ApiRequest(val name: String?, val rules: String?, val task: List<String>?)
     var url: String = ""
     var method: String = "POST"
     var requestTask: List<String>? = null
     var responseTask: List<String>? = null
     var request: Map<String, ApiRequest>? = null
     init{
-        v._string("url")?.let{url = it}
+        v._string("url")?.let{url = "$base$it"}
         v._string("method")?.let{method = it.toUpperCase()}
         v._string("requesttask", "requestTask")?.let{
             if(it.isNotBlank()) requestTask = it.split("|").map{it.trim()}
@@ -35,6 +33,7 @@ class Api(v:JSONObject){
                     v._string("task")?.let { it.split("|").map { it.trim() } } ?: null
                 )
             }
+            request = r
         }
     }
     fun set(k:String) = ChNet.add(k, this)

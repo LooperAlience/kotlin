@@ -131,6 +131,11 @@ object ChNet {
                 false
             }
         }) return Ch.ApiResult.fail(msg)
+        if(Ch.isDebug){
+            Log.i("ch", "method-" + api.method + ", url-" + apiBaseURL + api.url)
+            Log.i("ch", "requestArg-${arg.joinToString(", "){"${it.first}:${it.second}"}}")
+            Log.i("ch", "requestItem-$reqItem")
+        }
         net.send{res->
             res.key = key
             res.arg = reqItem

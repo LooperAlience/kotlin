@@ -49,8 +49,10 @@ object Ch{
         isInited = true
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         app(application)
-        _try{JSONObject(ChAsset.string(path))}?.let {ChRes.load(it, true)}
+        ChRes.init()
+        _try{JSONObject(ChAsset.string(path))}?.let {ChRes.load(it)}
     }
+    @JvmStatic var isDebug = false
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}
     @JvmStatic val NONE = object:Value{}
