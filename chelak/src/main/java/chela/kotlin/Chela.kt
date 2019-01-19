@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -43,11 +44,12 @@ object Ch{
     /**
      * add base application & setting
      */
-    @JvmStatic operator fun invoke(application:Application, settingJSON:String? = null){
+    @JvmStatic operator fun invoke(application:Application, path:String = ""){
+        if(isInited) throw Throwable("inited!")
+        isInited = true
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         app(application)
-        settingJSON?.let{_try{ChRes.load(JSONObject(it), true)}}
-        isInited = true
+        _try{JSONObject(ChAsset.string(path))}?.let {ChRes.load(it, true)}
     }
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}
@@ -58,6 +60,7 @@ object Ch{
     @JvmStatic val thread = ChThread
     @JvmStatic val app = ChApp
     @JvmStatic val window = ChWindow
+    @JvmStatic val res = ChRes
     @JvmStatic val net = ChNet
     @JvmStatic val clipBoard = ChClipBoard
     @JvmStatic val asset = ChAsset
@@ -112,10 +115,10 @@ object Ch{
     @JvmStatic fun fragmentBase():ChFragmentBase = ChFragmentBase()
 
 
-    sealed class ApiResult{
+    sealed class ApiResult(val msg:String){
         fun isFail() = this is fail
-        object ok:ApiResult()
-        class fail(val msg:String):ApiResult()
+        object ok:ApiResult("")
+        class fail(msg:String):ApiResult(msg)
     }
     @Target(AnnotationTarget.PROPERTY) annotation class STRING(val name:String = "")
     @Target(AnnotationTarget.PROPERTY) annotation class NUMBER(val name:String = "")

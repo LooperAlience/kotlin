@@ -31,7 +31,7 @@ object PropView:Property(){
                 when(v[0]){
                     '#'->view.setBackgroundColor(ChProperty.color(v))
                     else-> {
-                        ChDrawable.drawable("shape:$v")?.let { view.background = it }
+                        ChDrawable.drawable(v)?.let { view.background = it }
                             ?: view.setBackgroundResource(ChApp.resDrawable(v))
                     }
                 }

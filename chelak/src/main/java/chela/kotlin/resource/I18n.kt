@@ -1,10 +1,13 @@
 package chela.kotlin.resource
 
-import chela.kotlin.core.*
+import chela.kotlin.core._forObject
+import chela.kotlin.core._forString
+import chela.kotlin.core._object
+import chela.kotlin.core._string
 import chela.kotlin.i18n.ChI18n
 import org.json.JSONObject
 
-class I18n(v:JSONObject): toJSON {
+class I18n(v:JSONObject){
     var isOne = ""
     val data = mutableMapOf<String, Map<String, String>>()
     init{
@@ -17,6 +20,4 @@ class I18n(v:JSONObject): toJSON {
     }
     fun set(k:String) = data?.let{ChI18n.add(k, this)}
     fun remove(k:String) = ChI18n.remove(k)
-
-    override fun toJSON():String = """{"isone":"$isOne","data":${data._toJSON()}"""
 }

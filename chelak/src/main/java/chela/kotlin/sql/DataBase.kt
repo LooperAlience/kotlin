@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import chela.kotlin.android.ChApp
 import chela.kotlin.model.Model
 
@@ -12,11 +13,13 @@ class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create
     var msg = ""
     private val writer = writableDatabase
     private val reader = readableDatabase
-    override fun onCreate(db: SQLiteDatabase?){
-        if(create.isNotBlank()) create.split(",").forEach{exec(it.trim())}
-    }
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion:Int, newVersion:Int){
-        if(upgrade.isNotBlank()) upgrade.split(",").forEach{exec(it.trim())}
+    private var isCreate = false
+    private var isUpgrade = false
+    override fun onCreate(db: SQLiteDatabase?){isCreate = true}
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion:Int, newVersion:Int){isUpgrade = true}
+    init{
+        if(isCreate && create.isNotBlank()) create.split(",").forEach{exec(it.trim())}
+        else if(isUpgrade && upgrade.isNotBlank()) upgrade.split(",").forEach{exec(it.trim())}
     }
     fun remove(){
         close()
@@ -37,26 +40,26 @@ class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create
                 offCursor
             }else null
         }
-    fun <T: Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T):List<T>{
-        val c = runQuery(k, *arg) ?: throw Exception("invalid getQuery result:$k")
-        c.moveToFirst()
-        val r = (0 until c.count).map {
-            val v = block()
-            c.columnNames.forEachIndexed { i, s ->
-                v[s] = when(c.getType(i)){
-                    Cursor.FIELD_TYPE_INTEGER ->c.getInt(i)
-                    Cursor.FIELD_TYPE_FLOAT ->c.getFloat(i)
-                    Cursor.FIELD_TYPE_STRING ->c.getString(i)
-                    Cursor.FIELD_TYPE_BLOB ->c.getBlob(i)
-                    else->c.getString(i)
+    fun <T: Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T):List<T>
+        = runQuery(k, *arg)?.let {c->
+            c.moveToFirst()
+            val r = (0 until c.count).map {
+                val v = block()
+                c.columnNames.forEachIndexed { i, s ->
+                    v[s] = when (c.getType(i)) {
+                        Cursor.FIELD_TYPE_INTEGER -> c.getInt(i)
+                        Cursor.FIELD_TYPE_FLOAT -> c.getFloat(i)
+                        Cursor.FIELD_TYPE_STRING -> c.getString(i)
+                        Cursor.FIELD_TYPE_BLOB -> c.getBlob(i)
+                        else -> c.getString(i)
+                    }
                 }
+                c.moveToNext()
+                v
             }
-            c.moveToNext()
-            v
-        }
-        c.close()
-        return r
-    }
+            c.close()
+            r
+        } ?: listOf()
     fun lastId():Int{
         val c = reader.rawQuery("select last_insert_rowid()", null)
         val r = if(c.count > 0 && c.moveToFirst()) c.getInt(0) else -1
@@ -98,6 +101,7 @@ class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create
             return null
         }
         var c:Cursor? = null
+        if(it.query.size > 1) writer.beginTransaction()
         it.query.forEachIndexed { i, query ->
             val a = arg[i]
             val q = query.substring(1)
@@ -111,6 +115,7 @@ class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create
                 }
             }catch(e:Throwable){msg = "error - $e"}
         }
+        if(it.query.size > 1) writer.endTransaction()
         return c
     }
 }

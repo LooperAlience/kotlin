@@ -5,6 +5,7 @@ import android.net.ConnectivityManager.TYPE_WIFI
 import android.net.NetworkCapabilities.TRANSPORT_CELLULAR
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.android.ChApp
 import chela.kotlin.core._long

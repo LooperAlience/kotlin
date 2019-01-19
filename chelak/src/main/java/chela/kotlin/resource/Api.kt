@@ -3,15 +3,15 @@ package chela.kotlin.resource
 import chela.kotlin.core._forObject
 import chela.kotlin.core._object
 import chela.kotlin.core._string
-import chela.kotlin.core.toJSON
 import chela.kotlin.net.ChNet
 import org.json.JSONObject
+
 class ApiRequest(
     val name: String?,
     val rules: String?,
     val task: List<String>?
 )
-class Api(v:JSONObject):toJSON{
+class Api(v:JSONObject){
     var url: String = ""
     var method: String = "POST"
     var requestTask: List<String>? = null
@@ -39,21 +39,4 @@ class Api(v:JSONObject):toJSON{
     }
     fun set(k:String) = ChNet.add(k, this)
     fun remove(k:String) = ChNet.remove(k)
-    override fun toJSON():String = """{
-        "url":"${url}",
-        "method":${method}
-        ${requestTask?.let{",\"requesttask\":\"${it.joinToString("|")}\""}}
-        ${responseTask?.let{",\"responsetask\":\"${it.joinToString("|")}\""}}
-        ${request?.let{
-            val r = mutableListOf<String>()
-            it.forEach{(k, v)->
-                r += """{
-                  ${v.name?.let{",\"name\":\"$it\""}}
-                  ${v.rules?.let{",\"rules\":\"$it\""}}
-                  ${v.task?.let{",\"task\":\"${it.joinToString("|")}\""}}
-                }""".substring(1)
-            }
-          "{${r.joinToString(",")}}"
-        }}
-    }"""
 }

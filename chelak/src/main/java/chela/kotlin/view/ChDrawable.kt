@@ -34,6 +34,7 @@ object ChDrawable{
     }
     @JvmStatic private val drawables = mutableMapOf<String, Drawable>()
     @JvmStatic fun drawable(k:String):Drawable? = drawables[k]
+    @JvmStatic fun remove(k:String) = drawables.remove(k)
     @JvmStatic fun shape(k:String, obj:JSONObject):Drawable{
         val arg = mutableListOf<Param>()
         obj._forValue { key, v ->

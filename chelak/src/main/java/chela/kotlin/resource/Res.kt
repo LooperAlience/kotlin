@@ -1,17 +1,19 @@
 package chela.kotlin.resource
 
 import chela.kotlin.core.*
+import chela.kotlin.i18n.ChI18n
 import chela.kotlin.sql.ChSql
-import chela.kotlin.validation.ChRuleSet
 import org.json.JSONArray
 import org.json.JSONObject
 
-class Res(internal var id:String = "", v:JSONObject):toJSON {
+class Res(internal var id:String = "", v:JSONObject):toJSON{
+    private val json = "$v"
     private var ruleset:Map<String, Ruleset>? = null
     private var query:Map<String, String>? = null
     private var db:Map<String, Db>? = null
     private var api:Map<String, Api>? = null
     private var style:Map<String, Style>? = null
+    private var shape:Map<String, Shape>? = null
     private var i18n:Map<String, I18n>? = null
     init{
         v._string("id")?.let{id = it}
@@ -19,10 +21,14 @@ class Res(internal var id:String = "", v:JSONObject):toJSON {
             when(key){
                 "db"->db = it._mapObject{Db(it)}
                 "api"->api = it._mapObject{Api(it)}
-                "i18n"->i18n = it._mapObject{I18n(it)}
                 "style"->style = it._mapObject{Style(it)}
+                "shape"->shape = it._mapObject{Shape(it)}
                 "ruleset"->ruleset = it._mapObject{Ruleset(it)}
-                "getQuery"->query = it._map{
+                "i18n"->{
+                    it._string("language")?.let{ChI18n(it)}
+                    i18n = it._mapObject{I18n(it)}
+                }
+                "query"->query = it._map{
                     when(it){
                         is String->it
                         is JSONArray -> it._toList<String>()?.joinToString(" ")
@@ -35,6 +41,7 @@ class Res(internal var id:String = "", v:JSONObject):toJSON {
     fun remove(){
         i18n?.forEach{(k,v)->v.remove(k)}
         style?.forEach{(k,v)->v.remove(k)}
+        shape?.forEach{(k,v)->v.remove(k)}
         api?.forEach{(k,v)->v.remove(k)}
         ruleset?.forEach{(k,v)->v.remove(k)}
         query?.forEach{(k,_)->ChSql.removeQuery(k)}
@@ -57,8 +64,8 @@ class Res(internal var id:String = "", v:JSONObject):toJSON {
                 var u = v.upgrade
                 if(isD){
                     val (cr, up) = ChRes.base()
-                    c = "$cr,$c"
-                    u = "$up,$u"
+                    c = if(c.isNotBlank()) "$cr,$c" else cr
+                    u = if(u.isNotBlank()) "$up,$u" else up
                 }
                 ChSql.addDb(k, v.ver, c, u, isD)
                 if(isD) ChRes.baseQuery()
@@ -68,14 +75,8 @@ class Res(internal var id:String = "", v:JSONObject):toJSON {
     fun setRes(){
         api?.forEach{(k, v)->v.set(k)}
         style?.forEach{(k, v)->v.set(k)}
+        shape?.forEach{(k, v)->v.set(k)}
         i18n?.forEach{(k, v)->v.set(k)}
     }
-    override fun toJSON():String = "{" + """
-      ${ruleset?.let{",\"ruleset\":${it._toJSON()}"}}
-      ${query?.let{",\"getQuery\":${it._toJSON()}"}}
-      ${db?.let{",\"db\":${it._toJSON()}"}}
-      ${style?.let{",\"style\":${it._toJSON()}"}}
-      ${api?.let{",\"api\":${it._toJSON()}"}}
-      ${i18n?.let{",\"i18n\":${it._toJSON()}"}}
-    """.substring(1) + "}"
+    override fun toJSON():String = json
 }

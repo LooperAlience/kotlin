@@ -26,7 +26,7 @@ class ChQuery(key:String, body: String){
     }
     internal fun param(param:Array<out Pair<String, Any>>):List<Array<String>>? = items.map{_param(it, param) ?: return null}
     private fun _param(item:Map<String, Item>, param:Array<out Pair<String, Any>>):Array<String>?{
-        val r = MutableList(items.size){""}
+        val r = MutableList(item.size){""}
         var cnt = 0
         param.forEach {(k, v)->
             item[k]?.let {
@@ -40,8 +40,8 @@ class ChQuery(key:String, body: String){
                 }
             }
         }
-        return if(cnt != items.size){
-            msg = "param not match:$cnt != ${items.size} - $query"
+        return if(cnt != item.size){
+            msg = "param not match:$cnt != ${item.size} - $query"
             null
         }else r.toTypedArray()
     }

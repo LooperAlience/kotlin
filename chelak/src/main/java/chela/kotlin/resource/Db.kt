@@ -7,7 +7,7 @@ import chela.kotlin.core.toJSON
 import chela.kotlin.sql.ChSql
 import org.json.JSONObject
 
-class Db(v:JSONObject):toJSON{
+class Db(v:JSONObject){
     internal var isDefault:Boolean = false
     internal var ver:Int = 0
     internal var create:String = ""
@@ -19,6 +19,4 @@ class Db(v:JSONObject):toJSON{
         v._string("upgrade")?.let{upgrade = it}
     }
     fun remove(k:String) = ChSql.removeDb(k)
-    override fun toJSON():String =
-        """{"isDefault":"$isDefault", "ver":$ver, "create":"$create", "upgrade":"$upgrade"}"""
 }

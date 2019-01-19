@@ -17,12 +17,11 @@ object ChI18n{
         if(k.size < 3) return "no data:$k"
         val (_, key, subKey) = k
         val i = items[key] ?: return "no data:$key"
-        val ln = if(k.size == 4) k[3] else ""
-        return i.data[
-                if(i.isOne.isNotBlank()) i.isOne
-                else if(ln != "") ln
-                else lang
-            ]?.get(subKey) ?: "no data:$k"
+        val ln =  if(i.isOne.isNotBlank()) i.isOne
+            else if(k.size == 4) k[3]
+            else lang
+        if(ln.isBlank()) return "no language"
+        return i.data[ln]?.get(subKey) ?: "no data:$k"
     }
 
 }

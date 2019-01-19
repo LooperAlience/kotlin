@@ -106,4 +106,3 @@ fun JSONObject._boolean(vararg key:String):Boolean?{
     key.any {r = _try { this.getBoolean(it)};r != null}
     return r
 }
-
