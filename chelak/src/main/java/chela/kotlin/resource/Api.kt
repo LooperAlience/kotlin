@@ -2,6 +2,7 @@ package chela.kotlin.resource
 
 import android.util.Log
 import chela.kotlin.core._forObject
+import chela.kotlin.core._mapObject
 import chela.kotlin.core._object
 import chela.kotlin.core._string
 import chela.kotlin.net.ChNet
@@ -10,31 +11,16 @@ import org.json.JSONObject
 
 class Api(v:JSONObject, base:String){
     class ApiRequest(val name: String?, val rules: String?, val task: List<String>?)
-    var url: String = ""
-    var method: String = "POST"
-    var requestTask: List<String>? = null
-    var responseTask: List<String>? = null
-    var request: Map<String, ApiRequest>? = null
-    init{
-        v._string("url")?.let{url = "$base$it"}
-        v._string("method")?.let{method = it.toUpperCase()}
-        v._string("requesttask", "requestTask")?.let{
-            if(it.isNotBlank()) requestTask = it.split("|").map{it.trim()}
-        }
-        v._string("responsetask", "responseTask")?.let{
-            if(it.isNotBlank()) responseTask = it.split("|").map{it.trim()}
-        }
-        v._object("request")?.let{
-            val r = mutableMapOf<String, ApiRequest>()
-            it._forObject{k, v->
-                r[k] = ApiRequest(
-                    v._string("name"),
-                    v._string("rules"),
-                    v._string("task")?.let { it.split("|").map { it.trim() } } ?: null
-                )
-            }
-            request = r
-        }
+    val url = v._string("url")?.let{"$base$it"} ?:""
+    val method = v._string("method")?.let{it.toUpperCase()} ?: "POST"
+    val requestTask = v._string("requesttask", "requestTask")?.split("|")?.map{it.trim()}
+    val responseTask = v._string("responsetask", "responseTask")?.split("|")?.map{it.trim()}
+    val request = v._object("request")?._mapObject{
+        ApiRequest(
+            it._string("name"),
+            it._string("rules"),
+            it._string("task")?.split("|")?.map{it.trim()}
+        )
     }
     fun set(k:String) = ChNet.add(k, this)
     fun remove(k:String) = ChNet.remove(k)

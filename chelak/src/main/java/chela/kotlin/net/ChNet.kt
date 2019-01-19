@@ -31,7 +31,6 @@ typealias responseTaskF = (response:ChResponse, taskArg:List<String>)-> Boolean
  */
 object ChNet {
     @JvmStatic private val apis = mutableMapOf<String, Api>()
-    @JvmStatic private var apiBaseURL = ""
     @JvmStatic private val requestItemTask = mutableMapOf<String, (Any) -> Any?>(
         "sha256" to {v->Ch.crypto.sha256("$v")}
     )
@@ -79,7 +78,6 @@ object ChNet {
         true
         }
     )
-    @JvmStatic fun apiBaseURL(url:String){apiBaseURL = url}
     @JvmStatic fun apiRequestTask(key: String, block: requestTaskF) {requestTask[key] = block}
     @JvmStatic fun apiRequestItemTask(key: String, block: (Any) -> Any?){ requestItemTask[key] = block}
     @JvmStatic fun apiResponseTask(key: String, block: responseTaskF){responseTask[key] = block}
@@ -117,7 +115,7 @@ object ChNet {
                 reqItem += (req.name ?: k) to r
             }
         }
-        val net = http(api.method, apiBaseURL + api.url)
+        val net = http(api.method, api.url)
         var msg = ""
         if(false == api.requestTask?.all{
             val (k, arg) = reParam.parse(it)
@@ -132,7 +130,7 @@ object ChNet {
             }
         }) return Ch.ApiResult.fail(msg)
         if(Ch.isDebug){
-            Log.i("ch", "method-" + api.method + ", url-" + apiBaseURL + api.url)
+            Log.i("ch", "method-" + api.method + ", url-" + api.url)
             Log.i("ch", "requestArg-${arg.joinToString(", "){"${it.first}:${it.second}"}}")
             Log.i("ch", "requestItem-$reqItem")
         }
@@ -153,8 +151,10 @@ object ChNet {
     }
     @JvmStatic fun http(method:String, url:String): ChHttp = ChHttpOk3(method, Request.Builder().url(url))
     @JvmStatic fun isOn():Boolean = connectedType() != Ch.NONE
+
     @JvmStatic fun connectedType():Ch.Value{
         if(SDK_INT < 23){
+            @Suppress("DEPRECATION")
             ChApp.cm.activeNetworkInfo?.let{
                 return when(it.type){
                     TYPE_WIFI -> Ch.WIFI
