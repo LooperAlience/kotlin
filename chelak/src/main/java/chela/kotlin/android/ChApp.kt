@@ -17,6 +17,7 @@ import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.content.res.AppCompatResources
 import chela.kotlin.view.ChWindow
+import java.io.File
 
 /**
  * Base object for accessing an application's resource and converting display unit.
@@ -30,9 +31,13 @@ object ChApp{
     @JvmStatic lateinit var imm: InputMethodManager
     @JvmStatic lateinit var packName:String
     @JvmStatic lateinit var dm: DisplayMetrics
+    @JvmStatic lateinit var fileDir:File
+    @JvmStatic lateinit var cacheDir: File
 
     @JvmStatic operator fun invoke(a:Application){
         app = a
+        fileDir = a.filesDir!!
+        cacheDir = a.cacheDir!!
         res = a.resources
         asset = a.assets
         packName = a.packageName
@@ -61,6 +66,7 @@ object ChApp{
     @JvmStatic fun resDrawable(v: String):Int = resS2I("drawable", v)
     @JvmStatic fun resId(v: String):Int = resS2I("id", v)
     @JvmStatic fun resLayout(v: String):Int = resS2I("layout", v)
+    @JvmStatic fun resFont(v: String):Int = resS2I("addFont", v)
     @JvmStatic fun resName(id:Int):String = res.getResourceEntryName(id)
     @JvmStatic fun drawable(v:String):Drawable? = drawable(resS2I("drawable", v))
     @JvmStatic fun drawable(v:Int):Drawable? = AppCompatResources.getDrawable(app, v)

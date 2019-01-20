@@ -8,5 +8,8 @@ class ChResponse(
 ){
     var result:Any = "$body"
     val extra = mutableMapOf<String, Any>()
+    val byte:ByteArray? get() = response?.body()?.bytes()
     fun header(k:String) = response?.header(k)
+
+
 }

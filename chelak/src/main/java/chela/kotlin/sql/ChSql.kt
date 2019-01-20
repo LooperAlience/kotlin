@@ -31,10 +31,9 @@ object ChSql{
         if(!db.exists()){
             val folder = File(root)
             if (!folder.exists()) folder.mkdirs()
-            db.createNewFile()
-            with(FileOutputStream(db)) {
-                write(ChAsset.bytes(assetPath))
-                close()
+            if(db.createNewFile()) FileOutputStream(db).use{
+                it.write(ChAsset.bytes(assetPath))
+                it.close()
             }
         }
         addDb(k, 1, create, upgrade, isDefault)

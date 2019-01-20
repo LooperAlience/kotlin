@@ -38,6 +38,15 @@ inline fun JSONObject._forValue(key:String? = null, block:(key:String, v:Any)->U
         when(v){is String, is Number, is Boolean -> block(k, v)}
     }
 }
+
+fun<T:Comparable<*>> JSONObject._mapValue():Map<String, T>? = _try{
+    val map = mutableMapOf<String, T>()
+    this._forValue{key, v->
+        @Suppress("UNCHECKED_CAST")
+        map[key] = v as T
+    }
+    map
+}
 inline fun<T> JSONObject._map(block:(Any)->T?):Map<String, T>? = _try{
     val map = mutableMapOf<String, T>()
     this._for{key, v->block(v)?.let{map[key] = it}}
@@ -48,12 +57,9 @@ inline fun<T> JSONObject._mapObject(block:(JSONObject)->T?):Map<String, T>? = _t
     this._forObject{key, v->block(v)?.let{map[key] = it}}
     map
 }
-fun<T:Comparable<*>> JSONObject._toMap():Map<String, T>? = _try{
+inline fun<T> JSONObject._mapString(block:(String)->T?):Map<String, T>? = _try{
     val map = mutableMapOf<String, T>()
-    this._forValue{key, v->
-        @Suppress("UNCHECKED_CAST")
-        map[key] = v as T
-    }
+    this._forString{key, v->block(v)?.let{map[key] = it}}
     map
 }
 fun<T> JSONObject._list(vararg key:String):List<T>?{

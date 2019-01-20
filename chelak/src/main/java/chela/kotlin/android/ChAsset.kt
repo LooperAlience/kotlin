@@ -1,6 +1,5 @@
 package chela.kotlin.android
 
-import android.util.Log
 import chela.kotlin.Ch
 import java.nio.charset.Charset
 

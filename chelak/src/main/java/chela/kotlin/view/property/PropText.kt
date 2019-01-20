@@ -4,7 +4,12 @@ import android.text.InputFilter
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
+import chela.kotlin.Ch
 import chela.kotlin.PxtoSp
+import chela.kotlin.android.ChApp
+import chela.kotlin.core._try
+import chela.kotlin.view.ChStyle
 
 object Type{
     @JvmStatic val date = 0x14
@@ -109,6 +114,15 @@ object PropText:Property(){
     @JvmStatic fun allCaps(view:View, v:Any){
         if(v !is Boolean || view !is TextView) return
         view.isAllCaps = v
+    }
+    @JvmStatic fun fontFamily(view:View, v:Any) = font(view, v)
+    @JvmStatic fun font(view:View, v:Any){
+        if(view !is TextView) return
+        view.typeface = when(v){
+            is Number-> ResourcesCompat.getFont(ChApp.app, v.toInt())
+            is String-> ChStyle.fonts[v] ?: _try{ResourcesCompat.getFont(ChApp.app, ChApp.resFont(v))} ?: return
+            else->return
+        }
     }
     @JvmStatic fun inputType(view:View, v:Any){
         if(view !is TextView) return
