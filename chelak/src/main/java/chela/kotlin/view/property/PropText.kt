@@ -118,10 +118,13 @@ object PropText:Property(){
     @JvmStatic fun fontFamily(view:View, v:Any) = font(view, v)
     @JvmStatic fun font(view:View, v:Any){
         if(view !is TextView) return
-        view.typeface = when(v){
-            is Number-> ResourcesCompat.getFont(ChApp.app, v.toInt())
-            is String-> ChStyle.fonts[v] ?: _try{ResourcesCompat.getFont(ChApp.app, ChApp.resFont(v))} ?: return
-            else->return
+        when(v){
+            is Number->view.typeface = ResourcesCompat.getFont(ChApp.app, v.toInt())
+            is String->{
+                if(!ChStyle.getFont(v){view.typeface = it}) _try{
+                    ResourcesCompat.getFont(ChApp.app, ChApp.resFont(v))
+                }
+            }
         }
     }
     @JvmStatic fun inputType(view:View, v:Any){

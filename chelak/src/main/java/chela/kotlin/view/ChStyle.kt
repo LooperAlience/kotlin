@@ -12,24 +12,39 @@ import java.io.FileOutputStream
 /**
  * This object cached style property on [items].
  */
+typealias fontL = (Typeface)->Unit
 object ChStyle{
     @JvmStatic val items = mutableMapOf<String, Map<String, Any>>()
-    @JvmStatic val fonts = mutableMapOf<String, Typeface>()
+    @JvmStatic private val fonts = mutableMapOf<String, Typeface>()
+    @JvmStatic private val fontListener = mutableMapOf<String, MutableList<fontL>>()
     @JvmStatic fun add(k:String, map:Map<String, Any>){items[k] = map}
     @JvmStatic fun remove(k:String) = items.remove(k)
     @JvmStatic operator fun get(k:String):Map<String, Any>? = items[k]
+    @JvmStatic fun getFont(k:String, block:fontL):Boolean = fonts[k]?.let{
+        if(it === Typeface.DEFAULT){
+            if(fontListener[k] == null) fontListener[k] = mutableListOf()
+            fontListener[k]?.let{it += block}
+        }else block(it)
+        true
+    } ?: false
     @JvmStatic fun addFont(k:String, path:String){
         if(path.startsWith("http")){
             val f = File(ChApp.fileDir, "ch_font_$k")
-            if(!f.exists()) addFont(k, f)
-            else {
+            Log.i("ch", "font file:$f, ${f.length()}")
+            if(f.exists() && f.length() > 0L) addFont(k, f)
+            else{
+                fonts[k] = Typeface.DEFAULT
                 ChNet.http("GET", path).send{res ->
                     res.byte?.let { data ->
                         if(f.createNewFile()) FileOutputStream(f).use{
                             it.write(data)
-                            it.close()
                         }
+                        Log.i("ch", "sdsdsd:${f.exists()}, ${f.length()}")
                         addFont(k, f)
+                        fonts[k]?.let{font->fontListener[k]?.let{
+                            it.forEach{it(font)}}
+                            fontListener.remove(k)
+                        }
                     }
                 }
             }

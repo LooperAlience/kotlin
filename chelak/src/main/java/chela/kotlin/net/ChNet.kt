@@ -137,10 +137,10 @@ object ChNet {
         net.send{res->
             res.key = key
             res.arg = reqItem
+            Log.i("ch", "apiResponse:${res.body}, ${res.result}")
             api.responseTask?.all {
                 val (k, arg) = reParam.parse(it)
                 responseTask[k]?.let {it(res, arg)} ?: run{
-                    res.body = null
                     res.err = "invalid response task:$it for $key"
                     false
                 }
