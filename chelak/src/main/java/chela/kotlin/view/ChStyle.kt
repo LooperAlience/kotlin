@@ -30,7 +30,6 @@ object ChStyle{
     @JvmStatic fun addFont(k:String, path:String){
         if(path.startsWith("http")){
             val f = File(ChApp.fileDir, "ch_font_$k")
-            Log.i("ch", "font file:$f, ${f.length()}")
             if(f.exists() && f.length() > 0L) addFont(k, f)
             else{
                 fonts[k] = Typeface.DEFAULT
@@ -39,7 +38,6 @@ object ChStyle{
                         if(f.createNewFile()) FileOutputStream(f).use{
                             it.write(data)
                         }
-                        Log.i("ch", "sdsdsd:${f.exists()}, ${f.length()}")
                         addFont(k, f)
                         fonts[k]?.let{font->fontListener[k]?.let{
                             it.forEach{it(font)}}

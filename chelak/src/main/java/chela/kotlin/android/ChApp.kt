@@ -66,7 +66,7 @@ object ChApp{
     @JvmStatic fun resDrawable(v: String):Int = resS2I("drawable", v)
     @JvmStatic fun resId(v: String):Int = resS2I("id", v)
     @JvmStatic fun resLayout(v: String):Int = resS2I("layout", v)
-    @JvmStatic fun resFont(v: String):Int = resS2I("addFont", v)
+    @JvmStatic fun resFont(v: String):Int = resS2I("font", v)
     @JvmStatic fun resName(id:Int):String = res.getResourceEntryName(id)
     @JvmStatic fun drawable(v:String):Drawable? = drawable(resS2I("drawable", v))
     @JvmStatic fun drawable(v:Int):Drawable? = AppCompatResources.getDrawable(app, v)

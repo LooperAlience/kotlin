@@ -2,6 +2,7 @@ package chela.kotlin.net
 
 import android.util.Log
 import chela.kotlin.Ch
+import chela.kotlin.thread.ChThread
 import okhttp3.*
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -67,9 +68,9 @@ class ChHttpOk3 internal constructor(private val method:String, private var requ
         }
         okHttpClient.newCall(request.build()).enqueue(object: Callback {
             override fun onFailure(call: Call, e: IOException){
-                Ch.thread.main(Runnable{callback(ChResponse(null, e.toString()))})}
+                ChThread.main(Runnable{callback(ChResponse(null, e.toString()))})}
             override fun onResponse(call: Call, response:Response){
-                Ch.thread.main(Runnable {callback(ChResponse(response))})
+                ChThread.main(Runnable {callback(ChResponse(response))})
             }
         })
     }
