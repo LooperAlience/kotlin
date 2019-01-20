@@ -39,7 +39,8 @@ inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
  * Chela base object
  */
 object Ch{
-    private var isInited = false
+    @JvmStatic private var isInited = false
+    @JvmStatic var isDebug = false
     fun isInited() = isInited
     /**
      * add base application & setting
@@ -51,8 +52,10 @@ object Ch{
         app(application)
         ChRes.init()
         _try{JSONObject(ChAsset.string(path))}?.let {ChRes.load(it)}
+        if(!isDebug) Thread.currentThread().setUncaughtExceptionHandler{_, _->
+
+        }
     }
-    @JvmStatic var isDebug = false
     @JvmStatic val WIFI = object:Value{}
     @JvmStatic val MOBILE = object:Value{}
     @JvmStatic val NONE = object:Value{}

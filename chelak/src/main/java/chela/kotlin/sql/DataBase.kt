@@ -66,24 +66,36 @@ class DataBase internal constructor(ctx: Context, db:String, ver:Int, val create
         c.close()
         return r
     }
-    fun i(k: String, vararg arg:Pair<String, Any>): Int {
-        val c = runQuery(k, *arg)!!
-        val r = if(c.count > 0 && c.moveToFirst()) c.getInt(0) else -1
-        c.close()
-        return r
-    }
-    fun f(k: String, vararg arg: Pair<String, Any>): Float {
-        val c = runQuery(k, *arg)!!
-        val r = if(c.count > 0 && c.moveToFirst()) c.getFloat(0) else -1F
-        c.close()
-        return r
-    }
-    fun s(k: String, vararg arg: Pair<String, Any>): String {
-        val c = runQuery(k, *arg)!!
-        val r = if(c.count > 0 && c.moveToFirst()) c.getString(0) else ""
-        c.close()
-        return r
-    }
+    fun i(k: String, vararg arg:Pair<String, Any>): Int =
+        runQuery(k, *arg)?.let { c ->
+            val r = if (c.count > 0 && c.moveToFirst()) c.getInt(0) else -1
+            c.close()
+            return r
+        } ?: -1
+    fun l(k: String, vararg arg:Pair<String, Any>): Long =
+        runQuery(k, *arg)?.let { c ->
+            val r = if (c.count > 0 && c.moveToFirst()) c.getLong(0) else -1L
+            c.close()
+            return r
+        } ?: -1L
+    fun d(k: String, vararg arg:Pair<String, Any>): Double =
+        runQuery(k, *arg)?.let { c ->
+            val r = if (c.count > 0 && c.moveToFirst()) c.getDouble(0) else -1.0
+            c.close()
+            return r
+        } ?: -1.0
+    fun f(k: String, vararg arg: Pair<String, Any>): Float =
+        runQuery(k, *arg)?.let{c->
+            val r = if(c.count > 0 && c.moveToFirst()) c.getFloat(0) else -1F
+            c.close()
+            return r
+        } ?: -1F
+    fun s(k: String, vararg arg: Pair<String, Any>): String =
+        runQuery(k, *arg)?.let { c ->
+            val r = if (c.count > 0 && c.moveToFirst()) c.getString(0) else ""
+            c.close()
+            return r
+        } ?: ""
 
     /**
      * @param key
