@@ -29,6 +29,7 @@ import chela.kotlin.view.router.holder.ChFragmentBase
 import chela.kotlin.view.router.holder.ChGroupBase
 import chela.kotlin.view.router.holder.ChHolderBase
 import chela.kotlin.view.scanner.ChScanner
+import net.sqlcipher.database.SQLiteDatabase
 import org.json.JSONObject
 
 inline val Number.DptoPx get() = this.toDouble() * ChWindow.SptoPx
@@ -48,6 +49,7 @@ object Ch{
     @JvmStatic operator fun invoke(application:Application, path:String = ""){
         if(isInited) throw Throwable("inited!")
         isInited = true
+        SQLiteDatabase.loadLibs(application)
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         app(application)
         ChRes.init()

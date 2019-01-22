@@ -7,7 +7,7 @@ class ChResponse(private val response:Response?, var err:String? = null){
     var arg:List<Pair<String, Any>>? = null
     val extra = mutableMapOf<String, Any>()
     var result:Any = ""
-    val state:Int = response?.code() ?: 0
+    val state:Int by lazy{response?.code() ?: 0}
     private var isOpened = response == null
     val body:String? by lazy{
         if(isOpened) null

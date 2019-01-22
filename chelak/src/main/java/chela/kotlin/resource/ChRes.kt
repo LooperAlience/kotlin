@@ -5,6 +5,7 @@ import chela.kotlin.core._for
 import chela.kotlin.core._forObject
 import chela.kotlin.core._try
 import chela.kotlin.sql.ChSql
+import chela.kotlin.sql.CipherDb
 import chela.kotlin.sql.DataBase
 import org.json.JSONObject
 
@@ -42,7 +43,7 @@ object ChRes{
             val a = it.split("--")
             ChSql.addQuery(a[0].trim(), a[1].trim())
         }
-        ChSql.addDb("ch", 1, "ch_create", "", false)
+        ChSql.addDb("ch", false, "ch_create", null, null)
         ChSql.db("ch")?.let {
             db = it
             db.select("ch_get")?.forEach { _, arr ->
