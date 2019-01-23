@@ -17,11 +17,12 @@ class ChQuery(key:String, body: String){
             items += map
             reQueryParam.setItem(query){k, v->
                 map[k] = Item(map.size, k, ChRuleSet[v] ?: run {
-                    val rk = "$key.k"
+                    val rk = "$key.$k"
                     ChRuleSet.add(rk, v)
                     ChRuleSet[rk]!!
                 })
             }
+            query
         }
     }
     internal fun param(param:Array<out Pair<String, Any>>):List<Array<String>>? = items.map{_param(it, param) ?: return null}
