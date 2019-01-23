@@ -53,14 +53,15 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
         db?.forEach{(k,v)->v.remove(k)}
     }
     fun set(){
-        ruleset?.forEach { (k, v) -> v.set(k) }
-        query?.forEach { (k, v) -> ChSql.addQuery(k, v) }
-        db?.forEach { (k, v) -> v.set(k) }
         api?.forEach{(k, v)->v.set(k)}
+        ruleset?.forEach{(k, v)->v.set(k)}
+        query?.forEach{(k, v)-> ChSql.addQuery(k, v)}
+        db?.forEach{(k, v)-> v.set(k)}
         font?.forEach{(k, v)->v.set(k)}
         style?.forEach{(k, v)->v.set(k)}
         shape?.forEach{(k, v)->v.set(k)}
         i18n?.forEach{(k, v)->v.set(k)}
+
     }
     override fun toJSON():String = json
 }

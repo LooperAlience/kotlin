@@ -2,6 +2,7 @@ package chela.kotlin.view.router
 
 import chela.kotlin.core._allStack
 import chela.kotlin.core._pop
+import chela.kotlin.thread.ChThread
 import chela.kotlin.view.router.holder.ChHolder
 import chela.kotlin.view.router.holder.ChHolderBase
 
@@ -16,28 +17,34 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
     fun push(holder: ChHolder<T>, isAutoUnlock:Boolean = true){
         if(pushLock) return
         if(!isAutoUnlock) pushLock = true
-        if(stack.isNotEmpty()) base._pause(stack.last(), true)
-        base._push(holder, false)
-        stack += holder
+        ChThread.main(Runnable{
+            if(stack.isNotEmpty()) base._pause(stack.last(), true)
+            base._push(holder, false)
+            stack += holder
+        })
     }
     fun pop(isAutoUnlock:Boolean = true):Int{
         if(stack.isEmpty()) return 0
         if(popLock) return -1
         if(!isAutoUnlock) popLock = true
         val h = stack.last()
-        base._pop(h, false)
-        stack._pop()
-        if(stack.isNotEmpty()) base._resume(stack.last(), true)
-        return stack.size
+        ChThread.main(Runnable {
+            base._pop(h, false)
+            stack._pop()
+            if (stack.isNotEmpty()) base._resume(stack.last(), true)
+        })
+        return stack.size - 1
     }
-    fun jump(holder: ChHolder<T>) = stack._allStack { v, _ ->
-        if(holder === v){
-            base._resume(holder, false)
-            false
-        }else{
-            base._pop(holder, true)
-            true
+    fun jump(holder: ChHolder<T>) = ChThread.main(Runnable {
+        stack._allStack{v, _->
+            if (holder === v) {
+                base._resume(holder, false)
+                false
+            } else {
+                base._pop(holder, true)
+                true
+            }
         }
-    }
+    })
     fun url(url:String){}
 }

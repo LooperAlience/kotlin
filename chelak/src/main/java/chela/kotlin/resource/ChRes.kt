@@ -1,5 +1,6 @@
 package chela.kotlin.resource
 
+import android.util.Log
 import chela.kotlin.core._array
 import chela.kotlin.core._for
 import chela.kotlin.core._forObject
@@ -43,8 +44,8 @@ object ChRes{
             val a = it.split("--")
             ChSql.addQuery(a[0].trim(), a[1].trim())
         }
-        ChSql.addDb("ch", false, "ch_create", null, null)
-        ChSql.db("ch")?.let {
+        ChSql.addDb("ch", "ch_create", null, null)
+        ChSql.db("ch"){
             db = it
             db.select("ch_get")?.forEach { _, arr ->
                 val v = arr.map { "$it" }

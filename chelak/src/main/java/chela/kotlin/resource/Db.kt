@@ -8,10 +8,9 @@ import chela.kotlin.sql.ChSql
 import org.json.JSONObject
 
 class Db(v:JSONObject){
-    private var isDefault = v._boolean("isDefault", "isdefault") ?: false
     private var create = v._string("create") ?: ""
-    private var pass = v._string("pass")
+    private var keyProvider = v._string("keyProvider")
     private var asset = v._string("asset")
-    fun set(k:String) = ChSql.addDb(k, isDefault, create, asset, pass)
+    fun set(k:String) = ChSql.addDb(k, create, asset, keyProvider)
     fun remove(k:String) = ChSql.removeDb(k)
 }

@@ -1,7 +1,5 @@
 package chela.kotlin.net
 
-import android.util.Log
-import chela.kotlin.Ch
 import chela.kotlin.thread.ChThread
 import okhttp3.*
 import java.io.IOException
@@ -52,27 +50,21 @@ class ChHttpOk3 internal constructor(private val method:String, private var requ
         multi?.addFormDataPart(key, filename, RequestBody.create(MediaType.parse(mine), file))
         return this
     }
-    override fun send(callback: httpCallBack){
-        when(method){
-            "POST"->{
-                multi?.let {multi->
-                    json?.let {multi.addPart(RequestBody.create(JSON, it))} ?:
-                    body?.let {multi.addPart(RequestBody.create(BODY, it))} ?:
-                    form?.let {multi.addPart(it.build())}
-                    request = request.post(multi.build())
-                } ?:
-                json?.let {request = request.post(RequestBody.create(JSON, it))} ?:
-                body?.let {request = request.post(RequestBody.create(BODY, it))} ?:
-                form?.let {request = request.post(it.build())}
-            }
+    override fun send(block:httpCallBack){
+        if(method != "GET"){
+            multi?.let {multi->
+                json?.let {multi.addPart(RequestBody.create(JSON, it))} ?:
+                body?.let {multi.addPart(RequestBody.create(BODY, it))} ?:
+                form?.let {multi.addPart(it.build())}
+                request = request.post(multi.build())
+            } ?:
+            json?.let {request = request.post(RequestBody.create(JSON, it))} ?:
+            body?.let {request = request.post(RequestBody.create(BODY, it))} ?:
+            form?.let {request = request.post(it.build())}
         }
-        okHttpClient.newCall(request.build()).enqueue(object: Callback {
-            override fun onFailure(call: Call, e: IOException){
-                ChThread.main(Runnable{callback(ChResponse(null, e.toString()))})}
-            override fun onResponse(call: Call, response:Response){
-                ChThread.main(Runnable {callback(ChResponse(response))})
-            }
+        okHttpClient.newCall(request.build()).enqueue(object:Callback{
+            override fun onFailure(call: Call, e: IOException) = block(ChResponse(null, e.toString()))
+            override fun onResponse(call: Call, response:Response) = block(ChResponse(response))
         })
     }
 }
-

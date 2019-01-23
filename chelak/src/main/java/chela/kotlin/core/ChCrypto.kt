@@ -5,6 +5,7 @@ import android.security.KeyPairGeneratorSpec
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import android.util.Log
 import androidx.annotation.RequiresApi
 import chela.kotlin.android.ChApp
 import chela.kotlin.android.ChShared
@@ -30,12 +31,10 @@ object ChCrypto{
     @JvmStatic fun permanentPw():String{
         var pw = ChShared.name("ch").s("dp")
         if(pw.isBlank()){
-            val secretKey = ChCrypto.generateRandomKey(256)
-            pw = String(Base64.encode(secretKey, Base64.DEFAULT))
+            pw = String(ChCrypto.generateRandomKey(256))
             ChShared.name("ch").s("dp", ChCrypto.rsaEncrypt(pw))
-            secretKey.fill(0, 0, secretKey.size - 1)
         }else pw = ChCrypto.rsaDecrypt(pw)
-        return String(Base64.decode(pw, Base64.DEFAULT))
+        return pw
     }
     @JvmStatic fun rsaPublicKey() = Rsa.publicKey()
 }
@@ -45,21 +44,18 @@ private object Rsa{
     private const val KEY_PROVIDER_NAME = "AndroidKeyStore"
     private const val CIPHER_ALGORITHM = "RSA/ECB/PKCS1Padding"
     private lateinit var keyEntry: KeyStore.Entry
-    @Suppress("ObjectPropertyName")
-    private var _isSupported = false
+    private var isInited = false
 
-    val isSupported: Boolean
-        get() = _isSupported
-
-    private fun init() {
-        if(isSupported) return
+    private fun init(){
+        if(isInited) return
+        isInited = true
         val alias = "${ChApp.packName}.rsakeypairs"
         val keyStore = KeyStore.getInstance("AndroidKeyStore").apply {load(null)}
-        _isSupported = when{
+        if(!when{
             keyStore.containsAlias(alias) -> true
             Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 -> initM(alias)
             else -> initL(alias)
-        }
+        }) throw Throwable("RSA not support!")
         keyEntry = keyStore.getEntry(alias, null)
     }
 
@@ -81,7 +77,6 @@ private object Rsa{
         }
         true
     }catch(e:GeneralSecurityException){false}
-
     @Suppress("DEPRECATION")
     private fun initL(alias: String) = try{
         with(KeyPairGenerator.getInstance("RSA", KEY_PROVIDER_NAME)){
@@ -102,28 +97,20 @@ private object Rsa{
     }catch(e:GeneralSecurityException){false}
     fun publicKey():String{
         init()
-        return String((keyEntry as KeyStore.PrivateKeyEntry).certificate.publicKey.encoded)
+        return String(Base64.encode((keyEntry as KeyStore.PrivateKeyEntry).certificate.publicKey.encoded, Base64.DEFAULT)).replace("\n", "\\n")
     }
-    fun encrypt(plainText: String): String {
+    fun encrypt(v:String, isBase64:Boolean = true): String {
         init()
-        if (!_isSupported) return plainText
-        val cipher = Cipher.getInstance(CIPHER_ALGORITHM).apply{
+        val encryptedBytes = Cipher.getInstance(CIPHER_ALGORITHM).apply{
             init(Cipher.ENCRYPT_MODE, (keyEntry as KeyStore.PrivateKeyEntry).certificate.publicKey)
-        }
-        val bytes = plainText.toByteArray(Charsets.UTF_8)
-        val encryptedBytes = cipher.doFinal(bytes)
-        val base64EncryptedBytes = Base64.encode(encryptedBytes, Base64.DEFAULT)
-        return String(base64EncryptedBytes)
+        }.doFinal(v.toByteArray(Charsets.UTF_8))
+        return String(if(isBase64) Base64.encode(encryptedBytes, Base64.DEFAULT) else encryptedBytes)
     }
-    fun decrypt(base64EncryptedCipherText: String): String {
+    fun decrypt(v:String, isBase64:Boolean = true): String {
         init()
-        if(!_isSupported) return base64EncryptedCipherText
-        val cipher = Cipher.getInstance(CIPHER_ALGORITHM).apply{
+        val bytes = v.toByteArray(Charsets.UTF_8)
+        return String(Cipher.getInstance(CIPHER_ALGORITHM).apply{
             init(Cipher.DECRYPT_MODE, (keyEntry as KeyStore.PrivateKeyEntry).privateKey)
-        }
-        val base64EncryptedBytes = base64EncryptedCipherText.toByteArray(Charsets.UTF_8)
-        val encryptedBytes = Base64.decode(base64EncryptedBytes, Base64.DEFAULT)
-        val decryptedBytes = cipher.doFinal(encryptedBytes)
-        return String(decryptedBytes)
+        }.doFinal(if(isBase64) Base64.decode(bytes, Base64.DEFAULT) else bytes))
     }
 }

@@ -6,16 +6,21 @@ import chela.kotlin.Ch
 import chela.kotlin.android.ChApp
 import chela.kotlin.model.Model
 import net.sqlcipher.Cursor
+import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteOpenHelper
 
 class DataBase internal constructor(private val db:String, ver:Int, private val create:String = "", private val upgrade:String = "", pw:String? = null):SQLiteOpenHelper(ChApp.app, db, null, ver){
     var msg = ""
-    private val writer = getWritableDatabase(pw)
-    private val reader = getReadableDatabase(pw)
+    private val writer:SQLiteDatabase
+    private val reader:SQLiteDatabase
     private var isCreate = false
     private var isUpgrade = false
     init{
-        if(isCreate && create.isNotBlank()) create.split(",").forEach{exec(it.trim())}
+        writer = getWritableDatabase(pw)
+        reader = getReadableDatabase(pw)
+        if(isCreate && create.isNotBlank()){
+            create.split(",").forEach{exec(it.trim())}
+        }
         else if(isUpgrade && upgrade.isNotBlank()) upgrade.split(",").forEach{exec(it.trim())}
     }
     override fun onCreate(db:net.sqlcipher.database.SQLiteDatabase?){isCreate = true}
@@ -31,34 +36,33 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
         c.close()
         return r
     }
-    fun select(k:String, isRecord:Boolean = false, vararg arg:Pair<String, Any>): ChCursor?
-        = runQuery(k, *arg)?.let{
-            if(it.count > 0 && it.moveToFirst()) {
-                val offCursor = ChCursor(it, isRecord)
-                it.close()
-                offCursor
-            }else null
-        }
-    fun <T: Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T):List<T>
-        = runQuery(k, *arg)?.let {c->
-            c.moveToFirst()
-            val r = (0 until c.count).map {
-                val v = block()
-                c.columnNames.forEachIndexed { i, s ->
-                    v[s] = when (c.getType(i)) {
-                        Cursor.FIELD_TYPE_INTEGER -> c.getInt(i)
-                        Cursor.FIELD_TYPE_FLOAT -> c.getFloat(i)
-                        Cursor.FIELD_TYPE_STRING -> c.getString(i)
-                        Cursor.FIELD_TYPE_BLOB -> c.getBlob(i)
-                        else -> c.getString(i)
-                    }
+    fun select(k:String, isRecord:Boolean = false, vararg arg:Pair<String, Any>) = runQuery(k, *arg)?.let{
+        val r = if(it.count > 0 && it.moveToFirst()) {
+            val offCursor = ChCursor(it, isRecord)
+            offCursor
+        }else null
+        it.close()
+        r
+    }
+    fun <T: Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T) = runQuery(k, *arg)?.let {c->
+        c.moveToFirst()
+        val r = (0 until c.count).map {
+            val v = block()
+            c.columnNames.forEachIndexed { i, s ->
+                v[s] = when (c.getType(i)) {
+                    Cursor.FIELD_TYPE_INTEGER -> c.getInt(i)
+                    Cursor.FIELD_TYPE_FLOAT -> c.getFloat(i)
+                    Cursor.FIELD_TYPE_STRING -> c.getString(i)
+                    Cursor.FIELD_TYPE_BLOB -> c.getBlob(i)
+                    else -> c.getString(i)
                 }
-                c.moveToNext()
-                v
             }
-            c.close()
-            r
-        } ?: listOf()
+            c.moveToNext()
+            v
+        }
+        c.close()
+        r
+    } ?: listOf()
     fun lastId():Int{
         val c = reader.rawQuery("select last_insert_rowid()", null)
         val r = if(c.count > 0 && c.moveToFirst()) c.getInt(0) else -1
@@ -116,21 +120,25 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
         it.query.forEachIndexed { i, query ->
             val a = arg[i]
             val q = query.substring(1)
-            if(Ch.isDebug){
+            if(Ch.debugLevel > 1){
                 Log.i("ch", "query:$q")
-                Log.i("ch", "arg:$a")
+                Log.i("ch", "arg:${a.joinToString(", ")}, ${a.isEmpty()}")
             }
             try {
                 when (query[0]) {
-                    'r' ->  c = reader.rawQuery(q, if (a.isEmpty()) null else a) ?: run{
-                        msg = "no result - $key"
-                        null
+                    'r' -> {
+                        c?.let{it.close()}
+                        c = reader.rawQuery(q, if (a.isEmpty()) null else a) ?: run {
+                            msg = "no result - $key"
+                            null
+                        }
                     }
                     'w'->if(a.isEmpty()) writer.execSQL(q) else writer.execSQL(q, a)
                 }
             }catch(e:Throwable){msg = "error - $e"}
         }
         if(it.query.size > 1) writer.endTransaction()
+        if(Ch.debugLevel > 1) Log.i("ch", "cursor:$c")
         return c
     }
 }

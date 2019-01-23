@@ -17,7 +17,7 @@ class ChQuery(key:String, body: String){
             items += map
             reQueryParam.setItem(query){k, v->
                 map[k] = Item(map.size, k, ChRuleSet[v] ?: run {
-                    val rk = "$key.k"
+                    val rk = "$key.$k"
                     ChRuleSet.add(rk, v)
                     ChRuleSet[rk]!!
                 })

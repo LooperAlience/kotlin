@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MotionEvent
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -41,7 +40,7 @@ inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
  */
 object Ch{
     @JvmStatic private var isInited = false
-    @JvmStatic var isDebug = false
+    @JvmStatic var debugLevel = 0
     fun isInited() = isInited
     /**
      * add base application & setting
@@ -53,8 +52,8 @@ object Ch{
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         app(application)
         ChRes.init()
-        _try{JSONObject(ChAsset.string(path))}?.let {ChRes.load(it)}
-        if(!isDebug) Thread.currentThread().setUncaughtExceptionHandler{_, _->
+        if(path.isNotBlank()) _try{JSONObject(ChAsset.string(path))}?.let{ChRes.load(it)}
+        if(debugLevel == 0) Thread.currentThread().setUncaughtExceptionHandler{ _, _->
 
         }
     }

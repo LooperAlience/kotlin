@@ -39,7 +39,6 @@ object ChNet {
             var cnt = 0
             arg.filter{taskArg.contains(it.first)}.forEach {
                 http.header(it.first, "${it.second}")
-                arg.remove(it)
                 cnt++
             }
             cnt == taskArg.size
@@ -51,8 +50,11 @@ object ChNet {
             http.json(http.extra[EXTRA_JSON]?.toString() ?: arg._stringify())
             true
         },
-        "body" to { http, _, _->
-            http.body(http.extra[EXTRA_REQUEST]?.toString() ?: http.extra[EXTRA_JSON]?.toString() ?: "")
+        "body" to { http, arg, taskArg->
+            http.body(
+                if(taskArg.size == 1) "${arg.find{it.first == taskArg[0]}?.second ?: ""}"
+                else http.extra[EXTRA_REQUEST]?.toString() ?: http.extra[EXTRA_JSON]?.toString() ?: ""
+            )
             true
         }
     )
@@ -129,15 +131,15 @@ object ChNet {
                 false
             }
         }) return Ch.ApiResult.fail(msg)
-        if(Ch.isDebug){
+        if(Ch.debugLevel > 0){
             Log.i("ch", "method-" + api.method + ", url-" + api.url)
-            Log.i("ch", "requestArg-${arg.joinToString(", "){"${it.first}:${it.second}"}}")
+            if(Ch.debugLevel > 1) Log.i("ch", "requestArg-${arg.joinToString(", "){"${it.first}:${it.second}"}}")
             Log.i("ch", "requestItem-$reqItem")
         }
         net.send{res->
             res.key = key
             res.arg = reqItem
-            if(Ch.isDebug) Log.i("ch", "apiResponse:${res.body}, ${res.result}")
+            if(Ch.debugLevel> 2) Log.i("ch", "apiResponse:${res.body}, ${res.result}")
             api.responseTask?.all {
                 val (k, arg) = reParam.parse(it)
                 responseTask[k]?.let {it(res, arg)} ?: run{
