@@ -22,7 +22,6 @@ class ChQuery(key:String, body: String){
                     ChRuleSet[rk]!!
                 })
             }
-            query
         }
     }
     internal fun param(param:Array<out Pair<String, Any>>):List<Array<String>>? = items.map{_param(it, param) ?: return null}
