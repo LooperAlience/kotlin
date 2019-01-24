@@ -1,12 +1,10 @@
 package chela.kotlin.resource
 
-import android.util.Log
 import chela.kotlin.core._array
 import chela.kotlin.core._for
 import chela.kotlin.core._forObject
 import chela.kotlin.core._try
 import chela.kotlin.sql.ChSql
-import chela.kotlin.sql.CipherDb
 import chela.kotlin.sql.DataBase
 import org.json.JSONObject
 

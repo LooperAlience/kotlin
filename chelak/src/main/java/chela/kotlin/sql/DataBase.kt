@@ -116,9 +116,8 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
             return null
         }
         var c:Cursor? = null
-        if(it.query.size > 1) writer.beginTransaction()
-        it.query.forEachIndexed { i, query ->
-            val a = arg[i]
+        if(arg.size > 1) writer.beginTransaction()
+        arg.forEach{(query, a)->
             val q = query.substring(1)
             if(Ch.debugLevel > 1){
                 Log.i("ch", "query:$q")
