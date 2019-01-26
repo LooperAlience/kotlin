@@ -9,8 +9,8 @@ import org.json.JSONObject
 
 class Db(v:JSONObject){
     private var create = v._string("create") ?: ""
-    private var keyProvider = v._string("keyProvider")
+    private var pass = v._string("pass")
     private var asset = v._string("asset")
-    fun set(k:String) = ChSql.addDb(k, create, asset, keyProvider)
+    fun set(k:String) = ChSql.addDb(k, create, asset, pass)
     fun remove(k:String) = ChSql.removeDb(k)
 }

@@ -1,5 +1,6 @@
 package chela.kotlin.resource
 
+import android.annotation.SuppressLint
 import chela.kotlin.core._array
 import chela.kotlin.core._for
 import chela.kotlin.core._forObject
@@ -10,6 +11,7 @@ import org.json.JSONObject
 
 object ChRes{
     @JvmStatic var inited = false
+    @SuppressLint("StaticFieldLeak")
     @JvmStatic lateinit var db:DataBase
     @JvmStatic fun load(res:JSONObject){
         res._forObject{k, obj->load(Res(k, obj))}
@@ -43,12 +45,10 @@ object ChRes{
             ChSql.addQuery(a[0].trim(), a[1].trim())
         }
         ChSql.addDb("ch", "ch_create", null, null)
-        ChSql.db("ch"){
-            db = it
-            db.select("ch_get")?.forEach { _, arr ->
-                val v = arr.map { "$it" }
-                _try { JSONObject(v[1]) }?.let { Res(v[0], it).set() }
-            }
+        db = ChSql.db("ch")
+        db.select("ch_get")?.forEach { _, arr ->
+            val v = arr.map { "$it" }
+            _try { JSONObject(v[1]) }?.let { Res(v[0], it).set() }
         }
         inited = true
     }

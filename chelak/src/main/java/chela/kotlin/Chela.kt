@@ -9,6 +9,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
 import chela.kotlin.core.*
+import chela.kotlin.crypto.ChCrypto
 import chela.kotlin.i18n.ChI18n
 import chela.kotlin.looper.ChItem
 import chela.kotlin.looper.ChLooper

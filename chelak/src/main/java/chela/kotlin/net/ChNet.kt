@@ -61,8 +61,8 @@ object ChNet {
     @JvmStatic val timestamp = mutableMapOf<String, Long>()
     @JvmStatic private val responseTask = mutableMapOf<String, responseTaskF>(
         "json" to {res, _->
-            res.body?.let{v->
-                _try{JSONObject(v)}?.let{
+            (res.extra[EXTRA_JSON] ?: res.body)?.let{v->
+                _try{JSONObject("$v")}?.let{
                     res.extra[EXTRA_JSON] = it
                     res.result = it
                     true

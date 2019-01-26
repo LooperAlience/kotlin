@@ -1,5 +1,7 @@
 package chela.kotlin.net
 
+import android.util.Log
+import chela.kotlin.Ch
 import chela.kotlin.thread.ChThread
 import okhttp3.*
 import java.io.IOException
@@ -62,6 +64,7 @@ class ChHttpOk3 internal constructor(private val method:String, private var requ
             body?.let {request = request.post(RequestBody.create(BODY, it))} ?:
             form?.let {request = request.post(it.build())}
         }
+        if(Ch.debugLevel > 1) Log.i("ch", "$request")
         okHttpClient.newCall(request.build()).enqueue(object:Callback{
             override fun onFailure(call: Call, e: IOException) = block(ChResponse(null, e.toString()))
             override fun onResponse(call: Call, response:Response) = block(ChResponse(response))
