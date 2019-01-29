@@ -33,7 +33,6 @@ android {
     }
 
 }
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'net.zetetic:android-database-sqlcipher:3.5.8@aar'

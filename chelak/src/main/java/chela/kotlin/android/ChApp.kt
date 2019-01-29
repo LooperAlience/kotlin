@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.content.res.AppCompatResources
 import chela.kotlin.view.ChWindow
 import java.io.File
+import java.util.*
 
 /**
  * Base object for accessing an application's resource and converting display unit.
@@ -34,6 +35,9 @@ object ChApp{
     @JvmStatic lateinit var fileDir:File
     @JvmStatic lateinit var cacheDir: File
 
+    @JvmStatic lateinit var locale: Locale
+    @JvmStatic val language:String get() = locale.language
+
     @JvmStatic operator fun invoke(a:Application){
         app = a
         fileDir = a.filesDir!!
@@ -41,6 +45,10 @@ object ChApp{
         res = a.resources
         asset = a.assets
         packName = a.packageName
+
+        @Suppress("DEPRECATION")
+        locale = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) res.configuration.locales[0]
+            else res.configuration.locale
         imm = app.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         clip = app.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
