@@ -5,7 +5,7 @@ import chela.kotlin.regex.reTrimLine
 import chela.kotlin.validation.ChRuleSet
 
 
-class ChQuery(key:String, body: String){
+class ChQuery(key:String, body:String){
     private class Item(val i:Int, val k:String, val ruleSet: ChRuleSet)
     private val items = mutableListOf<Map<String, Item>>()
     private val replacer = mutableListOf<Map<String, String>>()

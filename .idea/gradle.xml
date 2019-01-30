@@ -9,6 +9,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/chelaA" />
+            <option value="$PROJECT_DIR$/chelaAP" />
             <option value="$PROJECT_DIR$/chelak" />
             <option value="$PROJECT_DIR$/seller" />
           </set>
