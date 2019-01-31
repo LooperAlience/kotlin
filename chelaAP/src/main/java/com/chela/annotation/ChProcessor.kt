@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService
 import javax.annotation.processing.*
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
+import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.util.ElementFilter
 import javax.tools.Diagnostic.Kind.ERROR
@@ -16,11 +17,19 @@ import javax.tools.Diagnostic.Kind.ERROR
 class ChProcessor : AbstractProcessor(){
     val exProp = "ref,isSet,OBJECT,ARRAY,isTypeChecked,Companion,INSTANCE".split(",")
     val exMethod = "getClass,hashCode,clone,toString,notify,notifyAll,equals,wait,finalize".split(",")
+    val styles = (
+        "style," +
+        "tag,isEnabled,visibility,background,shadow,x,y,z,scaleX,scaleY,rotation,alpha,paddingStart,paddingEnd,paddingTop,paddingBottom,padding," +
+        "click,longClick,clickable,longClickable,focusChange,focusable,focusableInTouchMode,focus,textChanged,touch,down,up,move," +
+        "width,height,margin,marginStart,marginEnd,marginTop,marginBottom," +
+        "image," +
+        "text,textSize,textScaleX,lineSpacing,textColor,textAlignment,hint,maxLines,maxLength,allCaps,fontFamily,font,inputType"
+    ).toLowerCase().split(",")
     private fun members(e:Element)=
         processingEnv.elementUtils.getAllMembers(processingEnv.typeUtils.asElement(e.asType()) as TypeElement)
 
     override fun getSupportedAnnotationTypes() = mutableSetOf(
-        STYLE::class.java.name
+        STYLE::class.java.name, VM::class.java.name
     )
     override fun getSupportedSourceVersion() = SourceVersion.latest()!!
     override fun process(set: MutableSet<out TypeElement>?, roundEnvironment:RoundEnvironment?):Boolean{
@@ -30,25 +39,56 @@ class ChProcessor : AbstractProcessor(){
             val annotated = mutableListOf<String>()
             val getter = mutableListOf<String>()
             val fields = mutableListOf<String>()
+            var a = ""
+            var b = ""
+
             methods.forEach{
                 val name = "${it.simpleName}"
+                a += ",$name(${it.kind})[${it.modifiers.joinToString("-"){"$it"}}]"
                 if(name != "get" && name.startsWith("get") &&  !exMethod.contains(name)){
                     getter += "${name[3]}".toLowerCase() + name.substring(4)
-                }else if(it.getAnnotation(Ex::class.java) != null){
+                }else if(it.getAnnotation(EX::class.java) != null){
                     annotated += name.replace("$" + "annotations", "")
                 }
             }
             getter.forEach{if(!annotated.contains(it)) fields += it}
             prop.any{
                 val name = "${it.simpleName}"
-                if(!fields.contains(name) && !exProp.contains(name) && !annotated.contains(name)){
+                b += ",$name(${it.kind})[${it.modifiers.joinToString("-"){"$it"}}]"
+                if(!it.modifiers.contains(Modifier.STATIC) && !fields.contains(name) && !exProp.contains(name) && !annotated.contains(name)){
                     fields += name
                 }
                 false
             }
-            processingEnv.messager.printMessage(ERROR, "$fields")
+            val cls = it.simpleName
+            fields.find{!styles.contains(it.toLowerCase())}?.let{
+                processingEnv.messager.printMessage(ERROR, "$it in $cls - invalid field, $b---$a")
+            }
         }
-
+        roundEnvironment?.getElementsAnnotatedWith(VM::class.java)?.forEach{
+            val methods = ElementFilter.methodsIn(members(it))
+            val prop = ElementFilter.fieldsIn(members(it))
+            val annotated = mutableListOf<String>()
+            val getter = mutableListOf<String>()
+            val fields = mutableListOf<String>()
+            methods.forEach{
+                val name = "${it.simpleName}"
+                if(it.getAnnotation(PROP::class.java) != null){
+                    annotated += name.replace("$" + "annotations", "")
+                }
+            }
+            prop.any{
+                val name = "${it.simpleName}"
+                if(!fields.contains(name) && !exProp.contains(name) && annotated.contains(name)){
+                    fields += name
+                }
+                false
+            }
+            val cls = it.simpleName
+            fields.find{!styles.contains(it.toLowerCase())}?.let{
+                processingEnv.messager.printMessage(ERROR, "$it in $cls - invalid field")
+            }
+        }
         return false
     }
 

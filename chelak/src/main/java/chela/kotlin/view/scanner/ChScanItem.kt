@@ -9,6 +9,8 @@ import chela.kotlin.view.ChStyle
 import chela.kotlin.model.Model
 import chela.kotlin.view.ChStyleModel
 import chela.kotlin.view.ChViewModel
+import com.chela.annotation.EX
+import com.chela.annotation.PROP
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
@@ -63,15 +65,15 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
             val target = Ch.model.get(v)
             (target as? ChStyleModel)?.let{model->
                 model::class.memberProperties.forEach { p->
-                    if(p.findAnnotation<ChStyleModel.Exclude>() == null){
+                    if(p.findAnnotation<EX>() == null){
                         val name = p.name.toLowerCase()
                         m[name] = if(name == "style") target[p.name] else "$key.${p.name}}"
                     }
                 }
             } ?: (target as? ChViewModel)?.let{model->
                 model::class.memberProperties.forEach { p->
-                    p.findAnnotation<ChViewModel.Prop>()?.let{
-                        val name = it.name.toLowerCase()
+                    p.findAnnotation<PROP>()?.let{
+                        val name = p.name.toLowerCase()
                         m[name] = if(name == "style") target[p.name] else "$key.${p.name}}"
                     }
                 }
