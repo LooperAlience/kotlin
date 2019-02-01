@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 
 class ChCursor internal constructor(c: Cursor, isRecord:Boolean): Cursor {
+    var msg:String = ""
     val length = c.count
     private val fields = c.columnNames
     private val columeCount = c.columnCount

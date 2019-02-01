@@ -33,18 +33,16 @@ class ChProcessor : AbstractProcessor(){
     )
     override fun getSupportedSourceVersion() = SourceVersion.latest()!!
     override fun process(set: MutableSet<out TypeElement>?, roundEnvironment:RoundEnvironment?):Boolean{
+
         roundEnvironment?.getElementsAnnotatedWith(STYLE::class.java)?.forEach{
             val methods = ElementFilter.methodsIn(members(it))
             val prop = ElementFilter.fieldsIn(members(it))
             val annotated = mutableListOf<String>()
             val getter = mutableListOf<String>()
             val fields = mutableListOf<String>()
-            var a = ""
-            var b = ""
 
             methods.forEach{
                 val name = "${it.simpleName}"
-                a += ",$name(${it.kind})[${it.modifiers.joinToString("-"){"$it"}}]"
                 if(name != "get" && name.startsWith("get") &&  !exMethod.contains(name)){
                     getter += "${name[3]}".toLowerCase() + name.substring(4)
                 }else if(it.getAnnotation(EX::class.java) != null){
@@ -52,17 +50,16 @@ class ChProcessor : AbstractProcessor(){
                 }
             }
             getter.forEach{if(!annotated.contains(it)) fields += it}
-            prop.any{
+            prop.forEach{
                 val name = "${it.simpleName}"
-                b += ",$name(${it.kind})[${it.modifiers.joinToString("-"){"$it"}}]"
                 if(!it.modifiers.contains(Modifier.STATIC) && !fields.contains(name) && !exProp.contains(name) && !annotated.contains(name)){
                     fields += name
                 }
-                false
             }
             val cls = it.simpleName
+            val pack = processingEnv.elementUtils.getPackageOf(it)
             fields.find{!styles.contains(it.toLowerCase())}?.let{
-                processingEnv.messager.printMessage(ERROR, "$it in $cls - invalid field, $b---$a")
+                processingEnv.messager.printMessage(ERROR, "$it in $cls of $pack- invalid field")
             }
         }
         roundEnvironment?.getElementsAnnotatedWith(VM::class.java)?.forEach{
@@ -85,8 +82,9 @@ class ChProcessor : AbstractProcessor(){
                 false
             }
             val cls = it.simpleName
+            val pack = processingEnv.elementUtils.getPackageOf(it)
             fields.find{!styles.contains(it.toLowerCase())}?.let{
-                processingEnv.messager.printMessage(ERROR, "$it in $cls - invalid field")
+                processingEnv.messager.printMessage(ERROR, "$it in $cls of $pack- invalid field")
             }
         }
         return false

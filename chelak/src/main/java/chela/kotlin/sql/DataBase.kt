@@ -44,7 +44,7 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
         it.close()
         r
     }
-    fun <T: Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T) = runQuery(k, *arg)?.let {c->
+    fun <T:Model> select(k:String, vararg arg:Pair<String, Any>, block:()->T) = runQuery(k, *arg)?.let {c->
         c.moveToFirst()
         val r = (0 until c.count).map {
             val v = block()
@@ -52,7 +52,6 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
                 v[s] = when (c.getType(i)) {
                     Cursor.FIELD_TYPE_INTEGER -> c.getInt(i)
                     Cursor.FIELD_TYPE_FLOAT -> c.getFloat(i)
-                    Cursor.FIELD_TYPE_STRING -> c.getString(i)
                     Cursor.FIELD_TYPE_BLOB -> c.getBlob(i)
                     else -> c.getString(i)
                 }
@@ -99,7 +98,6 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
             c.close()
             return r
         } ?: ""
-
     /**
      * @param key
      * @param db
