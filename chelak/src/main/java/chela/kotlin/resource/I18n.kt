@@ -18,6 +18,6 @@ class I18n(v:JSONObject){
             data[k] = m
         }
     }
-    fun set(k:String) = data?.let{ChI18n.add(k, this)}
+    fun set(k:String) = data.let{ChI18n.add(k, this)}
     fun remove(k:String) = ChI18n.remove(k)
 }

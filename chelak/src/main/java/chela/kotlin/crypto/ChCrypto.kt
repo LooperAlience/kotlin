@@ -19,6 +19,10 @@ object ChCrypto{
     @JvmStatic fun rsaDecrypt(v:String) = Rsa.decrypt(v)
 
     @JvmStatic fun aesKey() = generateRandomKey(300).copyOfRange(0, 32)
+    @JvmStatic fun aesEncryptByte(v:String, secretKey:ByteArray) = AES256.encryptByte(v, secretKey)
+    @JvmStatic fun aesDecryptByte(v:ByteArray, secretKey:ByteArray) = AES256.decryptByte(v, secretKey)
+
+
     @JvmStatic fun aesEncrypt(v:ByteArray, secretKey:ByteArray) = AES256.encrypt(v, secretKey)
     @JvmStatic fun aesEncrypt(v:String, secretKey:ByteArray) = AES256.encrypt(v, secretKey)
     @JvmStatic fun aesDecrypt(v:ByteArray, secretKey:ByteArray) = AES256.decrypt(v, secretKey)

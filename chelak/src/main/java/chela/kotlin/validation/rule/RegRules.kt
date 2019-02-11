@@ -2,6 +2,7 @@ package chela.kotlin.validation.rule
 
 import chela.kotlin.validation.ChRule
 
+@Suppress("UNUSED_PARAMETER")
 class RegRules:ChRule() {
     private val ip =
         """^(?:(?:[0-9]|(?:1\d{1,2})|(?:2[0-4]\d)|(?:25[0-5]))[.]){3}(?:[0-9]|[1-9][0-9]{1,2}|2[0-4]\d|25[0-5])$""".toRegex()

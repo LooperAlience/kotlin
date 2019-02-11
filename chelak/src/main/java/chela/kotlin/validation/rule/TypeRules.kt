@@ -6,6 +6,7 @@ import chela.kotlin.validation.ChRule
  * Child class of ChRule.
  * All _defined are stored as MutableMap in Abstract class.
  */
+@Suppress("UNUSED_PARAMETER")
 class TypeRules: ChRule(){
     fun INT(v:Any, arg:List<String>) = if (v is Int) v else this
     fun LONG(v:Any, arg:List<String>) = if (v is Long) v else this

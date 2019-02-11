@@ -66,7 +66,6 @@ class ChProcessor : AbstractProcessor(){
             val methods = ElementFilter.methodsIn(members(it))
             val prop = ElementFilter.fieldsIn(members(it))
             val annotated = mutableListOf<String>()
-            val getter = mutableListOf<String>()
             val fields = mutableListOf<String>()
             methods.forEach{
                 val name = "${it.simpleName}"
@@ -74,12 +73,11 @@ class ChProcessor : AbstractProcessor(){
                     annotated += name.replace("$" + "annotations", "")
                 }
             }
-            prop.any{
+            prop.forEach{
                 val name = "${it.simpleName}"
                 if(!fields.contains(name) && !exProp.contains(name) && annotated.contains(name)){
                     fields += name
                 }
-                false
             }
             val cls = it.simpleName
             val pack = processingEnv.elementUtils.getPackageOf(it)

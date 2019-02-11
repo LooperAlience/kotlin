@@ -32,15 +32,7 @@ object Step1HD: ChHolder<View>(){
         return v
     }
     override fun push(base: ChHolderBase<View>, isRestore:Boolean){
-        Ch.net("GET", "https://www.bsidesoft.com/hika/chela/test.json")
-        .send{data, _, _->
-            data?.let{
-                Step1VM.fromJson(it)
-                view.findViewById<TextView>(R.id.textView)?.let{
-                    it.text = Step1VM.userid
-                }
-            }
-        }
+
     }
     override fun pop(base: ChHolderBase<View>, isJump: Boolean):Boolean {
         val w = -groupBase.group.width.toDouble()

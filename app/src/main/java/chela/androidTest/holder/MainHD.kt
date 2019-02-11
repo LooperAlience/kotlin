@@ -36,12 +36,6 @@ object MainHD: ChHolder<View>(){
             }
         }
         if(main.isSet) return
-        Ch.net("GET", "https://www.bsidesoft.com/hika/chela/test.json")
-        .send{data, _, _->
-            data?.let{
-                main.fromJson(it)
-                Ch.scanner[this]?.render()
-            }
-        }
+
     }
 }

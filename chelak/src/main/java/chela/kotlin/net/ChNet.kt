@@ -139,7 +139,6 @@ object ChNet {
         net.send{res->
             res.key = key
             res.arg = reqItem
-            if(Ch.debugLevel> 2) Log.i("ch", "apiResponse:${res.body}, ${res.result}")
             api.responseTask?.all {
                 val (k, arg) = reParam.parse(it)
                 responseTask[k]?.let {it(res, arg)} ?: run{

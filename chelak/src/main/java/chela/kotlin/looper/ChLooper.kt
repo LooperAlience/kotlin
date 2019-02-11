@@ -83,8 +83,6 @@ class ChLooper:LifecycleObserver{
         val gap = c - previus
         if(gap > 0.0) fps = 1000.0 / gap
         previus = c
-        var isEnd = false
-        var rate = 0.0
         if(items.isEmpty()) return
         remove.clear()
         add.clear()
@@ -94,22 +92,20 @@ class ChLooper:LifecycleObserver{
                 val item = items[i++]
                 if (item.isPaused || item.start > c) break
                 item.isTurn = false
-                isEnd = false
-                if(!item.isInfinity && item.end <= c){
+                var isEnd = false
+                item.rate = if(!item.isInfinity && item.end <= c){
                     item.loop--
                     if (item.loop == 0) {
-                        rate = 1.0
                         isEnd = true
+                        1.0
                     } else {
-                        rate = 0.0
                         item.isTurn = true
                         item.start = c
                         item.end = c + item.term
+                        0.0
                     }
-                }else{
-                    rate = if (item.term == 0.0) 0.0 else (c - item.start) / item.term
-                }
-                item.rate = rate
+                }else if (item.term == 0.0) 0.0
+                else (c - item.start) / item.term
                 item.current = c
                 item.isStop = false
                 item.block(item)

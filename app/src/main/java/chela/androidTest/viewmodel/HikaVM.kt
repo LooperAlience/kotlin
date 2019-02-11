@@ -9,11 +9,7 @@ object HikaVM: Model(){
     var fontSize = 15.0
     val move = object:Ch.Touch{
         override fun onTouch(e:MotionEvent):Boolean{
-            val x = e.getX(0)
-            val y = e.getY(0)
-            val p = y / Ch.app.height
-            fontSize = 15.0 + 50.0 * p
-            Ch.scanner["hika"]?.renderSync()
+
             return true
         }
     }

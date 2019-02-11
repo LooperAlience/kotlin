@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package chela.kotlin.crypto
 
 import android.os.Build

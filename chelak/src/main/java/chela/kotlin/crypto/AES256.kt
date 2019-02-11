@@ -14,6 +14,13 @@ internal object AES256{
         )
         return c
     }
+    fun encryptByte(str:String, secretKey:ByteArray) =
+        cipher(Cipher.ENCRYPT_MODE, secretKey).doFinal(str.toByteArray(Charsets.UTF_8))
+    fun decryptByte(v:ByteArray, secretKey:ByteArray) =
+        String(cipher(Cipher.DECRYPT_MODE, secretKey).doFinal(v), Charsets.UTF_8)
+
+
+
     fun encrypt(str:String, secretKey:ByteArray) =
         encrypt(str.toByteArray(Charsets.UTF_8), secretKey)
     fun decrypt(str:String, secretKey:ByteArray) =
