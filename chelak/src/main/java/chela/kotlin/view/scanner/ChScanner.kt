@@ -3,6 +3,11 @@ package chela.kotlin.view.scanner
 import android.view.View
 import android.view.ViewGroup
 
+/**
+ * This object scans the View's items. Here, items refers to ChScanItem.
+ * If the view in layout.xml has the value of android:tag,
+ * then add it to the items of ChScanned.
+ */
 object ChScanner{
     @JvmStatic private val scanned = mutableMapOf<Any, ChScanned>()
     @JvmStatic operator fun get(k:Any): ChScanned? = scanned[k]

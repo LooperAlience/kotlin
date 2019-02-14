@@ -4,9 +4,16 @@ import android.view.View
 import chela.kotlin.Ch
 import chela.kotlin.view.property.ChProperty
 
+/**
+ * This class stores the [items] scanned by the ChScanner.
+ * The [collector] create ChScanItem field with the [items]'s key and value.
+ */
 class ChScanned internal constructor(@JvmField var view: View, private val items:MutableSet<ChScanItem> = mutableSetOf()):MutableSet<ChScanItem> by items{
     private val collector = mutableSetOf<ChScanItem>()
     private val keyItem = mutableMapOf<String, ChScanItem>()
+    /**
+     * Restore the view.
+     */
     fun render(v: View? = null): View {
         val isNew = v != null && v !== view
         if(isNew) view = v!!
@@ -27,6 +34,10 @@ class ChScanned internal constructor(@JvmField var view: View, private val items
         }
     }
     fun subView(key:String):View? = keyItem[key]?.view
+
+    /**
+     * Plus assign [it] to ChScanned's item in the ChScanner object.
+     */
     override fun add(it: ChScanItem): Boolean {
         if(it.key.isNotBlank()) keyItem[it.key] = it
         return items.add(it)

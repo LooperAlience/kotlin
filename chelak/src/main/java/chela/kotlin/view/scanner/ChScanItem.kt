@@ -14,6 +14,11 @@ import com.chela.annotation.PROP
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
+/**
+ * Scans the view component.
+ * @param view has android tag value.
+ * @param pos has the index of the child view.
+ */
 class ChScanItem internal constructor(@JvmField var view: View, private val pos:List<Int>): Model(){
     @JvmField internal val collector = mutableMapOf<String, Any>()
     @JvmField internal var key = ""
@@ -40,6 +45,13 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
             }
         }
     }
+
+    /**
+     * Store style attributes on [updater] or [once].
+     * @param k If [k] is style or 0 index is @, then key of JSONObject or JSONArray.
+     * Otherwise, [k] is key of style attribute. For example, "textcolor".
+     * @param v String format with JSONObject, JSONArray or value of style attribute. For example, "#999999".
+     */
     override operator fun set(k:String, v:Any):Boolean{
         if(v === OBJECT ||v === ARRAY) return true
         when {
@@ -55,6 +67,14 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         }
         return true
     }
+
+    /**
+     * Get the style key and instance of the view component
+     * @param k style key. For example, "style", "alpha", etc.
+     * @param v Chela style identifier. For example, [SplashVM, holder], [SplashVM, holder, alpha], etc.
+     * If k is a style, [v] join with style attributes by point separator.  For example, @{SplashVM.holder.alpha}, @{SplashVM.holder.visibility}, etc.
+     * This process is repeated until the attribute is stored in [prop], [once], or [updater].
+     */
     override fun viewmodel(k:String, v: List<String>):Boolean{
         if(k[0] == '-') {
             if (once == null) once = mutableMapOf()
