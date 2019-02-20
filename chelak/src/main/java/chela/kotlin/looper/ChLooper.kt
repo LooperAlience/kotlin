@@ -2,7 +2,6 @@ package chela.kotlin.looper
 
 import android.content.Context
 import android.graphics.Canvas
-import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -14,8 +13,10 @@ import kotlin.concurrent.read
 import kotlin.concurrent.write
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
+typealias ItemBlock = (ChItem)->Unit
+typealias Now = ()->Double
 /**
- * This class executes UI upgrade about its Item type on main thread.
+ * This class executes UI upgrade about its ItemDSL type on main thread.
  * Asynchronous execution is also possible.
  * <pre>
  *   App.looper(Ch.infinity()) { item ->
@@ -23,18 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
  *   }
  * </pre>
  */
-typealias ItemBlock = (ChItem)->Unit
-typealias Now = ()->Double
-internal val empty: ItemBlock = {}
-internal val now:Now = { SystemClock.uptimeMillis().toDouble()}
 class ChLooper:LifecycleObserver{
-    sealed class Item{
-        class Time(val ms:Int): Item()
-        class Delay(val ms:Int): Item()
-        class Loop(val cnt:Int): Item()
-        class Ended(val block:(ChItem)->Unit): Item()
-        class Infinity:Item()
-    }
     /**
      * Makes ChLooper run on the main thread
      * @param ctx activity context
@@ -47,15 +37,6 @@ class ChLooper:LifecycleObserver{
             invalidate()
         }
     }
-    class Sequence internal constructor(private val looper: ChLooper){
-        internal lateinit var item: ChItem
-        fun next(vararg param: ChLooper.Item, block: ItemBlock = empty): Sequence {
-            val i = looper.getItem(*param, block = block)
-            item.next = i
-            item = i
-            return this
-        }
-    }
     private val sequence = Sequence(this)
     private var fps = 0.0
     private var previus = 0.0
@@ -66,6 +47,26 @@ class ChLooper:LifecycleObserver{
     private val add = mutableListOf<ChItem>()
     private val itemPool = mutableListOf<ChItem>()
     private val lock =  ReentrantReadWriteLock()
+
+    operator fun invoke(block:ItemDSL.()->Unit):Sequence{
+        val item = getItem(ItemDSL().apply{block()})
+        item.start += now()
+        item.end = if(item.term == -1.0) -1.0 else item.start + item.term
+        lock.write {items += item}
+        sequence.item = item
+        return sequence
+    }
+    internal fun getItem(i:ItemDSL):ChItem = (itemPool._shift() ?: ChItem()).also{ item->
+        with(i){
+            item.term = time.toDouble()
+            item.start = delay.toDouble()
+            item.loop = loop
+            item.block = block
+            item.ended = ended
+            item.isInfinity = isInfinity
+            item.next = null
+        }
+    }
     /**
      * add Looper
      * @param act activity context
@@ -127,34 +128,6 @@ class ChLooper:LifecycleObserver{
             }
             if(add.isNotEmpty()) items += add
         }
-    }
-    operator fun invoke(vararg param: Item, block: ItemBlock = empty): Sequence {
-        val item = getItem(*param, block = block)
-        item.start += now()
-        item.end = if(item.term == -1.0) -1.0 else item.start + item.term
-        lock.write {items += item}
-        sequence.item = item
-        return sequence
-    }
-    internal fun getItem(vararg param: Item, block: ItemBlock): ChItem {
-        val item = itemPool._shift() ?: ChItem()
-        item.term = -1.0
-        item.start = 0.0
-        item.loop = 1
-        item.block = block
-        item.ended = empty
-        item.next = null
-        item.isInfinity = false
-        param.forEach{
-            when(it){
-                is Item.Infinity -> item.isInfinity = true
-                is Item.Time -> item.term = it.ms.toDouble()
-                is Item.Delay -> item.start = it.ms.toDouble()
-                is Item.Loop -> item.loop = it.cnt
-                is Item.Ended -> item.ended = it.block
-            }
-        }
-        return item
     }
     /**
      * LifecycleObserver detect life cycle event.

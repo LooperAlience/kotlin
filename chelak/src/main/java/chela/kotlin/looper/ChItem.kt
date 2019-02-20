@@ -14,8 +14,8 @@ class ChItem{
     @JvmField internal var isPaused = false
     @JvmField internal var isInfinity = false
 
-    @JvmField internal var block: ItemBlock = empty
-    @JvmField internal var ended: ItemBlock = empty
+    @JvmField internal var block: ItemBlock = ItemDSL.empty
+    @JvmField internal var ended: ItemBlock = ItemDSL.empty
     @JvmField internal var next: ChItem? = null
     @JvmField internal var isStop = false
     private var pauseStart = 0.0
