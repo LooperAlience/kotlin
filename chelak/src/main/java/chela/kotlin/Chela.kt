@@ -11,7 +11,6 @@ import chela.kotlin.android.*
 import chela.kotlin.core.*
 import chela.kotlin.crypto.ChCrypto
 import chela.kotlin.i18n.ChI18n
-import chela.kotlin.looper.ChItem
 import chela.kotlin.looper.ChLooper
 import chela.kotlin.model.ChModel
 import chela.kotlin.net.ChNet
@@ -93,10 +92,13 @@ object Ch{
             l.act(activity)
             l
         }else looper){
-            invoke(infinity()){
-                if(activity.window.decorView.width != 0){
-                    block()
-                    it.stop()
+            invoke{
+                isInfinity = true
+                this.block = {
+                    if(activity.window.decorView.width != 0){
+                        block()
+                        it.stop()
+                    }
                 }
             }
         }
@@ -108,11 +110,6 @@ object Ch{
     }
 
     @JvmStatic fun looper():ChLooper = ChLooper()
-    @JvmStatic fun time(ms:Int):ChLooper.Item.Time = ChLooper.Item.Time(ms)
-    @JvmStatic fun delay(ms:Int):ChLooper.Item.Delay = ChLooper.Item.Delay(ms)
-
-    @JvmStatic fun infinity():ChLooper.Item.Infinity = ChLooper.Item.Infinity()
-    @JvmStatic fun ended(block:(ChItem)->Unit):ChLooper.Item.Ended = ChLooper.Item.Ended(block)
     /**
      * get router
      *
