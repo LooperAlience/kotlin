@@ -10,9 +10,14 @@ import com.chela.annotation.STYLE
  */
 abstract class ChViewModel: Model(){
     open fun resumed(){}
-    open fun paused(){}
     open fun resumeAnimation(it: ChItem){}
+    open fun paused(){}
     open fun pauseAnimation(it: ChItem){}
+    open fun pushed(){}
+    open fun pushAnimation(it: ChItem){}
+    open fun poped(){}
+    open fun popAnimation(it: ChItem){}
+
 }
 /**
  * This class represent viewmodel UI style.
