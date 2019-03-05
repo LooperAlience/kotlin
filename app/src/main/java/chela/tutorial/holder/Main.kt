@@ -11,33 +11,33 @@ import chela.tutorial.viewmodel.MainVM
 object Main : Scene() {
     @JvmStatic private val vm = MainVM
     override fun layout() = R.layout.main
-    override fun resume(base: ChHolderBase<View>, isRestore: Boolean){
+    override fun push(base: ChHolderBase<View>, isRestore: Boolean){
         if(isRestore){
-            vm.resumed()
+            vm.pushed()
             render()
         }else{
             App.looper{
                 time = Holder.pushTime
                 block = {
-                    vm.holder.resumeAnimation(it)
+                    vm.holder.pushAnimation(it)
                    renderSync()
                 }
             }
         }
     }
-    override fun pause(base: ChHolderBase<View>, isJump:Boolean){
+    override fun pop(base: ChHolderBase<View>, isJump:Boolean){
         if(isJump){
-            vm.paused()
+            vm.poped()
             render()
         }else{
             App.looper{
                 time = Holder.popTime
                 block = {
-                    vm.holder.pauseAnimation(it)
+                    vm.holder.popAnimation(it)
                     renderSync()
                 }
                 ended = {
-                    vm.paused()
+                    vm.poped()
                     renderSync()
                 }
             }

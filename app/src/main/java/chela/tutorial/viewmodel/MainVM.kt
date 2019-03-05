@@ -16,12 +16,12 @@ object MainVM:ChViewModel(){
     @PROP var fontSize = 15.0.DptoPx
     @PROP var visible = false
 
-    override fun resumed() {
-        holder.resumed()
+    override fun pushed() {
+        holder.pushed()
         visible = true
     }
-    override fun paused() {
-        holder.paused()
+    override fun poped() {
+        holder.poped()
         visible = false
     }
 }

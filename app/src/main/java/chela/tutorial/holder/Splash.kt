@@ -12,43 +12,43 @@ import chela.tutorial.viewmodel.SplashVM
 object Splash:Scene(){
     @JvmStatic private val vm = SplashVM
     override fun layout() = R.layout.appsplash
-    override fun resume(base: ChHolderBase<View>, isRestore: Boolean){
+    override fun push(base: ChHolderBase<View>, isRestore: Boolean){
         if(isRestore){
-            vm.resumed()
+            vm.pushed()
             render()
             start()
         }else{
             App.looper{
                 time = Holder.pushTime
                 block = {
-                    vm.holder.resumeAnimation(it)
+                    vm.holder.pushAnimation(it)
                     renderSync()
                 }
             } + {
                 time = vm.title.time
                 block = {
-                    vm.title.resumeAnimation(it)
+                    vm.title.pushAnimation(it)
                     renderSync()
                 }
                 ended = {start()}
             }
         }
     }
-    override fun pause(base: ChHolderBase<View>, isJump:Boolean){
+    override fun pop(base: ChHolderBase<View>, isJump: Boolean) {
         if(isJump){
             Log.i("ch", "bbb")
-            vm.paused()
+            vm.poped()
             render()
         }else{
             Log.i("ch", "aaa")
             App.looper{
                 time = Holder.popTime
                 block = {
-                    vm.holder.pauseAnimation(it)
+                    vm.holder.popAnimation(it)
                     renderSync()
                 }
                 ended = {
-                    vm.holder.paused()
+                    vm.holder.poped()
                     renderSync()
                 }
             }

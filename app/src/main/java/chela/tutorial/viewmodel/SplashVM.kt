@@ -21,16 +21,16 @@ object SplashVM:ChViewModel(){
     var isLock = true
     @PROP var click = View.OnClickListener {
         if(SplashVM.isLock) return@OnClickListener
-        //SplashVM.isLock = true
+        SplashVM.isLock = true
         App.router.push(Main)
     }
-    override fun resumed() {
-        holder.resumed()
-        title.resumed()
+    override fun pushed() {
+        holder.pushed()
+        title.pushed()
     }
-    override fun paused() {
-        holder.paused()
-        title.paused()
+    override fun poped() {
+        holder.poped()
+        title.poped()
     }
 }
 @STYLE object Title:ChStyleModel(){
@@ -39,19 +39,19 @@ object SplashVM:ChViewModel(){
     var marginTop = 50.0.DptoPx
     var scaleX = 0.8
     var scaleY = 0.8
-    override fun resumed(){
+    override fun pushed(){
         alpha = 0.0
         marginTop = 50.0.DptoPx
         scaleX = 0.8
         scaleY = 0.8
     }
-    override fun paused(){
+    override fun poped(){
         alpha = 1.0
         marginTop = 0.0
         scaleX = 1.0
         scaleY = 1.0
     }
-    override fun resumeAnimation(it:ChItem){
+    override fun pushAnimation(it:ChItem){
         alpha = it.circleOut(0.0, 1.0)
         marginTop = it.circleOut(50.0.DptoPx, 0.0)
         scaleX = it.circleOut(0.8, 1.0)
