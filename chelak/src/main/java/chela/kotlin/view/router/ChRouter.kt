@@ -18,7 +18,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
         if(pushLock) return
         if(!isAutoUnlock) pushLock = true
         ChThread.main(Runnable{
-            if(stack.isNotEmpty()) base._pause(stack.last(), true)
+            if(stack.isNotEmpty()) base._pause(stack.last(), false)
             base._push(holder, false)
             stack += holder
         })
