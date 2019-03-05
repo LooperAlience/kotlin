@@ -3,8 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="#ffff98"
-              android:tag="x:@{MainVM.x}, visibility:@{MainVM.visible}"
-    >
+              android:tag="style:@{MainVM.holder}">
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"
@@ -14,7 +13,5 @@
         android:tag="
             text:@{MainVM.userid},
             textSize:@{MainVM.fontSize},
-            textColor:`#ff0000`,
-            click:@{MainVM.click}"
-        />
+            textColor:`#ff0000`"/>
 </LinearLayout>

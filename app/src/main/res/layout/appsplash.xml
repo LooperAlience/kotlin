@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:a="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        a:layout_width="match_parent" a:layout_height="match_parent"
+        a:tag="background:@{SplashVM.background}, style:@{SplashVM.holder}, click:@{SplashVM.click}">
+    <ImageView
+        a:layout_width="match_parent" a:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        a:scaleType="centerCrop"
+        a:src="@drawable/splash_background"/>
+    <ImageView
+        a:layout_width="wrap_content" a:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        a:src="@drawable/splash_title"
+        a:tag="style:@{SplashVM.title}"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
