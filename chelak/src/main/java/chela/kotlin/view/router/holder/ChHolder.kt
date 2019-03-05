@@ -7,11 +7,10 @@ abstract class ChHolderBase<T>{
     internal fun _push(holder: ChHolder<T>, isRestore:Boolean){
         push(holder)
         holder.push(this, isRestore)
-        _resume(holder, isRestore)
     }
     internal fun _pop(holder: ChHolder<T>, isJump:Boolean){
-        _pause(holder, isJump)
-        if(holder.pop(this, isJump)) pop(holder)
+        holder.pop(this, isJump)
+        pop(holder)
     }
     internal fun _pause(holder: ChHolder<T>, isJump:Boolean){
         pause(holder)
@@ -30,7 +29,7 @@ abstract class ChHolderBase<T>{
 abstract class ChHolder<T>{
     abstract fun create(base: ChHolderBase<T>):T
     open fun push(base: ChHolderBase<T>, isRestore:Boolean){}
+    open fun pop(base: ChHolderBase<T>, isJump:Boolean){}
     open fun resume(base: ChHolderBase<T>, isRestore:Boolean){}
     open fun pause(base: ChHolderBase<T>, isJump:Boolean){}
-    open fun pop(base: ChHolderBase<T>, isJump:Boolean):Boolean = true
 }
