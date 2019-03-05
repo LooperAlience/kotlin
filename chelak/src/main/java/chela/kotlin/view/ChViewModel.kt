@@ -9,8 +9,7 @@ import com.chela.annotation.STYLE
  * This class represent viewmodel lifecycle event.
  */
 abstract class ChViewModel: Model(){
-    open fun start(){}
-    open fun end(){}
+    open fun resumed(){}
     open fun paused(){}
     open fun resumeAnimation(it: ChItem){}
     open fun pauseAnimation(it: ChItem){}
