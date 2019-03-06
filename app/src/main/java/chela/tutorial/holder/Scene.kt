@@ -10,7 +10,7 @@ import chela.kotlin.view.scanner.ChScanned
 
 abstract class Scene: ChHolder<View>(){
     private var inflater: LayoutInflater? = null
-    private var scan:ChScanned? = null
+    protected var scan:ChScanned? = null
     override fun create(base: ChHolderBase<View>):View{
         if(base !is ChGroupBase) throw Exception("")
         if(base.inflater != inflater) {
@@ -18,9 +18,12 @@ abstract class Scene: ChHolder<View>(){
             val view = base.inflate(layout())
             scan?.let{it.view = view} ?: run{scan = Ch.scanner.scan(this, view)}
         }
-        return scan!!.render()
+        scan!!.render()
+        init()
+        return scan!!.view
     }
     fun render() = scan?.render()
     fun renderSync() = scan?.renderSync()
     abstract fun layout():Int
+    abstract fun init()
 }

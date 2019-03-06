@@ -10,7 +10,8 @@ import chela.tutorial.viewmodel.MainVM
 
 object Main : Scene() {
     @JvmStatic private val vm = MainVM
-    override fun layout() = R.layout.main
+    override fun layout() = R.layout.activity_main
+    override fun init(){}
     override fun push(base: ChHolderBase<View>, isRestore: Boolean){
         if(isRestore){
             vm.pushed()
@@ -20,7 +21,11 @@ object Main : Scene() {
                 time = Holder.pushTime
                 block = {
                     vm.holder.pushAnimation(it)
-                   renderSync()
+                    renderSync()
+                }
+                ended = {
+                    vm.pushed()
+                    vm.isLock = false
                 }
             }
         }

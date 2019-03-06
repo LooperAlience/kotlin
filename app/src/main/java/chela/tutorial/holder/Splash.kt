@@ -2,7 +2,6 @@ package chela.tutorial.holder
 
 import android.util.Log
 import android.view.View
-import chela.kotlin.Ch
 import chela.kotlin.view.router.holder.ChHolderBase
 import chela.tutorial.App
 import chela.tutorial.R
@@ -11,7 +10,8 @@ import chela.tutorial.viewmodel.SplashVM
 
 object Splash:Scene(){
     @JvmStatic private val vm = SplashVM
-    override fun layout() = R.layout.appsplash
+    override fun layout() = R.layout.activity_splash
+    override fun init(){}
     override fun push(base: ChHolderBase<View>, isRestore: Boolean){
         if(isRestore){
             vm.pushed()
@@ -30,7 +30,10 @@ object Splash:Scene(){
                     vm.title.pushAnimation(it)
                     renderSync()
                 }
-                ended = {start()}
+                ended = {
+                    vm.pushed()
+                    start()
+                }
             }
         }
     }

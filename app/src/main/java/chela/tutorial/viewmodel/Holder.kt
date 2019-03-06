@@ -13,7 +13,7 @@ import com.chela.annotation.STYLE
     @EX val popX:Pair<Double, Double> = 0.0 to -Ch.window.width.toDouble(),
     @EX val popA:Pair<Double, Double> =  1.0 to 0.0): ChStyleModel(){
     companion object {
-        @EX val popTime = 320
+        @EX val popTime = 1000
         @EX val pushTime = 350
     }
     var visibility = View.VISIBLE
@@ -22,12 +22,10 @@ import com.chela.annotation.STYLE
     override fun pushed() {
         x = pushX.second
         alpha = pushA.second
-        visibility = View.VISIBLE
     }
     override fun poped(){
         x = popX.second
         alpha = popA.second
-        visibility = View.GONE
     }
     override fun pushAnimation(it: ChItem) {
         x = it.circleOut(pushX.first, pushX.second)

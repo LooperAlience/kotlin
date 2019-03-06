@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.tutorial.R
 import chela.tutorial.holder.Main
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main2.*
 
 @SuppressLint("StaticFieldLeak")
 var groupBase = Ch.groupBase()
@@ -22,7 +22,7 @@ var looper = Ch.looper()
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.appmain)
+        setContentView(R.layout.activity_container)
         groupBase.group(_group)
         framentBase.manager = supportFragmentManager
         framentBase.container = _fragment.id
