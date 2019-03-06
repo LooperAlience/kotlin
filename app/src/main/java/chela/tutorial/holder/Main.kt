@@ -30,10 +30,11 @@ object Main : Scene() {
             }
         }
     }
-    override fun pop(base: ChHolderBase<View>, isJump:Boolean){
-        if(isJump){
+    override fun pop(base: ChHolderBase<View>, isJump:Boolean):Long{
+        return if(isJump){
             vm.poped()
             render()
+            0L
         }else{
             App.looper{
                 time = Holder.popTime
@@ -46,6 +47,7 @@ object Main : Scene() {
                     renderSync()
                 }
             }
+            Holder.popTime.toLong()
         }
     }
 }

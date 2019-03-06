@@ -42,17 +42,15 @@ object Sub : Scene() {
             }
         }
     }
-    override fun pop(base: ChHolderBase<View>, isJump:Boolean){
-        if(isJump){
-            Log.i("ch", "111")
+    override fun pop(base: ChHolderBase<View>, isJump:Boolean):Long{
+        return if(isJump){
             vm.poped()
             render()
+            0L
         }else{
-            Log.i("ch", "222")
             App.looper{
                 time = Holder.popTime
                 block = {
-                    Log.i("ch", "aa")
                     vm.holder.popAnimation(it)
                     renderSync()
                 }
@@ -61,6 +59,7 @@ object Sub : Scene() {
                     renderSync()
                 }
             }
+            Holder.popTime.toLong()
         }
     }
 }

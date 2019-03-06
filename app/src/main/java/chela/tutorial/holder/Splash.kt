@@ -37,11 +37,12 @@ object Splash:Scene(){
             }
         }
     }
-    override fun pop(base: ChHolderBase<View>, isJump: Boolean) {
-        if(isJump){
+    override fun pop(base: ChHolderBase<View>, isJump: Boolean):Long {
+        return if(isJump){
             Log.i("ch", "bbb")
             vm.poped()
             render()
+            0L
         }else{
             Log.i("ch", "aaa")
             App.looper{
@@ -55,6 +56,7 @@ object Splash:Scene(){
                     renderSync()
                 }
             }
+            Holder.popTime.toLong()
         }
     }
     private fun start() {
