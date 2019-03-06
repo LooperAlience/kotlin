@@ -1,15 +1,14 @@
-package chela.androidTest
+package chela.tutorial1
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import chela.androidTest.holder.MainFHD
-import chela.androidTest.holder.MainHD
 import chela.kotlin.Ch
-import chela.kotlin.looper.ChLooper.Item.Time
-import kotlinx.android.synthetic.main.activity_main.*
+import chela.tutorial.R
+import chela.tutorial.holder.Main
+import kotlinx.android.synthetic.main.activity_main2.*
 
 @SuppressLint("StaticFieldLeak")
 var groupBase = Ch.groupBase()
@@ -23,15 +22,12 @@ var looper = Ch.looper()
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_container)
         groupBase.group(_group)
         framentBase.manager = supportFragmentManager
         framentBase.container = _fragment.id
         looper.act(this)
-        Ch.waitActivate(this, looper){
-            router.push(MainHD, false)
-            routerf.push(MainFHD)
-        }
+        Ch.waitActivate(this, looper){router.push(Main, false) }
         with(Ch.permission(this, 15)){
             permissions(
                 Manifest.permission.READ_CONTACTS,
