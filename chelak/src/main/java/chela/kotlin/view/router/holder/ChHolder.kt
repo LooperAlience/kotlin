@@ -1,5 +1,6 @@
 package chela.kotlin.view.router.holder
 
+import chela.kotlin.thread.ChThread
 import chela.kotlin.view.router.ChRouter
 
 abstract class ChHolderBase<T>{
@@ -9,8 +10,7 @@ abstract class ChHolderBase<T>{
         holder.push(this, isRestore)
     }
     internal fun _pop(holder: ChHolder<T>, isJump:Boolean){
-        holder.pop(this, isJump)
-        pop(holder)
+        ChThread.main(holder.pop(this, isJump), Runnable {pop(holder)})
     }
     internal fun _pause(holder: ChHolder<T>, isJump:Boolean){
         pause(holder)
@@ -29,7 +29,7 @@ abstract class ChHolderBase<T>{
 abstract class ChHolder<T>{
     abstract fun create(base: ChHolderBase<T>):T
     open fun push(base: ChHolderBase<T>, isRestore:Boolean){}
-    open fun pop(base: ChHolderBase<T>, isJump:Boolean){}
+    open fun pop(base: ChHolderBase<T>, isJump:Boolean):Long = 0L
     open fun resume(base: ChHolderBase<T>, isRestore:Boolean){}
     open fun pause(base: ChHolderBase<T>, isJump:Boolean){}
 }

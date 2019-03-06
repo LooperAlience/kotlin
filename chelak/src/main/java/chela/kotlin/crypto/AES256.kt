@@ -7,7 +7,7 @@ import javax.crypto.spec.SecretKeySpec
 
 internal object AES256{
     private fun cipher(opmode:Int, v:ByteArray): Cipher {
-        val c = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        val c = Cipher.getInstance("AES/CBC/PKCS7Padding")
         c.init(opmode,
             SecretKeySpec(v, "AES"),
             IvParameterSpec(v.copyOfRange(0, 16))
