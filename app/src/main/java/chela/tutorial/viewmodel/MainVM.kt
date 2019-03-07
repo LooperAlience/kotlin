@@ -12,27 +12,12 @@ import com.chela.annotation.PROP
 import com.chela.annotation.VM
 
 @VM
-object MainVM:ChViewModel(){
-    val holder = Holder()
+object MainVM:SceneModel(){
     var text = "Main CLICK!!!"
     @PROP var fontSize = 15.0.DptoPx
-    @PROP var visible = false
-    var isLock = true
     @PROP var click = View.OnClickListener {
-        Log.i("ch", "click")
-        if(isLock) return@OnClickListener
-
-        Log.i("ch", "isLock ${isLock}")
-        isLock = true
+        if(Holder.isLock) return@OnClickListener
+        Holder.isLock = true
         App.router.push(Sub)
-    }
-    override fun pushed() {
-        Log.i("ch", "pushed")
-        holder.pushed()
-        visible = true
-    }
-    override fun poped() {
-        holder.poped()
-        visible = false
     }
 }
