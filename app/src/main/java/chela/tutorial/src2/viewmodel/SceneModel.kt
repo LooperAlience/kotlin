@@ -1,5 +1,6 @@
 package chela.tutorial.src2.viewmodel
 
+import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.looper.ChItem
 import chela.kotlin.view.ChStyleModel
@@ -17,6 +18,7 @@ abstract class SceneModel(holderType:Int = 0): ChViewModel(){
         }
     }
     override fun pushAnimation(it: ChItem){
+        Log.i("ch", "pushAni")
         holder.pushAnimation(it)
     }
     override fun popAnimation(it: ChItem) {

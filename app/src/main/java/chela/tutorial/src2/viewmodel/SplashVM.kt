@@ -1,5 +1,6 @@
 package chela.tutorial.src2.viewmodel
 
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import chela.kotlin.Ch
@@ -14,10 +15,11 @@ import com.chela.annotation.STYLE
 import com.chela.annotation.VM
 
 @VM
-object SplashVM: SceneModel(1){
+object SplashVM: SceneModel(0){
     val title = Title
     @PROP var background = "#18ba9b"
     @PROP var click = View.OnClickListener {
+        Log.i("ch", "click${App.isPermitted}")
         if(Holder.isLock) return@OnClickListener
         Holder.isLock = true
         if(App.isPermitted) App.router.push(Main) else Toast.makeText(Ch.app.app, "퍼미션 동의를 해야 다음으로 넘어갑니다", Toast.LENGTH_SHORT).show()

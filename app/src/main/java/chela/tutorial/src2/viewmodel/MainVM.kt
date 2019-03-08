@@ -6,6 +6,6 @@ import com.chela.annotation.VM
 
 @VM
 object MainVM: SceneModel(){
-    val text = "Main List"
+    @PROP val text = "Main List"
     @PROP val fontSize = 15.0.DptoPx
 }

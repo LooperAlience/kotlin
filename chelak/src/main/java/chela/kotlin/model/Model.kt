@@ -1,5 +1,6 @@
 package chela.kotlin.model
 
+import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.core._allStack
 import chela.kotlin.core._notBlank
@@ -38,11 +39,20 @@ abstract class Model{
         @Suppress("LeakingThis")
         val cls = this::class
         if(cls.findAnnotation<Unknown>() == null){
+            Log.i("ch", "1")
             if(this !is ChStyleModel || this.isRegister) {
+
+                Log.i("ch", "2")
                 if (!isTypeChecked.contains(cls)) {
+
+                    Log.i("ch", "3${cls}-${cls.simpleName}")
                     isTypeChecked.add(cls)
                     _try { cls.java.getDeclaredField("INSTANCE") }?.let {
+
+                        Log.i("ch", "4")
                         (cls.findAnnotation<Name>()?.let { it.name } ?: cls.simpleName)?.let {
+
+                            Log.i("ch", "1$it")
                             if (ChModel.repo.containsKey(it)) throw Exception("exist key:$it")
                             ChModel.repo[it] = this
                         }

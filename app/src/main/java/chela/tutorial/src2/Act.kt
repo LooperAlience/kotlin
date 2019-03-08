@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.tutorial.R
 import chela.tutorial.src2.holder.Splash
-import chela.tutorial.src2.holder.Main
-import chela.tutorial.src2.viewmodel.SplashVM
 import kotlinx.android.synthetic.main.activity_container.*
 
 class Act : AppCompatActivity(){

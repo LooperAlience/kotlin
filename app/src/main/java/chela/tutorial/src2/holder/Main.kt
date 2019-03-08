@@ -7,19 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import chela.kotlin.Ch
-import chela.kotlin.resource.ChRes
-import chela.kotlin.sql.ChSql
-import chela.kotlin.sql.DataBase
 import chela.tutorial.R
-import chela.tutorial.src1.holder.Sub
 import chela.tutorial.src2.App
 import chela.tutorial.src2.viewmodel.MainVM
 import com.bumptech.glide.Glide
-import java.util.ArrayList
-import java.util.HashMap
 
 
 object Main : Scene() {
@@ -70,8 +63,11 @@ object Main : Scene() {
             })
         })
     }
-    override fun pushed(){}
+    override fun pushed(){
+        Log.i("ch", "pushedddddd")
+    }
 }
+
 data class Data(val path:String, val date:String)
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.ImageHolder>() {
@@ -81,23 +77,21 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ImageHolder>() {
         return ImageHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_image_wrap, parent, false))
     }
     override fun onBindViewHolder(holder: ImageHolder, position: Int) {
-        list?.let {
-            holder.bind(it[position])
-        }
+        holder.bind(list[position])
     }
     override fun getItemCount(): Int {
-        return list?.size ?: 0
+        return list.size
     }
 
     inner class ImageHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        var item_img: ImageView = itemView.findViewById(R.id.item_img)
+        var itemImg: ImageView = itemView.findViewById(R.id.item_img)
         var type: TextView = itemView.findViewById(R.id.type)
         init {
-            item_img.setOnClickListener(this)
+            itemImg.setOnClickListener(this)
         }
-        fun bind(i: Array<Any?>) {
-            Glide.with(Ch.app.app).load(i[1]).into(item_img)
-            type.text = i[2] as String
+        fun bind(d: Data) {
+            Glide.with(Ch.app.app).load(d.path).into(itemImg)
+            type.text = d.date
         }
         override fun onClick(v: View) {
         }

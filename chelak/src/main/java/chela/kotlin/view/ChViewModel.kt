@@ -17,7 +17,6 @@ abstract class ChViewModel: Model(){
     open fun pushAnimation(it: ChItem){}
     open fun poped(){}
     open fun popAnimation(it: ChItem){}
-
 }
 /**
  * This class represent viewmodel UI style.

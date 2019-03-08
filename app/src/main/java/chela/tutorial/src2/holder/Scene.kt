@@ -30,12 +30,22 @@ abstract class Scene: ChHolder<View>(){
     }
     override fun push(base: ChHolderBase<View>, isRestore: Boolean) {
         if(isRestore){
+            Log.i("ch", "push1111111111")
             vm().pushed()
             render()
         }else{
+            Log.i("ch", "push222222${Holder.pushTime}")
+            vm().pushed()
+            render()
+            pushed()
+
+            /*
             App.looper {
+
                 time = Holder.pushTime
                 block = {
+
+                    Log.i("ch", "push33333")
                     vm().pushAnimation(it)
                     renderSync()
                 }
@@ -44,6 +54,7 @@ abstract class Scene: ChHolder<View>(){
                     pushed()
                 }
             }
+            */
         }
     }
     override fun pop(base: ChHolderBase<View>, isJump: Boolean):Long {

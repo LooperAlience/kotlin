@@ -17,7 +17,7 @@
         android:tag="
             text:@{MainVM.text},
             textSize:@{MainVM.fontSize},
-            textColor:`#ff0000`, click:@{MainVM.click}"/>
+            textColor:`#ff0000`"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"

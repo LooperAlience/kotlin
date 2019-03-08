@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 typealias ItemBlock = (ChItem)->Unit
 typealias Now = ()->Double
 /**
- * This class executes UI upgrade about its ItemDSL type on main thread.
+ * This class executes UI upgrade about its ItemDSL type on activity_main thread.
  * Asynchronous execution is also possible.
  * <pre>
  *   App.looper(Ch.infinity()) { item ->
@@ -26,9 +26,9 @@ typealias Now = ()->Double
  */
 class ChLooper:LifecycleObserver{
     /**
-     * Makes ChLooper run on the main thread
+     * Makes ChLooper run on the activity_main thread
      * @param ctx activity context
-     * @param looper its loop() execute on main thread
+     * @param looper its loop() execute on activity_main thread
      */
     private class Ani(ctx: Context, private val looper: ChLooper): View(ctx){
         init{tag = "CHELA_ANI"}
