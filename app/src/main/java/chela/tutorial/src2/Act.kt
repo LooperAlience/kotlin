@@ -1,53 +1,52 @@
-package chela.tutorial1
+package chela.tutorial.src2
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.tutorial.R
-import chela.tutorial.holder.Main
-import kotlinx.android.synthetic.main.activity_main2.*
+import chela.tutorial.src2.holder.Splash
+import chela.tutorial.src2.holder.Main
+import chela.tutorial.src2.viewmodel.SplashVM
+import kotlinx.android.synthetic.main.activity_container.*
 
-@SuppressLint("StaticFieldLeak")
-var groupBase = Ch.groupBase()
-val router = Ch.router(groupBase)
-
-val framentBase = Ch.fragmentBase()
-val routerf = Ch.router(framentBase)
-
-var looper = Ch.looper()
-
-class MainActivity : AppCompatActivity() {
+class Act : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_container)
-        groupBase.group(_group)
-        framentBase.manager = supportFragmentManager
-        framentBase.container = _fragment.id
-        looper.act(this)
-        Ch.waitActivate(this, looper){router.push(Main, false) }
+        App.groupBase.group(main)
+        App.looper.act(this)
+        Ch.waitActivate(this, App.looper){App.router.push(Splash)}
+
         with(Ch.permission(this, 15)){
             permissions(
                 Manifest.permission.READ_CONTACTS,
                 Manifest.permission.WRITE_CONTACTS,
                 Manifest.permission.CALL_PHONE,
-                Manifest.permission.READ_CALENDAR
+                Manifest.permission.READ_CALENDAR,
+                Manifest.permission.READ_EXTERNAL_STORAGE
             )
-            ok{Log.i("ch", "all permitted")}
-            neverAsk{Log.i("ch", "_never ask:$it")}
+            ok{
+                Log.i("ch", "all permitted")
+                App.isPermitted = true
+            }
+            neverAsk{ Log.i("ch", "_never ask:$it")}
             denied{ p, res->
                 Log.i("ch", "_denied:$p")
+                App.isPermitted = false
                 res.request()
             }
             request()
         }
+
+
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray){
         Ch.permission.result(this, requestCode, permissions, grantResults)
     }
-    override fun onBackPressed() {
-        if(router.pop() == 0) Ch.finish(this)
+    override fun onConfigurationChanged(newConfig: Configuration){
+        super.onConfigurationChanged(newConfig)
     }
 }

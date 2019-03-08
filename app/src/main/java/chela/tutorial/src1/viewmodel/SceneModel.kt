@@ -1,4 +1,4 @@
-package chela.tutorial.viewmodel
+package chela.tutorial.src1.viewmodel
 
 import chela.kotlin.Ch
 import chela.kotlin.looper.ChItem
@@ -9,7 +9,7 @@ import com.chela.annotation.STYLE
 
 
 abstract class SceneModel(holderType:Int = 0): ChViewModel(){
-    lateinit var holder:Holder
+    lateinit var holder: Holder
     init{
         when(holderType){
             0 -> holder = Holder()

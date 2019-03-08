@@ -1,12 +1,12 @@
-package chela.tutorial.holder
+package chela.tutorial.src1.holder
 
 import android.util.Log
-import chela.tutorial.App
 import chela.tutorial.R
-import chela.tutorial.viewmodel.Holder
-import chela.tutorial.viewmodel.SplashVM
+import chela.tutorial.src1.App
+import chela.tutorial.src1.viewmodel.Holder
+import chela.tutorial.src1.viewmodel.SplashVM
 
-object Splash:Scene(){
+object Splash: Scene(){
     override fun vm() = SplashVM
     override fun layout() = R.layout.activity_splash
     override fun init(){}

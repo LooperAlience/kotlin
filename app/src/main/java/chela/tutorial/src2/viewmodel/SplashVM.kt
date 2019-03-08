@@ -1,11 +1,13 @@
-package chela.tutorial.viewmodel
+package chela.tutorial.src2.viewmodel
 
 import android.view.View
+import android.widget.Toast
+import chela.kotlin.Ch
 import chela.kotlin.DptoPx
 import chela.kotlin.looper.ChItem
 import chela.kotlin.view.ChStyleModel
-import chela.tutorial.App
-import chela.tutorial.holder.Main
+import chela.tutorial.src2.App
+import chela.tutorial.src2.holder.Main
 import com.chela.annotation.EX
 import com.chela.annotation.PROP
 import com.chela.annotation.STYLE
@@ -18,7 +20,7 @@ object SplashVM: SceneModel(1){
     @PROP var click = View.OnClickListener {
         if(Holder.isLock) return@OnClickListener
         Holder.isLock = true
-        App.router.push(Main)
+        if(App.isPermitted) App.router.push(Main) else Toast.makeText(Ch.app.app, "퍼미션 동의를 해야 다음으로 넘어갑니다", Toast.LENGTH_SHORT).show()
     }
 }
 

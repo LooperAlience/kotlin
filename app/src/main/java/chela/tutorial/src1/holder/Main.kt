@@ -1,7 +1,7 @@
-package chela.tutorial.holder
+package chela.tutorial.src1.holder
 
 import chela.tutorial.R
-import chela.tutorial.viewmodel.MainVM
+import chela.tutorial.src1.viewmodel.MainVM
 
 
 object Main : Scene() {

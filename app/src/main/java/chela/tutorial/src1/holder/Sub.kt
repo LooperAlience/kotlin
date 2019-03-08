@@ -1,4 +1,4 @@
-package chela.tutorial.holder
+package chela.tutorial.src1.holder
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import chela.tutorial.R
-import chela.tutorial.viewmodel.SubVM
+import chela.tutorial.src1.viewmodel.SubVM
 
 
 object Sub : Scene() {

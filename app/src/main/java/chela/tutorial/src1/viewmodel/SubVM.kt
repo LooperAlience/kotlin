@@ -1,12 +1,12 @@
-package chela.tutorial.viewmodel
+package chela.tutorial.src1.viewmodel
 
 import android.view.View
-import chela.tutorial.App
+import chela.tutorial.src1.App
 import com.chela.annotation.PROP
 import com.chela.annotation.VM
 
 @VM
-object SubVM:SceneModel(){
+object SubVM: SceneModel(){
     val list = listOf("aaa", "bbb", "ccc","aaa", "bbb", "ccc","aaa", "bbb", "ccc","aaa", "bbb", "ccc","aaa", "bbb", "ccc","aaa", "bbb", "ccc","aaa", "bbb", "ccc","aaa", "bbb", "ccc","aaa", "bbb", "ccc")
     var text = "뒤로가기"
     @PROP var click = View.OnClickListener {
