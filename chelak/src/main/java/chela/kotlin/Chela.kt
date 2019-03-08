@@ -68,6 +68,7 @@ object Ch{
     @JvmStatic val window = ChWindow
     @JvmStatic val res = ChRes
     @JvmStatic val net = ChNet
+    @JvmStatic val content = ChContent
     @JvmStatic val clipBoard = ChClipBoard
     @JvmStatic val asset = ChAsset
     @JvmStatic val shared = ChShared
