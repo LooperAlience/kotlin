@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.tutorial.R
 import chela.tutorial.src1.holder.Splash
-import chela.tutorial1.router
 import kotlinx.android.synthetic.main.activity_container.*
 
 class Act : AppCompatActivity(){

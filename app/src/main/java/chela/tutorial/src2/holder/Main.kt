@@ -50,34 +50,23 @@ object Main : Scene() {
         Ch.sql.db("img").exec("local_remove_all")
 
         Ch.thread.pool(Runnable {
-            val projection = arrayOf( MediaStore.Images.Media.DATA, MediaStore.Images.ImageColumns._ID, MediaStore.Images.Media.DATE_ADDED)
-            val contentResolver = Ch.app.app.getContentResolver()
-            val imageCursor = contentResolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, // content://로 시작하는 content table uri
-                projection, // 어떤 row를 출력할 것인지
-                null, null,
-                MediaStore.Images.Media._ID + " DESC"
-            )// 어떤 column을 출력할 것인지
-            val dataColumnIndex = imageCursor.getColumnIndex(projection[0])
-            val dataColumnIndex_date = imageCursor.getColumnIndex(projection[2])
-            if (imageCursor == null) {/* Error 발생 */
-                Log.i("ch", "ch111")
-            } else if (imageCursor.moveToFirst()) {
-                do {
-                    val filePath = imageCursor.getString(dataColumnIndex)
-                    val fileDate = imageCursor.getString(dataColumnIndex_date)
-                    Ch.sql.db("img").exec("local_add", "filePath" to filePath, "fileDate" to fileDate)
-                } while (imageCursor.moveToNext())
-            } else { /*imageCursor가 비었습니다.*/
-            }
-            imageCursor.close()
+            val projection = arrayOf(MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED)
+            val imageCursor = Ch.app.app.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null,MediaStore.Images.Media._ID + " DESC")
 
+            imageCursor?.let{
+                it.moveToFirst()
+                val pathIdx = it.getColumnIndex(projection[0])
+                val dateIdx = it.getColumnIndex(projection[1])
+                do {
+                    Ch.sql.db("img").exec("local_add", "filePath" to imageCursor.getString(pathIdx), "fileDate" to imageCursor.getString(dateIdx))
+                } while (imageCursor.moveToNext())
+                it.close()
+            }
             Ch.thread.main(Runnable {
                 adapter.list = Ch.sql.db("img").select("local_list")?.rs
                 adapter.notifyDataSetChanged()
             })
         })
-
     }
     override fun pushed(){}
 }
