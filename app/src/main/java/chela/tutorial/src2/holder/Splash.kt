@@ -12,7 +12,6 @@ object Splash: Scene(){
     override fun init(){}
     override fun pushed() {
         Holder.isLock = true
-        Log.i("ch", "pushed")
         App.looper{
             time = vm().title.time
             block = {

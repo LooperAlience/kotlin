@@ -19,10 +19,8 @@ object Main : Scene() {
     override fun vm() = MainVM
     override fun layout() = R.layout.activity_main
     override fun init(){
-        val adapter = ListAdapter()
-        scan?.let{
-            it.view.findViewById<RecyclerView>(R.id.list).adapter = adapter
-        }
+
+
         if(!App.isPermitted) return
         //todo 퍼미션 호출 다시 해야 함
 
@@ -54,30 +52,27 @@ object Main : Scene() {
                     it.close()
                 }
 
-                select("local_list")?.map{_,arr->Data("${arr[0]}", "${arr[1]}")}?.let {
-                    adapter.list = it
-                    adapter.notifyDataSetChanged()
-                }
-                /*
-                Ch.thread.main(Runnable {
-                    Ch.sql.db("img").select("local_list")?.map{_,arr->Data("${arr[0]}", "${arr[1]}")}?.let {
-                        adapter.list = it
+                select("local_list")?.map{_,arr->Data("${arr[1]}", "${arr[2]}")}?.let {
+                    Ch.thread.main(Runnable {
+                        val adapter = ListAdapter(it)
+                        scan?.let {
+                            it.view.findViewById<RecyclerView>(R.id.list).adapter = adapter
+                        }
                         adapter.notifyDataSetChanged()
-                    }
-                })
-                */
+
+                    })
+                }
+
             })
         }
     }
     override fun pushed(){
-        Log.i("ch", "pushedddddd")
     }
 }
 
 data class Data(val path:String, val date:String)
 
-class ListAdapter : RecyclerView.Adapter<ListAdapter.ImageHolder>() {
-    lateinit var list:List<Data>
+class ListAdapter(val list:List<Data>) : RecyclerView.Adapter<ListAdapter.ImageHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
         return ImageHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_image_wrap, parent, false))
