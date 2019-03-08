@@ -19,8 +19,6 @@ object Main : Scene() {
     override fun vm() = MainVM
     override fun layout() = R.layout.activity_main
     override fun init(){
-
-
         if(!App.isPermitted) return
         //todo 퍼미션 호출 다시 해야 함
 
@@ -37,7 +35,7 @@ object Main : Scene() {
             val a = it.split("--")
             Ch.sql.addQuery(a[0].trim(), a[1].trim())
         }
-        Ch.sql.addDb("img", "local_img_create", null, null)
+        Ch.sql.addDb("img", "local_img_create", null, "1234")
         with(Ch.sql.db("img")){
             exec("local_remove_all")
             Ch.thread.pool(Runnable {
@@ -51,7 +49,6 @@ object Main : Scene() {
                     }
                     it.close()
                 }
-
                 select("local_list")?.map{_,arr->Data("${arr[1]}", "${arr[2]}")}?.let {
                     Ch.thread.main(Runnable {
                         val adapter = ListAdapter(it)
@@ -59,10 +56,8 @@ object Main : Scene() {
                             it.view.findViewById<RecyclerView>(R.id.list).adapter = adapter
                         }
                         adapter.notifyDataSetChanged()
-
                     })
                 }
-
             })
         }
     }
