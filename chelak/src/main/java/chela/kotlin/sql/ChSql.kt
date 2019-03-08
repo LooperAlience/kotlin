@@ -16,7 +16,7 @@ object ChSql{
     @JvmStatic private val dbProvider = mutableMapOf<String, MutableList<dbGet>>()
     @JvmStatic fun addProvider(k:String, provider:prov) = providers.put(k, provider)
     @JvmStatic fun db(k:String) = Dbs[k] ?: throw Throwable("invalid db $k")
-    @JvmStatic fun addDb(k:String, create:String, assetPath:String?, pass:String?){
+    @JvmStatic fun addDb(k:String, create:String, assetPath:String?, pass:String? = null){
         if(Dbs[k] != null) throw Throwable("exist db:$k")
         if(!Ch.isInited()) throw Throwable("Ch is not inited!")
         assetPath?.let {a->

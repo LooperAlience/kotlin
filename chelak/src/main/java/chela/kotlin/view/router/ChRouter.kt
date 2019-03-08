@@ -46,5 +46,8 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
             }
         }
     })
+    fun take(index:Int){
+        if(stack.size > index) base._pop(stack.removeAt(index), true)
+    }
     fun url(url:String){}
 }
