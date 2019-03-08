@@ -30,6 +30,11 @@ class ChCursor internal constructor(c: Cursor, isRecord:Boolean): Cursor {
         r
     }
     inline fun forEach(block:(Int, Array<Any?>)->Unit) = rs.forEachIndexed(block)
+    inline fun <T> map(block:(Int, Array<Any?>)->T):List<T>{
+        val r = mutableListOf<T>()
+        rs.forEachIndexed{i, a->r += block(i, a)}
+        return r
+    }
     private var cursor = 0
     private var row:Array<Any?> = rs[0]
     private fun setRow(c: Int): Boolean {

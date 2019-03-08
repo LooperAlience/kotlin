@@ -63,17 +63,19 @@ object Main : Scene() {
                 it.close()
             }
             Ch.thread.main(Runnable {
-                adapter.list = Ch.sql.db("img").select("local_list")?.rs
-                adapter.notifyDataSetChanged()
+                Ch.sql.db("img").select("local_list")?.map{_,arr->Data("${arr[0]}", "${arr[1]}")}?.let {
+                    adapter.list = it
+                    adapter.notifyDataSetChanged()
+                }
             })
         })
     }
     override fun pushed(){}
 }
-
+data class Data(val path:String, val date:String)
 
 class ListAdapter : RecyclerView.Adapter<ListAdapter.ImageHolder>() {
-    var list:Array<Array<Any?>>? = null
+    lateinit var list:List<Data>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
         return ImageHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_image_wrap, parent, false))
