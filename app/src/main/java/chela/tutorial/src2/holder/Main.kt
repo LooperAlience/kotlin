@@ -40,28 +40,34 @@ object Main : Scene() {
             Ch.sql.addQuery(a[0].trim(), a[1].trim())
         }
         Ch.sql.addDb("img", "local_img_create", null, null)
-        Ch.sql.db("img").exec("local_remove_all")
+        with(Ch.sql.db("img")){
+            exec("local_remove_all")
+            Ch.thread.pool(Runnable {
+                Ch.content.getImage(MediaStore.Images.Media._ID, false, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED)?.let{
+                    if(it.count > 0 && it.moveToFirst()) {
+                        val pathIdx = it.getColumnIndex(MediaStore.Images.Media.DATA)
+                        val dateIdx = it.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
+                        do {
+                            exec("local_add", "filePath" to it.getString(pathIdx), "fileDate" to it.getString(dateIdx))
+                        } while (it.moveToNext())
+                    }
+                    it.close()
+                }
 
-        Ch.thread.pool(Runnable {
-            val projection = arrayOf(MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED)
-            val imageCursor = Ch.app.app.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null,MediaStore.Images.Media._ID + " DESC")
-
-            imageCursor?.let{
-                it.moveToFirst()
-                val pathIdx = it.getColumnIndex(projection[0])
-                val dateIdx = it.getColumnIndex(projection[1])
-                do {
-                    Ch.sql.db("img").exec("local_add", "filePath" to imageCursor.getString(pathIdx), "fileDate" to imageCursor.getString(dateIdx))
-                } while (imageCursor.moveToNext())
-                it.close()
-            }
-            Ch.thread.main(Runnable {
-                Ch.sql.db("img").select("local_list")?.map{_,arr->Data("${arr[0]}", "${arr[1]}")}?.let {
+                select("local_list")?.map{_,arr->Data("${arr[0]}", "${arr[1]}")}?.let {
                     adapter.list = it
                     adapter.notifyDataSetChanged()
                 }
+                /*
+                Ch.thread.main(Runnable {
+                    Ch.sql.db("img").select("local_list")?.map{_,arr->Data("${arr[0]}", "${arr[1]}")}?.let {
+                        adapter.list = it
+                        adapter.notifyDataSetChanged()
+                    }
+                })
+                */
             })
-        })
+        }
     }
     override fun pushed(){
         Log.i("ch", "pushedddddd")
@@ -79,9 +85,7 @@ class ListAdapter : RecyclerView.Adapter<ListAdapter.ImageHolder>() {
     override fun onBindViewHolder(holder: ImageHolder, position: Int) {
         holder.bind(list[position])
     }
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    override fun getItemCount() = list.size
 
     inner class ImageHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var itemImg: ImageView = itemView.findViewById(R.id.item_img)
