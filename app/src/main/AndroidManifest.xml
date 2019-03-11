@@ -18,10 +18,12 @@
         <activity android:name="chela.tutorial.src1.Act">
         </activity>
         <activity android:name="chela.tutorial.src2.Act">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
+        <activity android:name="chela.tutorial.src3.Act">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+        </intent-filter>
+    </activity>
     </application>
 </manifest>
