@@ -4,19 +4,30 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.tutorial.R
+import chela.tutorial.common.App
 import chela.tutorial.src1.holder.Splash
 import kotlinx.android.synthetic.main.activity_container.*
 
 class Act : AppCompatActivity(){
+    companion object {
+        val groupBase = Ch.groupBase()
+        val router = Ch.router(groupBase)
+    }
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_container)
-        App.groupBase.group(main)
+        groupBase.group(main)
         App.looper.act(this)
-        Ch.waitActivate(this, App.looper){ App.router.push(Splash)}
+        Ch.waitActivate(this, App.looper){ router.push(Splash)}
     }
     override fun onBackPressed() {
-        //Todo alert..
-        if(App.router.pop() == 0) finish()
+        if(router.pop() == 0){
+            router.clear()
+            finish()
+        }
+    }
+    override fun onStop() {
+        router.clear()
+        super.onStop()
     }
 }

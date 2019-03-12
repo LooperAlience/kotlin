@@ -6,7 +6,7 @@ import chela.kotlin.looper.ChItem
 import chela.kotlin.view.ChStyleModel
 import chela.tutorial.common.Holder
 import chela.tutorial.common.SceneModel
-import chela.tutorial.src1.App
+import chela.tutorial.src1.Act
 import chela.tutorial.src1.holder.Main
 import com.chela.annotation.EX
 import com.chela.annotation.PROP
@@ -20,7 +20,7 @@ object SplashVM: SceneModel(1){
     @PROP var click = View.OnClickListener {
         if(Holder.isLock) return@OnClickListener
         Holder.isLock = true
-        App.router.push(Main)
+        Act.router.push(Main)
     }
 }
 

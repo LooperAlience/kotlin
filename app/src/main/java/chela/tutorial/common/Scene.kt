@@ -8,7 +8,6 @@ import chela.kotlin.view.router.holder.ChGroupBase
 import chela.kotlin.view.router.holder.ChHolder
 import chela.kotlin.view.router.holder.ChHolderBase
 import chela.kotlin.view.scanner.ChScanned
-import chela.tutorial.src1.App
 
 abstract class Scene: ChHolder<View>(){
     private var inflater: LayoutInflater? = null
