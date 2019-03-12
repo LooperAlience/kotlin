@@ -1,4 +1,4 @@
-package chela.tutorial.src3.holder
+package chela.tutorial.common
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,9 +8,7 @@ import chela.kotlin.view.router.holder.ChGroupBase
 import chela.kotlin.view.router.holder.ChHolder
 import chela.kotlin.view.router.holder.ChHolderBase
 import chela.kotlin.view.scanner.ChScanned
-import chela.tutorial.src3.App
-import chela.tutorial.src3.viewmodel.Holder
-import chela.tutorial.src3.viewmodel.SceneModel
+import chela.tutorial.src1.App
 
 abstract class Scene: ChHolder<View>(){
     private var inflater: LayoutInflater? = null
@@ -29,14 +27,16 @@ abstract class Scene: ChHolder<View>(){
         return scan!!.view
     }
     override fun push(base: ChHolderBase<View>, isRestore: Boolean) {
+        Log.i("ch", "Scene push${isRestore}")
         if(isRestore){
-            Log.i("ch", "push1111111111")
             vm().pushed()
             render()
         }else{
             App.looper {
+                Log.i("ch", "Scene looper")
                 time = Holder.pushTime
                 block = {
+                    Log.i("ch", "Scene looper block")
                     vm().pushAnimation(it)
                     renderSync()
                 }
@@ -49,6 +49,7 @@ abstract class Scene: ChHolder<View>(){
     }
     override fun pop(base: ChHolderBase<View>, isJump: Boolean):Long {
         return if(isJump){
+            Log.i("ch", "bbb")
             vm().poped()
             render()
             0L

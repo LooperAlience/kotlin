@@ -7,7 +7,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.tutorial.R
-import chela.tutorial.src2.holder.Splash
+import chela.tutorial.src2.holder.Main
 import kotlinx.android.synthetic.main.activity_container.*
 
 class Act : AppCompatActivity(){
@@ -16,7 +16,7 @@ class Act : AppCompatActivity(){
         setContentView(R.layout.activity_container)
         App.groupBase.group(main)
         App.looper.act(this)
-        Ch.waitActivate(this, App.looper){App.router.push(Splash)}
+        Ch.waitActivate(this, App.looper){ App.router.push(Main)}
 
         with(Ch.permission(this, 15)){
             permissions(
@@ -43,8 +43,5 @@ class Act : AppCompatActivity(){
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray){
         Ch.permission.result(this, requestCode, permissions, grantResults)
-    }
-    override fun onConfigurationChanged(newConfig: Configuration){
-        super.onConfigurationChanged(newConfig)
     }
 }

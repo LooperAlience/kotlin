@@ -1,7 +1,6 @@
 package chela.tutorial.src2.holder
 
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import chela.kotlin.Ch
 import chela.tutorial.R
 import chela.tutorial.src2.App
-import chela.tutorial.src2.viewmodel.MainVM
+import chela.tutorial.common.Scene
+import chela.tutorial.src2.viewmodel.MainVM2
 import com.bumptech.glide.Glide
 
 
 object Main : Scene() {
-    override fun vm() = MainVM
-    override fun layout() = R.layout.activity_main
+    override fun vm() = MainVM2
+    override fun layout() = R.layout.activity_main2
     override fun init(){
         if(!App.isPermitted) return
         //todo 퍼미션 호출 다시 해야 함

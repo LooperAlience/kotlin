@@ -1,4 +1,4 @@
-package chela.tutorial.src3.viewmodel
+package chela.tutorial.common
 
 import android.util.Log
 import chela.kotlin.Ch
@@ -18,6 +18,7 @@ abstract class SceneModel(holderType:Int = 0): ChViewModel(){
         }
     }
     override fun pushAnimation(it: ChItem){
+        Log.i("ch", "SceneModel pushAnimation${holder}")
         holder.pushAnimation(it)
     }
     override fun popAnimation(it: ChItem) {
@@ -55,6 +56,7 @@ class Holder(
         visible = false
     }
     override fun pushAnimation(it: ChItem) {
+        Log.i("ch", "pushAnimation${pushX.second}")
         x = it.circleOut(pushX.first, pushX.second)
     }
     override fun popAnimation(it: ChItem) {

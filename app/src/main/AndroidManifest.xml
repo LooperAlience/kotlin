@@ -15,15 +15,22 @@
             android:supportsRtl="true"
             android:name="chela.tutorial.src1.App"
             android:theme="@style/AppTheme">
+        <activity
+                android:name="chela.tutorial.main.MainActivity"
+                android:theme="@style/Theme.AppCompat.NoActionBar"
+                android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity android:name="chela.tutorial.src1.Act">
         </activity>
         <activity android:name="chela.tutorial.src2.Act">
         </activity>
         <activity android:name="chela.tutorial.src3.Act">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN"/>
-            <category android:name="android.intent.category.LAUNCHER"/>
-        </intent-filter>
-    </activity>
+        </activity>
+        <activity android:name="chela.tutorial.src4.Act">
+        </activity>
     </application>
 </manifest>

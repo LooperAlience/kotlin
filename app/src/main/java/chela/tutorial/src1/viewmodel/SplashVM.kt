@@ -4,6 +4,8 @@ import android.view.View
 import chela.kotlin.DptoPx
 import chela.kotlin.looper.ChItem
 import chela.kotlin.view.ChStyleModel
+import chela.tutorial.common.Holder
+import chela.tutorial.common.SceneModel
 import chela.tutorial.src1.App
 import chela.tutorial.src1.holder.Main
 import com.chela.annotation.EX

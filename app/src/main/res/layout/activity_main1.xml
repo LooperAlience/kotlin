@@ -5,7 +5,7 @@
               android:layout_height="match_parent"
               android:background="#ffff98"
               android:orientation="vertical"
-              android:tag="style:@{MainVM2.holder}">
+              android:tag="style:@{MainVM1.holder}">
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -15,8 +15,9 @@
         android:clickable="true"
         android:layout_marginTop="10dp"
         android:tag="
-            text:@{MainVM2.text},
-            textSize:@{MainVM2.fontSize},
+            text:@{MainVM1.text},
+            textSize:@{MainVM1.fontSize},
+            click:@{MainVM1.click}
             textColor:`#ff0000`"/>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -2,8 +2,9 @@ package chela.tutorial.src1.holder
 
 import android.util.Log
 import chela.tutorial.R
+import chela.tutorial.common.Scene
 import chela.tutorial.src1.App
-import chela.tutorial.src1.viewmodel.Holder
+import chela.tutorial.common.Holder
 import chela.tutorial.src1.viewmodel.SplashVM
 
 object Splash: Scene(){
