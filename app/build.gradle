@@ -45,6 +45,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+
+    def nav_version = "1.0.0-alpha02"
+    implementation "android.arch.navigation:navigation-fragment:$nav_version"
+    implementation "android.arch.navigation:navigation-ui:$nav_version"
+    // optional - Test helpers
+    androidTestImplementation "android.arch.navigation:navigation-testing:$nav_version"
+
     implementation project(':chelak')
     implementation project(':chelaA')
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+                android:id="@+id/nav_1"
+                android:title="튜토리얼1 : 화면전환, 애니메이션, 리사이클뷰"/>
+        <item
+                android:id="@+id/nav_2"
+                android:title="튜토리얼2 : 퍼미션, 컨텐트 프로바이져, 리사이클뷰"/>
+        <item
+                android:id="@+id/nav_3"
+                android:title="튜토리얼3 : 이미지 ViewPager"/>
+        <item
+                android:id="@+id/nav_4"
+                android:title="튜토리얼4"/>
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                    android:id="@+id/nav_share"
+                    android:title="Share"/>
+            <item
+                    android:id="@+id/nav_send"
+                    android:title="Send"/>
+        </menu>
+    </item>
+
+</menu>

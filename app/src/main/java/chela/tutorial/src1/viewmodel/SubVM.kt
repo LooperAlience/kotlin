@@ -1,6 +1,8 @@
 package chela.tutorial.src1.viewmodel
 
 import android.view.View
+import chela.tutorial.common.Holder
+import chela.tutorial.common.SceneModel
 import chela.tutorial.src1.App
 import com.chela.annotation.PROP
 import com.chela.annotation.VM

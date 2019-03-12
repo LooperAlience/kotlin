@@ -5,7 +5,7 @@
               android:layout_height="match_parent"
               android:background="#ffff98"
               android:orientation="vertical"
-              android:tag="style:@{MainVM2.holder}">
+              android:tag="style:@{MainVM4.holder}">
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -15,8 +15,8 @@
         android:clickable="true"
         android:layout_marginTop="10dp"
         android:tag="
-            text:@{MainVM2.text},
-            textSize:@{MainVM2.fontSize},
+            text:@{MainVM4.text},
+            textSize:@{MainVM4.fontSize},
             textColor:`#ff0000`"/>
 
     <androidx.recyclerview.widget.RecyclerView

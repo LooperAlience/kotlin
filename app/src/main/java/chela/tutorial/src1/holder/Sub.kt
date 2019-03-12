@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import chela.tutorial.R
+import chela.tutorial.common.Scene
 import chela.tutorial.src1.viewmodel.SubVM
 
 

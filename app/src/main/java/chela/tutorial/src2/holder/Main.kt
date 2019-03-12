@@ -1,7 +1,6 @@
 package chela.tutorial.src2.holder
 
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,69 +10,45 @@ import androidx.recyclerview.widget.RecyclerView
 import chela.kotlin.Ch
 import chela.tutorial.R
 import chela.tutorial.src2.App
-import chela.tutorial.src2.viewmodel.MainVM
+import chela.tutorial.common.Scene
+import chela.tutorial.src2.viewmodel.MainVM2
 import com.bumptech.glide.Glide
 
 
 object Main : Scene() {
-    override fun vm() = MainVM
-    override fun layout() = R.layout.activity_main
+    override fun vm() = MainVM2
+    override fun layout() = R.layout.activity_main2
     override fun init(){
-
-
         if(!App.isPermitted) return
         //todo 퍼미션 호출 다시 해야 함
-
-        """
-        local_img_create--CREATE TABLE IF NOT EXISTS local_img(
-            rowid INTEGER PRIMARY KEY AUTOINCREMENT,
-            filePath VARCHAR(255) NOT null,
-            fileDate VARCHAR(255) NOT null
-        );
-        local_add--insert into local_img(filePath,fileDate)values(@filePath:string@,@fileDate:string@);
-        local_remove_all--delete from local_img;
-        local_list--select * from local_img
-        """.split(";").forEach {
-            val a = it.split("--")
-            Ch.sql.addQuery(a[0].trim(), a[1].trim())
-        }
-        Ch.sql.addDb("img", "local_img_create", null, null)
-        with(Ch.sql.db("img")){
-            exec("local_remove_all")
-            Ch.thread.pool(Runnable {
-                Ch.content.getImage(MediaStore.Images.Media._ID, false, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED)?.let{
-                    if(it.count > 0 && it.moveToFirst()) {
-                        val pathIdx = it.getColumnIndex(MediaStore.Images.Media.DATA)
-                        val dateIdx = it.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
-                        do {
-                            exec("local_add", "filePath" to it.getString(pathIdx), "fileDate" to it.getString(dateIdx))
-                        } while (it.moveToNext())
-                    }
-                    it.close()
+        Ch.thread.pool(Runnable {
+            val list = mutableListOf<Data>()
+            Ch.content.getImage(MediaStore.Images.Media._ID, false, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED)?.let{
+                if(it.count > 0 && it.moveToFirst()) {
+                    val pathIdx = it.getColumnIndex(MediaStore.Images.Media.DATA)
+                    val dateIdx = it.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
+                    do {
+                        list.add(Data(it.getString(pathIdx), it.getString(dateIdx)))
+                    } while (it.moveToNext())
                 }
-
-                select("local_list")?.map{_,arr->Data("${arr[1]}", "${arr[2]}")}?.let {
-                    Ch.thread.main(Runnable {
-                        val adapter = ListAdapter(it)
-                        scan?.let {
-                            it.view.findViewById<RecyclerView>(R.id.list).adapter = adapter
-                        }
-                        adapter.notifyDataSetChanged()
-
-                    })
+                it.close()
+            }
+            Ch.thread.main(Runnable {
+                val adapter = ListAdapter(list)
+                scan?.let {
+                    it.view.findViewById<RecyclerView>(R.id.list).adapter = adapter
                 }
-
+                adapter.notifyDataSetChanged()
             })
-        }
+        })
+
     }
-    override fun pushed(){
-    }
+    override fun pushed(){}
 }
 
 data class Data(val path:String, val date:String)
 
-class ListAdapter(val list:List<Data>) : RecyclerView.Adapter<ListAdapter.ImageHolder>() {
-
+class ListAdapter(private val list:List<Data>) : RecyclerView.Adapter<ListAdapter.ImageHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageHolder {
         return ImageHolder(LayoutInflater.from(parent.context).inflate(R.layout.row_image_wrap, parent, false))
     }

@@ -1,10 +1,10 @@
-package chela.tutorial.src1
+package chela.tutorial.src3
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.tutorial.R
-import chela.tutorial.src1.holder.Splash
+import chela.tutorial.src3.holder.Main
 import kotlinx.android.synthetic.main.activity_container.*
 
 class Act : AppCompatActivity(){
@@ -13,10 +13,6 @@ class Act : AppCompatActivity(){
         setContentView(R.layout.activity_container)
         App.groupBase.group(main)
         App.looper.act(this)
-        Ch.waitActivate(this, App.looper){ App.router.push(Splash)}
-    }
-    override fun onBackPressed() {
-        //Todo alert..
-        if(App.router.pop() == 0) finish()
+        Ch.waitActivate(this, App.looper){ App.router.push(Main)}
     }
 }
