@@ -1,5 +1,6 @@
 package chela.kotlin.view.router
 
+import android.util.Log
 import chela.kotlin.core._allStack
 import chela.kotlin.core._pop
 import chela.kotlin.thread.ChThread
@@ -15,6 +16,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
     fun unlockPush(){if(pushLock) pushLock = false}
     fun unlockPop(){if(popLock) popLock = false}
     fun push(holder: ChHolder<T>, isAutoUnlock:Boolean = true){
+        Log.i("ch", "-----------------push")
         if(pushLock) return
         if(!isAutoUnlock) pushLock = true
         ChThread.main(Runnable{
@@ -33,7 +35,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
             stack._pop()
             if (stack.isNotEmpty()) base._resume(stack.last(), true)
         })
-        return stack.size - 1
+        return stack.size
     }
     fun jump(holder: ChHolder<T>) = ChThread.main(Runnable {
         stack._allStack{v, _->

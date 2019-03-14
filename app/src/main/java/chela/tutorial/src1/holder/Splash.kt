@@ -18,11 +18,14 @@ object Splash: Scene(){
         App.looper{
             time = vm().title.time
             block = {
+                Log.i("ch", "Splash block")
                 vm().title.pushAnimation(it)
                 renderSync()
             }
             ended = {
+                Log.i("ch", "Splash ended")
                 vm().pushed()
+                render()
             }
         }
     }
