@@ -23,4 +23,8 @@ class ChGroupBase: ChHolderBase<View>(){
         group.removeViewAt(group.childCount - 1)
         if(group.childCount == 0) group.visibility = View.GONE
     }
+    override fun take(index:Int, holder: ChHolder<View>, isRestore: Boolean) {
+        group.removeViewAt(index)
+        if(group.childCount == 0) group.visibility = View.GONE
+    }
 }
