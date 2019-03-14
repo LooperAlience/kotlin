@@ -33,7 +33,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
             stack._pop()
             if (stack.isNotEmpty()) base._resume(stack.last(), true)
         })
-        return stack.size - 1
+        return stack.size
     }
     fun jump(holder: ChHolder<T>) = ChThread.main(Runnable {
         stack._allStack{v, _->

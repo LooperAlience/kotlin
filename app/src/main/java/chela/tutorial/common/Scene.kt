@@ -19,9 +19,11 @@ abstract class Scene: ChHolder<View>(){
         if(base.inflater != inflater) {
             inflater = base.inflater
             val view = base.inflate(layout())
-            scan?.let{it.view = view} ?: run{scan = Ch.scanner.scan(this, view)}
-        }
-        scan!!.render()
+            if(scan == null){
+                scan = Ch.scanner.scan(this, view)
+                scan!!.render()
+            }else scan!!.render(view)
+        }else scan!!.render()
         init()
         return scan!!.view
     }
