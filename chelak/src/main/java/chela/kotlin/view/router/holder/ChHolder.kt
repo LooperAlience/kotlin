@@ -25,6 +25,7 @@ abstract class ChHolderBase<T>{
     open fun pop(holder: ChHolder<T>){}
     protected open fun pause(holder: ChHolder<T>){}
     protected open fun resume(holder: ChHolder<T>){}
+    open fun take(index:Int, holder: ChHolder<T>, isRestore:Boolean){}
 }
 abstract class ChHolder<T>{
     abstract fun create(base: ChHolderBase<T>):T
