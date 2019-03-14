@@ -1,6 +1,7 @@
 package chela.kotlin.resource
 
 import android.annotation.SuppressLint
+import chela.kotlin.Ch
 import chela.kotlin.core._array
 import chela.kotlin.core._for
 import chela.kotlin.core._forObject
@@ -21,6 +22,7 @@ object ChRes{
         }
     }
     @JvmStatic private fun load(res:Res){
+        if(Ch.debugLevel > 0) db.exec("ch_remove", "id" to res.id)
         if(db.i("ch_id", "id" to res.id) == 0){
             db.exec("ch_add", "id" to res.id, "contents" to res.toJSON())
             res.set()
