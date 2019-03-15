@@ -27,7 +27,7 @@ abstract class ChHolderBase<T>{
     protected open fun resume(holder: ChHolder<T>){}
     open fun take(index:Int, holder: ChHolder<T>, isRestore:Boolean){}
 }
-abstract class ChHolder<T>{
+abstract class ChHolder<T>(val isJumpPoint:Boolean = false){
     abstract fun create(base: ChHolderBase<T>):T
     open fun push(base: ChHolderBase<T>, isRestore:Boolean){}
     open fun pop(base: ChHolderBase<T>, isJump:Boolean):Long = 0L
