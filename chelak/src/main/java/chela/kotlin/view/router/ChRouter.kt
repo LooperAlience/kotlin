@@ -37,13 +37,33 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
         })
         return stack.size
     }
-    fun jump(holder: ChHolder<T>) = ChThread.main(Runnable {
+    fun jump()= ChThread.main(Runnable {
+        var isJump = false
         stack._allStack{v, _->
-            if (holder === v) {
-                base._resume(holder, false)
+            if(v.isJumpPoint){
+                base._pop(v, true)
+                base._resume(stack[stack.size - 1], false)
                 false
-            } else {
-                base._pop(holder, true)
+            }else{
+                base._pop(v, isJump)
+                if(!isJump) isJump = true
+                true
+            }
+        }
+    })
+    fun jump(holder: ChHolder<T>, isIncluded:Boolean = true) = ChThread.main(Runnable {
+        var isJump = false
+        stack._allStack{v, _->
+            if(holder === v){
+                if(!isIncluded) base._resume(v, false)
+                else{
+                    base._pop(v, true)
+                    base._resume(stack[stack.size - 1], false)
+                }
+                false
+            }else{
+                base._pop(v, isJump)
+                if(!isJump) isJump = true
                 true
             }
         }
