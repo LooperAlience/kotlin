@@ -67,7 +67,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
         }
     })
     fun take(holder: ChHolder<T>){
-        val i = stack.indexOf(holder)
+        val i = stack.lastIndexOf(holder)
         if(i != -1) take(i)
     }
     fun take(index:Int){
