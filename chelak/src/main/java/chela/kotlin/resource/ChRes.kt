@@ -55,4 +55,4 @@ object ChRes{
         inited = true
     }
     @JvmStatic val ids:String get()= db.select("ch_list")?.rs?.joinToString(",") {"\"${it[0]}\""} ?: ""
-}
+}b
