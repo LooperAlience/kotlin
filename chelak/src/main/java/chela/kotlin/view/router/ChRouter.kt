@@ -12,6 +12,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
     private var pushLock = false
     private var popLock = false
     init{base.router = this}
+    val isFinal:Boolean get() = stack.size == 1
     fun restore(){stack.forEach{base._push(it, true)}}
     fun unlockPush(){if(pushLock) pushLock = false}
     fun unlockPop(){if(popLock) popLock = false}
