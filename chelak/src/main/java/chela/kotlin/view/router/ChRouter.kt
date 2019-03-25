@@ -79,5 +79,5 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
         })
     }
     fun clear() = stack.clear()
-    fun url(url:String){}
+    fun action(key:String, vararg arg:Any) = if(stack.isNotEmpty()) stack.last().action(key, arg) else false
 }

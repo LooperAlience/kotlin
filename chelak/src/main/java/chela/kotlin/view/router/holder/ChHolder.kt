@@ -33,4 +33,5 @@ abstract class ChHolder<T>(val isJumpPoint:Boolean = false){
     open fun pop(base: ChHolderBase<T>, isJump:Boolean):Long = 0L
     open fun resume(base: ChHolderBase<T>, isRestore:Boolean){}
     open fun pause(base: ChHolderBase<T>, isJump:Boolean){}
+    open fun action(key: String, arg: Array<out Any>) = false
 }
