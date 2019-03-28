@@ -10,7 +10,6 @@ import chela.kotlin.PxtoSp
 import chela.kotlin.android.ChApp
 import chela.kotlin.core._try
 import chela.kotlin.regex.reV
-import chela.kotlin.view.ChDrawable
 import chela.kotlin.view.ChStyle
 
 object Type{
@@ -66,7 +65,7 @@ object PropText:Property(){
     }
     @JvmStatic fun textSize(view:View, v:Any){
         if(v !is Number || view !is TextView) return
-        view.textSize = v.PxtoSp.toFloat()
+        view.textSize = v.toFloat()
     }
     @JvmStatic fun textScaleX(view:View, v:Any){
         if(v !is Number || view !is TextView) return
@@ -101,6 +100,10 @@ object PropText:Property(){
     @JvmStatic fun hint(view:View, v:Any){
         if(v !is String || view !is TextView) return
         view.hint = v
+    }
+    @JvmStatic fun hintColor(view:View, v:Any){
+        if(v !is String || view !is TextView) return
+        view.setHintTextColor(ChProperty.color(v))
     }
     @JvmStatic fun maxLines(view:View, v:Any){
         if(v !is Number || view !is TextView) return

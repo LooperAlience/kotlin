@@ -122,6 +122,7 @@ abstract class Model{
                     }?:
                     reV.match(c.v)?.let{
                         val key = c.key
+                        Log.i("ch", "reV $key : ${it.groups}")
                         val isOk = it.groups[1]?.let{set(key, it.value)} ?:
                             it.groups[2]?.let{set(key, it.value)} ?:
                             it.groups[3]?.let{set(key, reV.group3(it))} ?:

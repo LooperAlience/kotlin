@@ -17,13 +17,13 @@ abstract class Scene: ChHolder<View>(){
         if(base !is ChGroupBase) throw Exception("")
         vm()
         if(base.inflater != inflater) {
+            Log.i("ch", "scan222")
             inflater = base.inflater
             val view = base.inflate(layout())
-            if(scan == null){
-                scan = Ch.scanner.scan(this, view)
-                scan!!.render()
-            }else scan!!.render(view)
-        }else scan!!.render()
+            scan?.let{it.view = view} ?: run{scan = Ch.scanner.scan(this, view)}
+        }
+        Log.i("ch", "scan ${scan} ${Ch.model.get("SplashVM.background}")}")
+        scan!!.render()
         init()
         return scan!!.view
     }
@@ -44,6 +44,7 @@ abstract class Scene: ChHolder<View>(){
                 ended = {
                     vm().pushed()
                     pushed()
+                    render()
                 }
             }
         }
@@ -63,6 +64,7 @@ abstract class Scene: ChHolder<View>(){
                 }
                 ended = {
                     vm().poped()
+                    render()
                 }
             }
             Holder.popTime.toLong()

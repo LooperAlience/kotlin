@@ -1,5 +1,6 @@
 package chela.kotlin.regex
 
+import android.util.Log
 import chela.kotlin.*
 
 object reV: ChRegex(
