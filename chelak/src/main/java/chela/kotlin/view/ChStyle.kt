@@ -17,7 +17,9 @@ object ChStyle{
     @JvmStatic val items = mutableMapOf<String, Map<String, Any>>()
     @JvmStatic private val fonts = mutableMapOf<String, Typeface>()
     @JvmStatic private val fontListener = mutableMapOf<String, MutableList<fontL>>()
-    @JvmStatic fun add(k:String, map:Map<String, Any>){items[k] = map}
+    @JvmStatic fun add(k:String, map:Map<String, Any>){
+        items[k] = map
+    }
     @JvmStatic fun remove(k:String) = items.remove(k)
     @JvmStatic operator fun get(k:String):Map<String, Any>? = items[k]
     @JvmStatic fun getFont(k:String, block:fontL):Boolean = fonts[k]?.let{

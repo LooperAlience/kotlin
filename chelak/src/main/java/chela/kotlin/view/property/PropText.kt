@@ -9,6 +9,8 @@ import chela.kotlin.Ch
 import chela.kotlin.PxtoSp
 import chela.kotlin.android.ChApp
 import chela.kotlin.core._try
+import chela.kotlin.regex.reV
+import chela.kotlin.view.ChDrawable
 import chela.kotlin.view.ChStyle
 
 object Type{
