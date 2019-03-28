@@ -90,10 +90,8 @@ object PropView:Property(){
         view.setPadding(view.paddingStart, view.paddingTop, view.paddingEnd, v.toInt())
     }
     @JvmStatic fun padding(view:View, v:Any){
-        Log.i("ch", "===== padding ======== : $v")
         if(v !is String) return
         val a = v.split(" ").map{reV.num(it)?.let{it.toInt()} ?: it.toInt()}
-        Log.i("ch", "===== padding ======== : $a")
         view.setPadding(a[3], a[0], a[1], a[2])//left,top,right,bottom
     }
 }

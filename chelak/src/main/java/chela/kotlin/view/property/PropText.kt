@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import chela.kotlin.Ch
 import chela.kotlin.PxtoSp
+import chela.kotlin.SptoPx
 import chela.kotlin.android.ChApp
 import chela.kotlin.core._try
 import chela.kotlin.regex.reV
@@ -65,7 +66,7 @@ object PropText:Property(){
     }
     @JvmStatic fun textSize(view:View, v:Any){
         if(v !is Number || view !is TextView) return
-        view.textSize = v.toFloat()
+        view.textSize = v.PxtoSp.toFloat()
     }
     @JvmStatic fun textScaleX(view:View, v:Any){
         if(v !is Number || view !is TextView) return
