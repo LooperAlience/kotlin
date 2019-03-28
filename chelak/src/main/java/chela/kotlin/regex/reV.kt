@@ -1,5 +1,6 @@
 package chela.kotlin.regex
 
+import android.util.Log
 import chela.kotlin.*
 
 object reV: ChRegex(
@@ -29,6 +30,7 @@ object reV: ChRegex(
     }
     @JvmStatic fun group4(it:MatchGroup):Long{
         val v = it.value
+        Log.i("ch", "group4 : " + v);
         return when {
             v.endsWith("dp")->(v.substring(0, v.length - 2).toDouble().DptoPx).toLong()
             v.endsWith("sp")->(v.substring(0, v.length - 2).toDouble().SptoPx).toLong()
