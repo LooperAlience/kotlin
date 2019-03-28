@@ -3,8 +3,10 @@ package chela.kotlin.view.property
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.Log
 import android.view.View
 import chela.kotlin.android.ChApp
+import chela.kotlin.regex.reV
 import chela.kotlin.view.ChDrawable
 
 object PropView:Property(){
@@ -88,8 +90,9 @@ object PropView:Property(){
         view.setPadding(view.paddingStart, view.paddingTop, view.paddingEnd, v.toInt())
     }
     @JvmStatic fun padding(view:View, v:Any){
+        Log.i("ch", "===== padding ======== : $v")
         if(v !is String) return
-        val a = v.split(" ").map{it.toInt()}
+        val a = v.split(" ").map{reV.num(it)?.let{it.toInt()} ?: it.toInt()}
         view.setPadding(a[3], a[0], a[1], a[2])//left,top,right,bottom
     }
 }
