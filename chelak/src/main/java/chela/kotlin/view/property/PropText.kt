@@ -1,6 +1,9 @@
 package chela.kotlin.view.property
 
+import android.os.Build
+import android.text.Html
 import android.text.InputFilter
+import android.text.Spanned
 import android.util.Log
 import android.view.View
 import android.widget.TextView
@@ -64,6 +67,18 @@ object PropText:Property(){
         if(view !is TextView) return
         view.text = v as String
     }
+    @JvmStatic fun fromHtml(view:View, v:Any){
+        if(view !is TextView) return
+        var spanned:Spanned
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            spanned = Html.fromHtml(v as String,  Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            @Suppress("DEPRECATION")
+            spanned = Html.fromHtml(v as String)
+        }
+        view.text = spanned
+    }
+
     @JvmStatic fun textSize(view:View, v:Any){
         if(v !is Number || view !is TextView) return
         view.textSize = v.PxtoSp.toFloat()

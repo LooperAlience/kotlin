@@ -23,7 +23,7 @@ class ChProcessor : AbstractProcessor(){
         "click,longClick,clickable,longClickable,focusChange,focusable,focusableInTouchMode,focus,textChanged,touch,down,up,move," +
         "width,height,margin,marginStart,marginEnd,marginTop,marginBottom," +
         "image," +
-        "text,textSize,textScaleX,lineSpacing,textColor,textAlignment,hint,hintColor,maxLines,maxLength,allCaps,fontFamily,font,inputType"
+        "text,fromHtml,textSize,textScaleX,lineSpacing,textColor,textAlignment,hint,hintColor,maxLines,maxLength,allCaps,fontFamily,font,inputType"
     ).toLowerCase().split(",")
     private fun members(e:Element)=
         processingEnv.elementUtils.getAllMembers(processingEnv.typeUtils.asElement(e.asType()) as TypeElement)
