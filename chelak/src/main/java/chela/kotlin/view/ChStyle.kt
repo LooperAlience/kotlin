@@ -1,7 +1,6 @@
 package chela.kotlin.view
 
 import android.graphics.Typeface
-import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.android.ChApp
 import chela.kotlin.net.ChNet

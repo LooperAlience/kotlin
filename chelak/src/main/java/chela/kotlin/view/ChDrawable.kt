@@ -3,7 +3,6 @@ package chela.kotlin.view
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.util.Log
 import chela.kotlin.core._forValue
 import chela.kotlin.core._list
 import chela.kotlin.regex.reV
