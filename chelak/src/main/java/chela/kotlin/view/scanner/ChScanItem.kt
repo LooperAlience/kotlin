@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import chela.kotlin.Ch
 import chela.kotlin.core._shift
+import chela.kotlin.model.ChModel
 import chela.kotlin.view.ChStyle
 import chela.kotlin.model.Model
 import chela.kotlin.view.ChStyleModel
@@ -82,7 +83,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         }else if(k == "style"){
             val m = mutableMapOf<String, Any>()
             val key = "@{" + v.joinToString(".")
-            val target = Ch.model.get(v)
+            val target = ChModel.get(v)
             (target as? ChStyleModel)?.let{model->
                 model::class.memberProperties.forEach { p->
                     if(p.findAnnotation<EX>() == null){

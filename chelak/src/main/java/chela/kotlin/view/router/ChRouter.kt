@@ -17,7 +17,6 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
     fun unlockPush(){if(pushLock) pushLock = false}
     fun unlockPop(){if(popLock) popLock = false}
     fun push(holder: ChHolder<T>, isAutoUnlock:Boolean = true){
-        Log.i("ch", "-----------------push")
         if(pushLock) return
         if(!isAutoUnlock) pushLock = true
         ChThread.main(Runnable{
