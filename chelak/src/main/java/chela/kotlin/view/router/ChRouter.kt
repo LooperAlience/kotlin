@@ -73,7 +73,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
     }
     fun take(index:Int){
         if(stack.size > index) ChThread.main(Runnable {
-            base._take(index, stack.removeAt(index), true)
+            base._take(index, stack.removeAt(index))
         })
     }
     fun clear() = stack.clear()
