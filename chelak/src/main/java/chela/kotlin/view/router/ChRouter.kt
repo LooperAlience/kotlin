@@ -1,6 +1,5 @@
 package chela.kotlin.view.router
 
-import android.util.Log
 import chela.kotlin.core._allStack
 import chela.kotlin.core._pop
 import chela.kotlin.thread.ChThread
@@ -74,7 +73,7 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
     }
     fun take(index:Int){
         if(stack.size > index) ChThread.main(Runnable {
-            base.take(index, stack.removeAt(index), true)
+            base._take(index, stack.removeAt(index), true)
         })
     }
     fun clear() = stack.clear()
