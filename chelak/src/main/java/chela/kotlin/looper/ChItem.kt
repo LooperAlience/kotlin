@@ -9,7 +9,7 @@ class ChItem{
     @JvmField internal var start = 0.0
     @JvmField internal var end = 0.0
     @JvmField internal var term = 0.0
-    @JvmField internal var isTurn = false
+    @JvmField var isTurn = false
     @JvmField internal var loop = 1
     @JvmField internal var isPaused = false
     @JvmField internal var isInfinity = false

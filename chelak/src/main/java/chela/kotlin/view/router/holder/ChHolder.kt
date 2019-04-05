@@ -20,18 +20,23 @@ abstract class ChHolderBase<T>{
         resume(holder)
         holder.resume(this, isRestore)
     }
+    internal fun _take(index:Int, holder: ChHolder<T>){
+        take(index, holder)
+        holder.take(this)
+    }
     protected fun restore(){router.restore()}
     protected open fun push(holder: ChHolder<T>){}
     open fun pop(holder: ChHolder<T>){}
     protected open fun pause(holder: ChHolder<T>){}
     protected open fun resume(holder: ChHolder<T>){}
-    open fun take(index:Int, holder: ChHolder<T>, isRestore:Boolean){}
+    open fun take(index:Int, holder: ChHolder<T>){}
 }
 abstract class ChHolder<T>(val isJumpPoint:Boolean = false){
     abstract fun create(base: ChHolderBase<T>):T
     open fun push(base: ChHolderBase<T>, isRestore:Boolean){}
-    open fun pop(base: ChHolderBase<T>, isJump:Boolean):Long = 0L
+    open fun pop(base: ChHolderBase<T>, isJump:Boolean) = 0L
     open fun resume(base: ChHolderBase<T>, isRestore:Boolean){}
     open fun pause(base: ChHolderBase<T>, isJump:Boolean){}
+    open fun take(base: ChHolderBase<T>){}
     open fun action(key: String, arg: Array<out Any>) = false
 }
