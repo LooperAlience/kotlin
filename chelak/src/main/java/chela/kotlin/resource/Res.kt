@@ -1,9 +1,7 @@
 package chela.kotlin.resource
 
-import android.util.Log
 import chela.kotlin.core.*
 import chela.kotlin.i18n.ChI18n
-import chela.kotlin.net.ChNet
 import chela.kotlin.sql.ChSql
 import org.json.JSONArray
 import org.json.JSONObject
@@ -29,7 +27,7 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
                 "shape"->shape = it._mapObject{Shape(it)}
                 "ruleset"->ruleset = it._mapObject{Ruleset(it)}
                 "i18n"->{
-                    it._string("setting_language")?.let{ChI18n(it)}
+                    it._string("language")?.let{ChI18n(it)}
                     i18n = it._mapObject{I18n(it)}
                 }
                 "query"->query = it._map{

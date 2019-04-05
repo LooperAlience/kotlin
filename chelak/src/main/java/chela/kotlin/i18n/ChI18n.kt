@@ -1,5 +1,6 @@
 package chela.kotlin.i18n
 
+import android.util.Log
 import chela.kotlin.resource.I18n
 
 object ChI18n{
@@ -20,6 +21,8 @@ object ChI18n{
         val ln =  if(i.isOne.isNotBlank()) i.isOne
             else if(k.size == 4) k[3]
             else lang
+        Log.i("ch", "=========ln========= $ln :: key : $key :: lang :$lang")
+        Log.i("ch", "=========items========= $items")
         if(ln.isBlank()) return "no setting_language"
         return i.data[ln]?.get(subKey) ?: "no data:$k"
     }
