@@ -20,7 +20,7 @@ object ChI18n{
         val ln =  if(i.isOne.isNotBlank()) i.isOne
             else if(k.size == 4) k[3]
             else lang
-        if(ln.isBlank()) return "no language"
+        if(ln.isBlank()) return "no setting_language"
         return i.data[ln]?.get(subKey) ?: "no data:$k"
     }
 }

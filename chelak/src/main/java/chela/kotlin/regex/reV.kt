@@ -1,7 +1,8 @@
 package chela.kotlin.regex
 
-import android.util.Log
-import chela.kotlin.*
+import chela.kotlin.Ch
+import chela.kotlin.DptoPx
+import chela.kotlin.SptoPx
 
 object reV: ChRegex(
     """^\s*""" +

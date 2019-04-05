@@ -48,6 +48,13 @@ object ChDrawable{
                 }
                 "strokecolor" -> arg += Param.StrokeColor("$v")
                 "solid" -> arg += Param.Solid("$v")
+                "shape" -> arg += when("$v"){
+                    "line" -> Param.Line
+                    "oval" -> Param.Oval
+                    "ring" -> Param.Ring
+                    "rect" -> Param.Rect
+                    else -> Param.Rect
+                }
                 else -> Param::class.sealedSubclasses.
                     find { it.simpleName?.toLowerCase() == key.toLowerCase() }?.
                     let {it.objectInstance}?.let{arg += it}
