@@ -4,6 +4,7 @@ import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import chela.kotlin.Ch
 import java.util.*
 
@@ -58,6 +59,11 @@ object PropEvent:Property(){
         if(v !is Ch.OnTextChanged || view !is EditText) return
         v.text = view
         view.addTextChangedListener(v)
+    }
+
+    @JvmStatic fun editorAction(view: View, v:Any){
+        if(v !is TextView.OnEditorActionListener || view !is EditText) return
+        view.setOnEditorActionListener(v)
     }
 
     @JvmStatic private val touches = WeakHashMap<View, MutableMap<String, Ch.Touch>>()
