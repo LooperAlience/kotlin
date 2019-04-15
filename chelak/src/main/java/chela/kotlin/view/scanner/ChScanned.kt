@@ -1,7 +1,7 @@
 package chela.kotlin.view.scanner
 
 import android.view.View
-import chela.kotlin.Ch
+import chela.kotlin.thread.ChThread
 import chela.kotlin.view.property.ChProperty
 
 /**
@@ -22,7 +22,7 @@ class ChScanned internal constructor(@JvmField var view: View, private val items
             if(isNew) it.view(view)
             if(it.render()) collector += it
         }
-        if(collector.isNotEmpty()) Ch.thread.msg(Ch.thread.property, collector)
+        if(collector.isNotEmpty()) ChThread.msg(ChThread.property, collector)
         return view
     }
     fun renderSync(){

@@ -37,10 +37,7 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
         return r
     }
     fun select(k:String, isRecord:Boolean = false, vararg arg:Pair<String, Any>) = runQuery(k, *arg)?.let{
-        val r = if(it.count > 0 && it.moveToFirst()) {
-            val offCursor = ChCursor(it, isRecord)
-            offCursor
-        }else null
+        val r = if(it.count > 0 && it.moveToFirst()) ChCursor(it, isRecord) else null
         it.close()
         r
     }

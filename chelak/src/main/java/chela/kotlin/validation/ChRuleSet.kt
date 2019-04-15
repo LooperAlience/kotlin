@@ -7,18 +7,18 @@ import chela.kotlin.validation.rule.TypeRules
 
 class ChRuleSet(rule:String){
     companion object{
-        @JvmStatic private val _defined = mutableMapOf<String, ChRuleSet>()
-        @JvmStatic private val baseRule = listOf(BaseRules(), TypeRules(), RegRules())
-        @JvmStatic val string get() = ChRuleSet["string"]!!
-        @JvmStatic fun add(k:String, rule:String){
+        private val _defined = mutableMapOf<String, ChRuleSet>()
+        private val baseRule = listOf(BaseRules(), TypeRules(), RegRules())
+        val string get() = ChRuleSet["string"]!!
+        fun add(k:String, rule:String){
             if(k.isBlank() || rule.isBlank()) return
             val key = k.trim().toLowerCase()
             _defined[key] = ChRuleSet(rule)
         }
-        @JvmStatic fun remove(k:String) = _defined.remove(k)
-        @JvmStatic operator fun get(k:String):ChRuleSet? = _defined[k.toLowerCase()]
-        @JvmStatic fun check(k:String, v:Any) = (get(k) ?: string).check(v)
-        @JvmStatic fun isOk(vararg kv:Pair<String, Any>) = kv.all {(k, v)-> check(k, v) !is ChRuleSet}
+        fun remove(k:String) = _defined.remove(k)
+        operator fun get(k:String):ChRuleSet? = _defined[k.toLowerCase()]
+        fun check(k:String, v:Any) = (get(k) ?: string).check(v)
+        fun isOk(vararg kv:Pair<String, Any>) = kv.all {(k, v)-> check(k, v) !is ChRuleSet}
     }
     private val rules = rule.split("-or-").map{
         it.split("|").filter{it.isNotBlank()}.map{v->

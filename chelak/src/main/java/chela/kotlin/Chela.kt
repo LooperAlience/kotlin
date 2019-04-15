@@ -6,15 +6,20 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
-import chela.kotlin.core.*
+import chela.kotlin.core.ChDate
+import chela.kotlin.core.ChMath
+import chela.kotlin.core.ChReflect
+import chela.kotlin.core._try
 import chela.kotlin.crypto.ChCrypto
 import chela.kotlin.i18n.ChI18n
 import chela.kotlin.looper.ChLooper
 import chela.kotlin.model.ChModel
 import chela.kotlin.net.ChNet
+import chela.kotlin.net.ChResponse
 import chela.kotlin.resource.ChRes
 import chela.kotlin.sql.ChSql
 import chela.kotlin.thread.ChThread
@@ -32,98 +37,99 @@ import chela.kotlin.view.scanner.ChScanner
 import net.sqlcipher.database.SQLiteDatabase
 import org.json.JSONObject
 
-inline val Number.DptoPx get() = this.toDouble() * ChWindow.SptoPx
-inline val Number.PxtoDp get() = this.toDouble() * ChWindow.PxtoDp
-inline val Number.PxtoSp get() = this.toDouble() * ChWindow.PxtoSp
-inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
+
 /**
  * Chela base object
  */
 object Ch{
-    @JvmStatic private var isInited = false
-    @JvmStatic var debugLevel = 0
+
+    inline val Number.DptoPx get() = this.toDouble() * ChWindow.SptoPx
+    inline val Number.PxtoDp get() = this.toDouble() * ChWindow.PxtoDp
+    inline val Number.PxtoSp get() = this.toDouble() * ChWindow.PxtoSp
+    inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
+
+    class Update(var v:Any)
+
+    private var isInited = false
+    var debugLevel = 0
     fun isInited() = isInited
     /**
      * add base application & setting
      */
-    @JvmStatic operator fun invoke(application:Application, path:String = ""){
+    operator fun invoke(application:Application, path:String = ""){
         if(isInited) throw Throwable("inited!")
         isInited = true
-        SQLiteDatabase.loadLibs(application)
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
-        app(application)
+        ChApp(application)
+        SQLiteDatabase.loadLibs(application)
         ChRes.init()
-        if(path.isNotBlank()) _try{
+        if (path.isNotBlank()) _try {
             JSONObject(ChAsset.string(path))
-        }?.let{
+        }?.let {
             ChRes.load(it)
         }
-        if(debugLevel == 0) Thread.currentThread().setUncaughtExceptionHandler{ _, _->
-
-        }
+        if (debugLevel == 0) Thread.currentThread().setUncaughtExceptionHandler { _, _ ->}
     }
-    @JvmStatic val WIFI = object:Value{}
-    @JvmStatic val MOBILE = object:Value{}
-    @JvmStatic val NONE = object:Value{}
-    @JvmStatic val NONE_BA = ByteArray(0)
-    @JvmStatic val math = ChMath
-    @JvmStatic val reflect = ChReflect
-    @JvmStatic val thread = ChThread
-    @JvmStatic val app = ChApp
-    @JvmStatic val window = ChWindow
-    @JvmStatic val res = ChRes
-    @JvmStatic val net = ChNet
-    @JvmStatic val content = ChContent
-    @JvmStatic val clipBoard = ChClipBoard
-    @JvmStatic val asset = ChAsset
-    @JvmStatic val shared = ChShared
-    @JvmStatic val keyboard = ChKeyboard
-    @JvmStatic val date = ChDate
-    @JvmStatic val permission = ChPermission
-    @JvmStatic val model = ChModel
-    @JvmStatic val sql = ChSql
-    @JvmStatic val ruleset = ChRuleSet
-    @JvmStatic val view = ChView
-    @JvmStatic val drawable = ChDrawable
-    @JvmStatic val style = ChStyle
-    @JvmStatic val i18n = ChI18n
-    @JvmStatic val crypto = ChCrypto
-    @JvmStatic val scanner = ChScanner
-    @JvmStatic val prop = ChProperty
-    @JvmStatic fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
+    val WIFI = object : Value {}
+    val MOBILE = object : Value {}
+    val NONE = object : Value {}
+    val NONE_BA = ByteArray(0)
+    val math = ChMath
+    val reflect = ChReflect
+    val thread = ChThread
+    val app = ChApp
+    val window = ChWindow
+    val res = ChRes
+    val net = ChNet
+    val content = ChContent
+    val clipBoard = ChClipBoard
+    val asset = ChAsset
+    val shared = ChShared
+    val keyboard = ChKeyboard
+    val date = ChDate
+    val permission = ChPermission
+    val model = ChModel
+    val sql = ChSql
+    val ruleset = ChRuleSet
+    val view = ChView
+    val drawable = ChDrawable
+    val style = ChStyle
+    val i18n = ChI18n
+    val crypto = ChCrypto
+    val scanner = ChScanner
+    val prop = ChProperty
 
-    @JvmStatic fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, block:()->Unit){
-        with(if(looper == null){
-            val l = Ch.looper()
+    fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
+
+    fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, f:()->Unit){
+        (looper ?: run{
+            val l = looper()
             l.act(activity)
             l
-        }else looper){
-            invoke{
-                isInfinity = true
-                this.block = {
-                    if(activity.window.decorView.width != 0){
-                        block()
-                        it.stop()
-                    }
+        }){
+            isInfinity = true
+            block = {
+                if(activity.window.decorView.width != 0){
+                    f()
+                    it.stop()
                 }
             }
         }
     }
-    @JvmStatic fun finish(act:AppCompatActivity){
+    fun finish(act:AppCompatActivity){
         act.cacheDir?.let{it.deleteRecursively()}
         act.finish()
         System.exit(0)
     }
 
-    @JvmStatic fun looper():ChLooper = ChLooper()
+    fun looper():ChLooper = ChLooper()
     /**
      * get router
      *
      */
-    @JvmStatic fun <T>router(base: ChHolderBase<T>): ChRouter<T> = ChRouter(base)
-    @JvmStatic fun groupBase():ChGroupBase = ChGroupBase()
-    @JvmStatic fun fragmentBase():ChFragmentBase = ChFragmentBase()
-
+    fun <T>router(base: ChHolderBase<T>): ChRouter<T> = ChRouter(base)
+    fun groupBase():ChGroupBase = ChGroupBase()
+    fun fragmentBase():ChFragmentBase = ChFragmentBase()
 
     sealed class ApiResult(val msg:String){
         fun isFail() = this is fail
@@ -147,5 +153,34 @@ object Ch{
         override fun onTextChanged(s:CharSequence?, start:Int, before:Int, count:Int) = onChanged(text, s ?: "", start, before, count)
         abstract fun onChanged(view:EditText, s:CharSequence, start:Int, before:Int, count:Int)
         fun pos() = ChView.cursorPos(text)
+    }
+    abstract class Data <T>(val key:Any){
+        companion object{
+            private val data = mutableMapOf<Any, Any>()
+        }
+        protected abstract fun getDB():T
+        protected abstract fun setDB(res:ChResponse)
+        protected abstract fun net(block:(ChResponse)->Unit)
+        protected abstract fun isValid(v:T):Boolean
+        protected abstract fun renew(v:T)
+        protected abstract fun data(v:T)
+        operator fun invoke(){
+            @Suppress("UNCHECKED_CAST")
+            data[key]?.let{
+                if(isValid(it as T)){
+                    data(it)
+                    return
+                }else data.remove(key)
+            }
+            val v = getDB()
+            if(isValid(v)){
+                data[key] = v as Any
+                renew(v)
+                invoke()
+            }else net{res->
+                setDB(res)
+                invoke()
+            }
+        }
     }
 }

@@ -1,7 +1,5 @@
 package chela.kotlin.resource
 
-import android.util.Log
-import chela.kotlin.core._forObject
 import chela.kotlin.core._mapObject
 import chela.kotlin.core._object
 import chela.kotlin.core._string

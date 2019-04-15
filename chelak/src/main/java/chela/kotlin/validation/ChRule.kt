@@ -8,8 +8,8 @@ import kotlin.reflect.KFunction
 typealias ruleF = (arg:List<String>)->(v:Any)->Any
 abstract class ChRule{
     companion object{
-        @JvmStatic internal val _defined = mutableMapOf<String, ruleF>()
-        @JvmStatic operator fun get(k:String):ruleF = _defined[k] ?: throw Exception("invalid rule:$k")
+        internal val _defined = mutableMapOf<String, ruleF>()
+        operator fun get(k:String):ruleF = _defined[k] ?: throw Exception("invalid rule:$k")
     }
     init{
         /**

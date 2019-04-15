@@ -1,6 +1,6 @@
 package chela.tutorial.src3.viewmodel
 
-import chela.kotlin.DptoPx
+import chela.kotlin.Ch.DptoPx
 import chela.tutorial.common.SceneModel
 import com.chela.annotation.PROP
 import com.chela.annotation.VM

@@ -1,10 +1,10 @@
 package chela.tutorial.common
 
 import android.util.Log
-import chela.kotlin.Ch
 import chela.kotlin.looper.ChItem
 import chela.kotlin.view.ChStyleModel
 import chela.kotlin.view.ChViewModel
+import chela.kotlin.view.ChWindow
 import com.chela.annotation.EX
 import com.chela.annotation.STYLE
 
@@ -18,7 +18,6 @@ abstract class SceneModel(holderType:Int = 0): ChViewModel(){
         }
     }
     override fun pushAnimation(it: ChItem){
-        Log.i("ch", "SceneModel pushAnimation${holder}")
         holder.pushAnimation(it)
     }
     override fun popAnimation(it: ChItem) {
@@ -37,8 +36,8 @@ abstract class SceneModel(holderType:Int = 0): ChViewModel(){
 
 @STYLE
 class Holder(
-    @EX val pushX:Pair<Double, Double> = Ch.window.width.toDouble() to 0.0,
-    @EX val popX:Pair<Double, Double> = 0.0 to Ch.window.width.toDouble()): ChStyleModel(){
+    @EX val pushX:Pair<Double, Double> = ChWindow.width.toDouble() to 0.0,
+    @EX val popX:Pair<Double, Double> = 0.0 to ChWindow.width.toDouble()): ChStyleModel(){
     companion object {
         @EX val popTime = 320
         @EX val pushTime = 350
@@ -56,7 +55,6 @@ class Holder(
         visible = false
     }
     override fun pushAnimation(it: ChItem) {
-        Log.i("ch", "pushAnimation${pushX.second}")
         x = it.circleOut(pushX.first, pushX.second)
     }
     override fun popAnimation(it: ChItem) {

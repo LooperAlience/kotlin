@@ -21,7 +21,7 @@ object Main : Scene() {
     override fun init(){
         if(!Act.isPermitted) return
         //todo 퍼미션 호출 다시 해야 함
-        Ch.thread.pool(Runnable {
+        ChThread.pool(Runnable {
             val list = mutableListOf<Data>()
             Ch.content.getImage(MediaStore.Images.Media._ID, false, MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED)?.let{
                 if(it.count > 0 && it.moveToFirst()) {
@@ -33,7 +33,7 @@ object Main : Scene() {
                 }
                 it.close()
             }
-            Ch.thread.main(Runnable {
+            ChThread.main(Runnable {
                 val adapter = ListAdapter(list)
                 scan?.let {
                     it.view.findViewById<RecyclerView>(R.id.list).adapter = adapter
@@ -64,7 +64,7 @@ class ListAdapter(private val list:List<Data>) : RecyclerView.Adapter<ListAdapte
             itemImg.setOnClickListener(this)
         }
         fun bind(d: Data) {
-            Glide.with(Ch.app.app).load(d.path).into(itemImg)
+            Glide.with(ChApp.app).load(d.path).into(itemImg)
             type.text = d.date
         }
         override fun onClick(v: View) {

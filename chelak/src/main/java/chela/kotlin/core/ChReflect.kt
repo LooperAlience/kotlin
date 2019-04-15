@@ -7,8 +7,8 @@ import kotlin.reflect.full.memberProperties
 
 object ChReflect{
     class Item(val getter: Map<String, KProperty1.Getter<*, *>>, val setter:Map<String, KMutableProperty.Setter<*>>)
-    @JvmStatic private val fields = mutableMapOf<KClass<*>, Item>()
-    @JvmStatic fun fields(cls: KClass<*>):Item{
+    private val fields = mutableMapOf<KClass<*>, Item>()
+    fun fields(cls: KClass<*>):Item{
         if(fields[cls] != null) return fields[cls]!!
         val getter = mutableMapOf<String, KProperty1.Getter<*, *>>()
         val setters = mutableMapOf<String, KMutableProperty.Setter<*>>()

@@ -13,7 +13,7 @@ typealias oknever = (List<String>)->Unit
 
 object ChPermission{
     @SuppressLint("ObsoleteSdkInt")
-    @JvmStatic internal val dangers = with(mutableSetOf<String>()){
+    internal val dangers = with(mutableSetOf<String>()){
         addAll(listOf(
             Manifest.permission.READ_CALENDAR,
             Manifest.permission.WRITE_CALENDAR,
@@ -48,9 +48,9 @@ object ChPermission{
         }
         this
     }
-    @JvmStatic internal val isGranted = PackageManager.PERMISSION_GRANTED
-    @JvmStatic private val instances = mutableMapOf<Int, Permission>()
-    @JvmStatic operator fun invoke(act:AppCompatActivity, code:Int):Permission{
+    internal val isGranted = PackageManager.PERMISSION_GRANTED
+    private val instances = mutableMapOf<Int, Permission>()
+    operator fun invoke(act:AppCompatActivity, code:Int):Permission{
         var v = instances[code]
         if(v == null || v.act !== act){
             v = Permission(act, code)
@@ -58,7 +58,7 @@ object ChPermission{
         }
         return v
     }
-    @JvmStatic fun result(act:AppCompatActivity, code:Int, permission:Array<String>, granted:IntArray){
+    fun result(act:AppCompatActivity, code:Int, permission:Array<String>, granted:IntArray){
         val p = instances[code] ?: return
         val ok = mutableListOf<String>()
         val denied = mutableListOf<String>()

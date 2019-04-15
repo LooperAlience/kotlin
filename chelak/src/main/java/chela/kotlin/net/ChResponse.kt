@@ -1,6 +1,5 @@
 package chela.kotlin.net
 
-import android.util.Log
 import okhttp3.Response
 
 class ChResponse(private val response:Response?, var err:String? = null){

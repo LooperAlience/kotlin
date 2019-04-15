@@ -1,7 +1,7 @@
 package chela.tutorial.src1.viewmodel
 
 import android.view.View
-import chela.kotlin.DptoPx
+import chela.kotlin.Ch.DptoPx
 import chela.kotlin.looper.ChItem
 import chela.kotlin.view.ChStyleModel
 import chela.tutorial.common.Holder

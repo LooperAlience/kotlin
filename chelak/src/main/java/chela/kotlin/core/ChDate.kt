@@ -3,7 +3,7 @@ package chela.kotlin.core
 import java.util.*
 
 object ChDate{
-    @JvmStatic fun offset():Int{
+    fun offset():Int{
         val longtime = Date().time
         val z1 = TimeZone.getDefault()
         val offset1 = z1.getOffset(longtime)

@@ -2,7 +2,6 @@ package chela.kotlin.android
 
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import chela.kotlin.Ch
 
 object ChShared{
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
@@ -35,5 +34,5 @@ object ChShared{
         }
 
     }
-    @JvmStatic fun name(k:String):Item = Item(Ch.app.app.getSharedPreferences(k, MODE_PRIVATE))
+    fun name(k:String):Item = Item(ChApp.app.getSharedPreferences(k, MODE_PRIVATE))
 }

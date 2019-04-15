@@ -12,6 +12,7 @@ import chela.kotlin.core._long
 import chela.kotlin.core._stringify
 import chela.kotlin.core._toString
 import chela.kotlin.core._try
+import chela.kotlin.crypto.ChCrypto
 import chela.kotlin.net.ChHttp.Companion.EXTRA_JSON
 import chela.kotlin.net.ChHttp.Companion.EXTRA_REQUEST
 import chela.kotlin.net.ChNet.apis
@@ -30,11 +31,11 @@ typealias responseTaskF = (response:ChResponse, taskArg:List<String>)-> Boolean
  * It cached Api information on [apis].
  */
 object ChNet {
-    @JvmStatic private val apis = mutableMapOf<String, Api>()
-    @JvmStatic private val requestItemTask = mutableMapOf<String, (Any) -> Any?>(
-        "sha256" to {v->Ch.crypto.sha256("$v")}
+    private val apis = mutableMapOf<String, Api>()
+    private val requestItemTask = mutableMapOf<String, (Any) -> Any?>(
+        "sha256" to {v-> ChCrypto.sha256("$v")}
     )
-    @JvmStatic private val requestTask = mutableMapOf<String, requestTaskF>(
+    private val requestTask = mutableMapOf<String, requestTaskF>(
         "header" to {http, arg, taskArg->
             var cnt = 0
             arg.filter{taskArg.contains(it.first)}.forEach {
@@ -58,8 +59,8 @@ object ChNet {
             true
         }
     )
-    @JvmStatic val timestamp = mutableMapOf<String, Long>()
-    @JvmStatic private val responseTask = mutableMapOf<String, responseTaskF>(
+    val timestamp = mutableMapOf<String, Long>()
+    private val responseTask = mutableMapOf<String, responseTaskF>(
         "json" to {res, _->
             (res.extra[EXTRA_JSON] ?: res.body)?.let{v->
                 _try{JSONObject("$v")}?.let{
@@ -80,22 +81,22 @@ object ChNet {
         true
         }
     )
-    @JvmStatic fun apiRequestTask(key: String, block: requestTaskF) {requestTask[key] = block}
-    @JvmStatic fun apiRequestItemTask(key: String, block: (Any) -> Any?){ requestItemTask[key] = block}
-    @JvmStatic fun apiResponseTask(key: String, block: responseTaskF){responseTask[key] = block}
-    @JvmStatic fun get(k: String):Api? = apis[k]
-    @JvmStatic fun add(k:String, api:Api){apis[k] = api}
-    @JvmStatic fun remove(k:String) = apis.remove(k)
+    fun apiRequestTask(key: String, block: requestTaskF) {requestTask[key] = block}
+    fun apiRequestItemTask(key: String, block: (Any) -> Any?){ requestItemTask[key] = block}
+    fun apiResponseTask(key: String, block: responseTaskF){responseTask[key] = block}
+    fun get(k: String):Api? = apis[k]
+    fun add(k:String, api:Api){apis[k] = api}
+    fun remove(k:String) = apis.remove(k)
     /**
      * @key json object key on Api
      * @arg Pair you want to validate and send HTTP request.
      * <pre>
-     *     Ch.net.api(jsonObjectKey, key to value...) { response ->
+     *     ChNet.api(jsonObjectKey, key to value...) { response ->
      *        App.data = response.result
      *     }
      * </pre>
      */
-    @JvmStatic fun api(key:String, vararg arg:Pair<String, Any>, block:(ChResponse)->Unit):Ch.ApiResult{
+    fun api(key:String, vararg arg:Pair<String, Any>, block:(ChResponse)->Unit):Ch.ApiResult{
         val api = get(key) ?: return Ch.ApiResult.fail("invalid api:$key")
         val reqItem = mutableListOf<Pair<String, Any>>()
         api.request?.let{
@@ -105,7 +106,7 @@ object ChNet {
                 var r = v
                 req.rules?.let {
                     if (it.isNotBlank()) {
-                        r = Ch.ruleset.check(req.rules, r)
+                        r = ChRuleSet.check(req.rules, r)
                         if (r is ChRuleSet) return Ch.ApiResult.fail("rule check fail $k:$v")
                     }
                 }
@@ -150,10 +151,10 @@ object ChNet {
         }
         return Ch.ApiResult.ok
     }
-    @JvmStatic fun http(method:String, url:String): ChHttp = ChHttpOk3(method, Request.Builder().url(url))
-    @JvmStatic fun isOn():Boolean = connectedType() != Ch.NONE
+    fun http(method:String, url:String): ChHttp = ChHttpOk3(method, Request.Builder().url(url))
+    fun isOn():Boolean = connectedType() != Ch.NONE
 
-    @JvmStatic fun connectedType():Ch.Value{
+    fun connectedType():Ch.Value{
         if(SDK_INT < 23){
             @Suppress("DEPRECATION")
             ChApp.cm.activeNetworkInfo?.let{

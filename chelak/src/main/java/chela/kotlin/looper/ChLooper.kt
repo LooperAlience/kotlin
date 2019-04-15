@@ -2,6 +2,7 @@ package chela.kotlin.looper
 
 import android.content.Context
 import android.graphics.Canvas
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import chela.kotlin.core._shift
+import chela.kotlin.thread.ChThread
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 import java.util.concurrent.locks.ReentrantReadWriteLock
@@ -74,9 +76,9 @@ class ChLooper:LifecycleObserver{
     fun act(act: AppCompatActivity){
         val root = act.window.decorView as ViewGroup
         if(root.findViewWithTag<Ani>("CHELA_ANI") == null){
-            val ani = Ani(act, this)
-            root.addView(ani)
             act.lifecycle.addObserver(this)
+            val ani = Ani(act, this)
+            ChThread.main(Runnable { root.addView(ani) })
         }
     }
     fun loop(){

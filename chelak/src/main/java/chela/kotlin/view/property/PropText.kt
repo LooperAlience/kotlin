@@ -4,70 +4,66 @@ import android.os.Build
 import android.text.Html
 import android.text.InputFilter
 import android.text.Spanned
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
-import chela.kotlin.Ch
-import chela.kotlin.PxtoSp
-import chela.kotlin.SptoPx
 import chela.kotlin.android.ChApp
 import chela.kotlin.core._try
-import chela.kotlin.regex.reV
 import chela.kotlin.view.ChStyle
+import chela.kotlin.Ch.PxtoSp
 
 object Type{
-    @JvmStatic val date = 0x14
-    @JvmStatic val dateTime = 0x4
-    @JvmStatic val none = 0x0
-    @JvmStatic val number = 0x2
-    @JvmStatic val numberDecimal = 0x2002
-    @JvmStatic val numberPassword = 0x12
-    @JvmStatic val numberSigned = 0x1002
-    @JvmStatic val phone = 0x3
-    @JvmStatic val text = 0x1
-    @JvmStatic val textAutoComplete = 0x10001
-    @JvmStatic val textAutoCorrect = 0x8001
-    @JvmStatic val textCapCharacters = 0x1001
-    @JvmStatic val textCapSentences = 0x4001
-    @JvmStatic val textCapWords = 0x2001
-    @JvmStatic val textEmailAddress = 0x21
-    @JvmStatic val textEmailSubject = 0x31
-    @JvmStatic val textFilter = 0xb1
-    @JvmStatic val textIMEMultiline = 0x40001
-    @JvmStatic val textLongMessage = 0x51
-    @JvmStatic val textMultiline = 0x20001
-    @JvmStatic val textNoSuggestions = 0x80001
-    @JvmStatic val textPassword = 0x81
-    @JvmStatic val textPersonName = 0x61
-    @JvmStatic val textPhonetic = 0xc1
-    @JvmStatic val textPostalAddress = 0x71
-    @JvmStatic val textShortMessage = 0x41
-    @JvmStatic val textUri = 0x11
-    @JvmStatic val textVisiblePassword = 0x91
-    @JvmStatic val textWebEditText = 0xa1
-    @JvmStatic val textWebEmailAddress = 0xd1
-    @JvmStatic val textWebPassword = 0xe1
-    @JvmStatic val time = 0x24
+    val date = 0x14
+    val dateTime = 0x4
+    val none = 0x0
+    val number = 0x2
+    val numberDecimal = 0x2002
+    val numberPassword = 0x12
+    val numberSigned = 0x1002
+    val phone = 0x3
+    val text = 0x1
+    val textAutoComplete = 0x10001
+    val textAutoCorrect = 0x8001
+    val textCapCharacters = 0x1001
+    val textCapSentences = 0x4001
+    val textCapWords = 0x2001
+    val textEmailAddress = 0x21
+    val textEmailSubject = 0x31
+    val textFilter = 0xb1
+    val textIMEMultiline = 0x40001
+    val textLongMessage = 0x51
+    val textMultiline = 0x20001
+    val textNoSuggestions = 0x80001
+    val textPassword = 0x81
+    val textPersonName = 0x61
+    val textPhonetic = 0xc1
+    val textPostalAddress = 0x71
+    val textShortMessage = 0x41
+    val textUri = 0x11
+    val textVisiblePassword = 0x91
+    val textWebEditText = 0xa1
+    val textWebEmailAddress = 0xd1
+    val textWebPassword = 0xe1
+    val time = 0x24
 }
 object Alignment{
-    @JvmStatic val center = 4
-    @JvmStatic val gravity = 1
-    @JvmStatic val inherit = 0
-    @JvmStatic val textend = 3
-    @JvmStatic val textstart = 2
-    @JvmStatic val viewend = 6
-    @JvmStatic val viewstart = 5
+    val center = 4
+    val gravity = 1
+    val inherit = 0
+    val textend = 3
+    val textstart = 2
+    val viewend = 6
+    val viewstart = 5
 }
 object PropText:Property(){
-    @JvmStatic val type = Type
-    @JvmStatic val alignment = Alignment
+    val type = Type
+    val alignment = Alignment
 
-    @JvmStatic fun text(view:View, v:Any){
+    fun text(view:View, v:Any){
         if(view !is TextView) return
         view.text = v as String
     }
-    @JvmStatic fun fromHtml(view:View, v:Any){
+    fun fromHtml(view:View, v:Any){
         if(view !is TextView) return
         var spanned:Spanned
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -79,23 +75,23 @@ object PropText:Property(){
         view.text = spanned
     }
 
-    @JvmStatic fun textSize(view:View, v:Any){
+    fun textSize(view:View, v:Any){
         if(v !is Number || view !is TextView) return
         view.textSize = v.PxtoSp.toFloat()
     }
-    @JvmStatic fun textScaleX(view:View, v:Any){
+    fun textScaleX(view:View, v:Any){
         if(v !is Number || view !is TextView) return
         view.textScaleX = v.toFloat()
     }
-    @JvmStatic fun lineSpacing(view:View, v:Any){
+    fun lineSpacing(view:View, v:Any){
         if(v !is Number || view !is TextView) return
         view.setLineSpacing(v.toFloat(), 1F)
     }
-    @JvmStatic fun textColor(view:View, v:Any){
+    fun textColor(view:View, v:Any){
         if(v !is String || view !is TextView) return
         view.setTextColor(ChProperty.color(v))
     }
-    @JvmStatic fun textAlignment(view:View, v:Any){
+    fun textAlignment(view:View, v:Any){
         if(view !is TextView) return
         if(v is Int) view.setTextAlignment(v)
         else if(v is String) {
@@ -113,31 +109,31 @@ object PropText:Property(){
             )
         }
     }
-    @JvmStatic fun hint(view:View, v:Any){
+    fun hint(view:View, v:Any){
         if(v !is String || view !is TextView) return
         view.hint = v
     }
-    @JvmStatic fun hintColor(view:View, v:Any){
+    fun hintColor(view:View, v:Any){
         if(v !is String || view !is TextView) return
         view.setHintTextColor(ChProperty.color(v))
     }
-    @JvmStatic fun maxLines(view:View, v:Any){
+    fun maxLines(view:View, v:Any){
         if(v !is Number || view !is TextView) return
         view.maxLines = v.toInt()
     }
-    @JvmStatic fun maxLength(view:View, v:Any){
+    fun maxLength(view:View, v:Any){
         if(v !is Number || view !is TextView) return
         val filters = view.filters?.toMutableList() ?: mutableListOf()
         filters.find {it is InputFilter.LengthFilter}?.let {filters.remove(it)}
         filters.add(InputFilter.LengthFilter(v.toInt()))
         view.filters = filters.toTypedArray()
     }
-    @JvmStatic fun allCaps(view:View, v:Any){
+    fun allCaps(view:View, v:Any){
         if(v !is Boolean || view !is TextView) return
         view.isAllCaps = v
     }
-    @JvmStatic fun fontFamily(view:View, v:Any) = font(view, v)
-    @JvmStatic fun font(view:View, v:Any){
+    fun fontFamily(view:View, v:Any) = font(view, v)
+    fun font(view:View, v:Any){
         if(view !is TextView) return
         when(v){
             is Number->view.typeface = ResourcesCompat.getFont(ChApp.app, v.toInt())
@@ -148,7 +144,7 @@ object PropText:Property(){
             }
         }
     }
-    @JvmStatic fun inputType(view:View, v:Any){
+    fun inputType(view:View, v:Any){
         if(view !is TextView) return
         if(v is Int) view.inputType = v
         else if(v is String){

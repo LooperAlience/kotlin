@@ -1,13 +1,12 @@
 package chela.tutorial.common
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import chela.kotlin.Ch
 import chela.kotlin.view.router.holder.ChGroupBase
 import chela.kotlin.view.router.holder.ChHolder
 import chela.kotlin.view.router.holder.ChHolderBase
 import chela.kotlin.view.scanner.ChScanned
+import chela.kotlin.view.scanner.ChScanner
 
 abstract class Scene: ChHolder<View>(){
     private var inflater: LayoutInflater? = null
@@ -17,27 +16,22 @@ abstract class Scene: ChHolder<View>(){
         if(base !is ChGroupBase) throw Exception("")
         vm()
         if(base.inflater != inflater) {
-            Log.i("ch", "scan222")
             inflater = base.inflater
             val view = base.inflate(layout())
-            scan?.let{it.view = view} ?: run{scan = Ch.scanner.scan(this, view)}
+            scan?.let{it.view = view} ?: run{scan = ChScanner.scan(this, view)}
         }
-        Log.i("ch", "scan ${scan} ${Ch.model.get("SplashVM.background}")}")
         scan!!.render()
         init()
         return scan!!.view
     }
     override fun push(base: ChHolderBase<View>, isRestore: Boolean) {
-        Log.i("ch", "Scene push${isRestore}")
         if(isRestore){
             vm().pushed()
             render()
         }else{
             App.looper {
-                Log.i("ch", "Scene looper")
                 time = Holder.pushTime
                 block = {
-                    Log.i("ch", "Scene looper block")
                     vm().pushAnimation(it)
                     renderSync()
                 }
@@ -51,7 +45,6 @@ abstract class Scene: ChHolder<View>(){
     }
     override fun pop(base: ChHolderBase<View>, isJump: Boolean):Long {
         return if(isJump){
-            Log.i("ch", "bbb")
             vm().poped()
             render()
             0L

@@ -13,22 +13,22 @@ import java.io.FileOutputStream
  */
 typealias fontL = (Typeface)->Unit
 object ChStyle{
-    @JvmStatic val items = mutableMapOf<String, Map<String, Any>>()
-    @JvmStatic private val fonts = mutableMapOf<String, Typeface>()
-    @JvmStatic private val fontListener = mutableMapOf<String, MutableList<fontL>>()
-    @JvmStatic fun add(k:String, map:Map<String, Any>){
+    val items = mutableMapOf<String, Map<String, Any>>()
+    private val fonts = mutableMapOf<String, Typeface>()
+    private val fontListener = mutableMapOf<String, MutableList<fontL>>()
+    fun add(k:String, map:Map<String, Any>){
         items[k] = map
     }
-    @JvmStatic fun remove(k:String) = items.remove(k)
-    @JvmStatic operator fun get(k:String):Map<String, Any>? = items[k]
-    @JvmStatic fun getFont(k:String, block:fontL):Boolean = fonts[k]?.let{
+    fun remove(k:String) = items.remove(k)
+    operator fun get(k:String):Map<String, Any>? = items[k]
+    fun getFont(k:String, block:fontL):Boolean = fonts[k]?.let{
         if(it === Typeface.DEFAULT){
             if(fontListener[k] == null) fontListener[k] = mutableListOf()
             fontListener[k]?.let{it += block}
         }else block(it)
         true
     } ?: false
-    @JvmStatic fun addFont(k:String, path:String){
+    fun addFont(k:String, path:String){
         if(path.startsWith("http")){
             val f = File(ChApp.fileDir, "ch_font_$k")
             if(f.exists() && f.length() > 0L) addFont(k, f)
@@ -47,9 +47,9 @@ object ChStyle{
                     }
                 }
             }
-        }else fonts[k] = Typeface.createFromAsset(Ch.app.asset, path)
+        }else fonts[k] = Typeface.createFromAsset(ChApp.asset, path)
     }
-    @JvmStatic fun addFont(k:String, file: File) = fonts.put(k, Typeface.createFromFile(file))
+    fun addFont(k:String, file: File) = fonts.put(k, Typeface.createFromFile(file))
 
-    @JvmStatic fun removeFont(k:String) = fonts.remove(k)
+    fun removeFont(k:String) = fonts.remove(k)
 }

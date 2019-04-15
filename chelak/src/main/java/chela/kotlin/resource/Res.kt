@@ -1,5 +1,6 @@
 package chela.kotlin.resource
 
+import android.util.Log
 import chela.kotlin.core.*
 import chela.kotlin.i18n.ChI18n
 import chela.kotlin.sql.ChSql
@@ -54,12 +55,11 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
         api?.forEach{(k, v)->v.set(k)}
         ruleset?.forEach{(k, v)->v.set(k)}
         query?.forEach{(k, v)-> ChSql.addQuery(k, v)}
-        db?.forEach{(k, v)-> v.set(k)}
         font?.forEach{(k, v)->v.set(k)}
         style?.forEach{(k, v)->v.set(k)}
         shape?.forEach{(k, v)->v.set(k)}
         i18n?.forEach{(k, v)->v.set(k)}
-
+        db?.forEach{(k, v)-> v.set(k)}
     }
     override fun toJSON():String = json
 }

@@ -2,10 +2,8 @@ package chela.kotlin.model
 
 import android.util.Log
 import chela.kotlin.Ch
-import chela.kotlin.core._allStack
-import chela.kotlin.core._notBlank
-import chela.kotlin.core._shift
-import chela.kotlin.core._try
+import chela.kotlin.core.*
+import chela.kotlin.crypto.ChCrypto
 import chela.kotlin.regex.reK
 import chela.kotlin.regex.reV
 import chela.kotlin.view.ChStyleModel
@@ -39,20 +37,11 @@ abstract class Model{
         @Suppress("LeakingThis")
         val cls = this::class
         if(cls.findAnnotation<Unknown>() == null){
-            Log.i("ch", "1")
             if(this !is ChStyleModel || this.isRegister) {
-
-                Log.i("ch", "2")
                 if (!isTypeChecked.contains(cls)) {
-
-                    Log.i("ch", "3${cls}-${cls.simpleName}")
                     isTypeChecked.add(cls)
                     _try { cls.java.getDeclaredField("INSTANCE") }?.let {
-
-                        Log.i("ch", "4")
                         (cls.findAnnotation<Name>()?.let { it.name } ?: cls.simpleName)?.let {
-
-                            Log.i("ch", "1$it")
                             if (ChModel.repo.containsKey(it)) throw Exception("exist key:$it")
                             ChModel.repo[it] = this
                         }
@@ -62,7 +51,7 @@ abstract class Model{
         }
     }
     @JvmField @Suppress("LeakingThis")
-    val ref = Ch.reflect.fields(this::class)
+    val ref = ChReflect.fields(this::class)
     @JvmField var isSet = false
     open operator fun get(k:String):Any = ref.getter[k]?.call(this) ?: Ch.NONE
     open operator fun set(k:String, v:Any):Boolean = ref.setter[k]?.let {
@@ -92,7 +81,7 @@ abstract class Model{
                 }
             ) {
                 's'->"\"${if(v is String) v.replace("\"", "\\\"") else "$v"}\""
-                '2'->"\"${if(v is String) Ch.crypto.sha256(v) else ""}\""
+                '2'->"\"${if(v is String) ChCrypto.sha256(v) else ""}\""
                 'n'->"${if(v is Number) v else 0}"
                 'b'->"${if(v is Boolean) v else false}"
                 'v'-> (v as Model).stringify()
@@ -122,7 +111,6 @@ abstract class Model{
                     }?:
                     reV.match(c.v)?.let{
                         val key = c.key
-                        Log.i("ch", "reV $key : ${it.groups}")
                         val isOk = it.groups[1]?.let{set(key, it.value)} ?:
                             it.groups[2]?.let{set(key, it.value)} ?:
                             it.groups[3]?.let{set(key, reV.group3(it))} ?:

@@ -9,9 +9,9 @@ import android.view.ViewGroup
  * then add it to the items of ChScanned.
  */
 object ChScanner{
-    @JvmStatic private val scanned = mutableMapOf<Any, ChScanned>()
-    @JvmStatic operator fun get(k:Any): ChScanned? = scanned[k]
-    @JvmStatic fun scan(id:Any, view:View): ChScanned {
+    private val scanned = mutableMapOf<Any, ChScanned>()
+    operator fun get(k:Any): ChScanned? = scanned[k]
+    fun scan(id:Any, view:View): ChScanned {
         val prev = scanned[id]
         if(prev != null && prev.view == view) return prev
         val st = mutableListOf(view)
@@ -32,7 +32,9 @@ object ChScanner{
                     }
                 }
                 val target = ChScanItem(v, pos)
-                target.fromJson("{${v.tag}}")
+                val tag = "${v.tag}"
+
+                target.fromJson("{${if(tag[0] == '@' || tag[0] == '`') "style:" else ""}$tag}")
                 result += target
             }
             if (v is ViewGroup) for (i in v.childCount - 1 downTo 0) st.add(v.getChildAt(i))

@@ -8,18 +8,18 @@ import org.json.JSONObject
 import kotlin.reflect.full.createInstance
 
 object ChModel{
-    @JvmStatic internal val repo: MutableMap<String, Model> = HashMap()
-    @JvmStatic fun get(v:String):Any = get(v.split(".").map { it.trim() })
-    @JvmStatic fun get(v:List<String>):Any{
+    internal val repo: MutableMap<String, Model> = HashMap()
+    fun get(v:String):Any = get(v.split(".").map { it.trim() })
+    fun get(v:List<String>):Any{
         if(v.isEmpty()) throw Exception("invalid list size == 0")
         if(v[0] == "i18n") return ChI18n.get(v)
         repo[v[0]]?.let { return find(v, it) } ?: throw Exception("invalid key:" + v[0])
     }
-    @JvmStatic fun record(v: List<String>, record: Model): Any {
+    fun record(v: List<String>, record: Model): Any {
         if (v.isEmpty()) throw Exception("invalid list size == 0")
         return find(v, record)
     }
-    @JvmStatic private fun find(v: List<String>, it: Model): Any {
+    private fun find(v: List<String>, it: Model): Any {
         var model: Model? = it
         var list:MutableList<Any>? = null
         var r: Any = 0
@@ -39,7 +39,7 @@ object ChModel{
         }
         return r
     }
-    @JvmStatic private fun arr(o:JSONArray, target:MutableList<Any>){
+    private fun arr(o:JSONArray, target:MutableList<Any>){
         (0 until o.length()).forEach {
             val v = o[it]
             @Suppress("UNCHECKED_CAST")
@@ -50,7 +50,7 @@ object ChModel{
             }
         }
     }
-    @JvmStatic private fun obj(o:JSONObject, target:Model){
+    private fun obj(o:JSONObject, target:Model){
         val setter = target.ref.setter
         val getter = target.ref.getter
         o._for{k, v ->
@@ -64,7 +64,7 @@ object ChModel{
             }
         }
     }
-    @JvmStatic fun jsonToModel(json:JSONObject, model:String):Model? =
+    fun jsonToModel(json:JSONObject, model:String):Model? =
         try {
             (Class.forName(model).kotlin.createInstance() as? Model)?.let {
                 obj(json, it)

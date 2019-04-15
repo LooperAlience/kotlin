@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import chela.kotlin.Ch
+import chela.kotlin.android.ChApp
 import chela.tutorial.R
 import chela.tutorial.common.Scene
 import chela.tutorial.src3.viewmodel.MainVM3
@@ -21,10 +22,8 @@ object Main : Scene() {
     override fun vm() = MainVM3
     override fun layout() = R.layout.activity_main3
     override fun init(){
-        Log.i("ch", "init")
-
         val imagePagerAdapter = ImagePagerAdapter(intArrayOf(R.drawable.guide0, R.drawable.guide1, R.drawable.guide2, R.drawable.guide3))
-        val indicatorManager = CircleIndicatorManager(Ch.app.app)
+        val indicatorManager = CircleIndicatorManager(ChApp.app)
 
         scan?.let { chScanned ->
             indicatorManager.apply {

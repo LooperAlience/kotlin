@@ -24,21 +24,21 @@ import java.util.*
  * Base object for accessing an application's resource and converting display unit.
  */
 object ChApp{
-    @JvmStatic lateinit var app: Application
-    @JvmStatic lateinit var clip: ClipboardManager
-    @JvmStatic lateinit var res: Resources
-    @JvmStatic lateinit var asset: AssetManager
-    @JvmStatic lateinit var cm: ConnectivityManager
-    @JvmStatic lateinit var imm: InputMethodManager
-    @JvmStatic lateinit var packName:String
-    @JvmStatic lateinit var dm: DisplayMetrics
-    @JvmStatic lateinit var fileDir:File
-    @JvmStatic lateinit var cacheDir: File
+    lateinit var app: Application
+    lateinit var clip: ClipboardManager
+    lateinit var res: Resources
+    lateinit var asset: AssetManager
+    lateinit var cm: ConnectivityManager
+    lateinit var imm: InputMethodManager
+    lateinit var packName:String
+    lateinit var dm: DisplayMetrics
+    lateinit var fileDir:File
+    lateinit var cacheDir: File
 
-    @JvmStatic lateinit var locale: Locale
-    @JvmStatic val language:String get() = locale.language
+    lateinit var locale: Locale
+    val language:String get() = locale.language
 
-    @JvmStatic operator fun invoke(a:Application){
+    operator fun invoke(a:Application){
         app = a
         fileDir = a.filesDir!!
         cacheDir = a.cacheDir!!
@@ -60,25 +60,25 @@ object ChApp{
         ChWindow.SptoPx = s
         ChWindow.PxtoSp = 1 / s
     }
-    @JvmStatic fun appVersion():String = app.packageManager.getPackageInfo(app.packageName, 0).versionName
+    fun appVersion():String = app.packageManager.getPackageInfo(app.packageName, 0).versionName
 
-    @JvmStatic fun deviceId() = Settings.Secure.ANDROID_ID
-    @JvmStatic fun deviceModel() = Build.MODEL
-    @JvmStatic fun deviceVersion() = Build.VERSION.RELEASE
+    fun deviceId() = Settings.Secure.ANDROID_ID
+    fun deviceModel() = Build.MODEL
+    fun deviceVersion() = Build.VERSION.RELEASE
     /**
      * @param type Resource type to find. For example, "string".
      * @param name The name of the desired resource. For example, "app_name".
      * @return int The associated resource identifier. For example, R.string.app_name.
      */
-    @JvmStatic fun resS2I(type:String, name:String):Int = res.getIdentifier(name, type, packName)
-    @JvmStatic fun resDrawable(v: String):Int = resS2I("drawable", v)
-    @JvmStatic fun resId(v: String):Int = resS2I("id", v)
-    @JvmStatic fun resLayout(v: String):Int = resS2I("layout", v)
-    @JvmStatic fun resFont(v: String):Int = resS2I("font", v)
-    @JvmStatic fun resName(id:Int):String = res.getResourceEntryName(id)
-    @JvmStatic fun drawable(v:String):Drawable? = drawable(resS2I("drawable", v))
-    @JvmStatic fun drawable(v:Int):Drawable? = AppCompatResources.getDrawable(app, v)
-    @JvmStatic fun bitmap2Drawable(v:Bitmap): BitmapDrawable = BitmapDrawable(res, v)
-    @JvmStatic fun string(v:String):String = string(resS2I("string", v))
-    @JvmStatic fun string(v:Int):String = res.getString(v)
+    fun resS2I(type:String, name:String):Int = res.getIdentifier(name, type, packName)
+    fun resDrawable(v: String):Int = resS2I("drawable", v)
+    fun resId(v: String):Int = resS2I("id", v)
+    fun resLayout(v: String):Int = resS2I("layout", v)
+    fun resFont(v: String):Int = resS2I("font", v)
+    fun resName(id:Int):String = res.getResourceEntryName(id)
+    fun drawable(v:String):Drawable? = drawable(resS2I("drawable", v))
+    fun drawable(v:Int):Drawable? = AppCompatResources.getDrawable(app, v)
+    fun bitmap2Drawable(v:Bitmap): BitmapDrawable = BitmapDrawable(res, v)
+    fun string(v:String):String = string(resS2I("string", v))
+    fun string(v:Int):String = res.getString(v)
 }

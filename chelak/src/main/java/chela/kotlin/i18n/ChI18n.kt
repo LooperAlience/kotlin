@@ -4,25 +4,23 @@ import android.util.Log
 import chela.kotlin.resource.I18n
 
 object ChI18n{
-    @JvmStatic private var lang = ""
-    @JvmStatic private val items = mutableMapOf<String, I18n>()
+    private var lang = ""
+    private val items = mutableMapOf<String, I18n>()
 
-    @JvmStatic operator fun invoke(ln:String){lang = ln}
-    @JvmStatic operator fun invoke() = lang
+    operator fun invoke(ln:String){lang = ln}
+    operator fun invoke() = lang
 
-    @JvmStatic fun add(k:String, res:I18n){items[k] = res}
-    @JvmStatic fun remove(k:String){items.remove(k)}
+    fun add(k:String, res:I18n){items[k] = res}
+    fun remove(k:String){items.remove(k)}
 
-    @JvmStatic operator fun get(k:String):String = get("i18n.$k".split(".").map {it.trim()})
-    @JvmStatic operator fun get(k:List<String>):String{
+    operator fun get(k:String):String = get("i18n.$k".split(".").map {it.trim()})
+    operator fun get(k:List<String>):String{
         if(k.size < 3) return "no data:$k"
         val (_, key, subKey) = k
         val i = items[key] ?: return "no data:$key"
         val ln =  if(i.isOne.isNotBlank()) i.isOne
             else if(k.size == 4) k[3]
             else lang
-        Log.i("ch", "=========ln========= $ln :: key : $key :: lang :$lang")
-        Log.i("ch", "=========items========= $items")
         if(ln.isBlank()) return "no setting_language"
         return i.data[ln]?.get(subKey) ?: "no data:$k"
     }

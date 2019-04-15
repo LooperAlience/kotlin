@@ -1,13 +1,12 @@
 package chela.kotlin.view.scanner
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import chela.kotlin.Ch
 import chela.kotlin.core._shift
 import chela.kotlin.model.ChModel
-import chela.kotlin.view.ChStyle
 import chela.kotlin.model.Model
+import chela.kotlin.view.ChStyle
 import chela.kotlin.view.ChStyleModel
 import chela.kotlin.view.ChViewModel
 import com.chela.annotation.EX
@@ -61,6 +60,10 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
                 if(updater == null) updater = mutableMapOf()
                 updater?.put(k._shift(), v)
             }
+            v is Ch.Update->{
+                if(updater == null) updater = mutableMapOf()
+                updater?.put(k._shift(), v.v)
+            }
             else -> {
                 if(once == null) once = mutableMapOf()
                 once?.put(k, v)
@@ -79,7 +82,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
     override fun viewmodel(k:String, v: List<String>):Boolean{
         if(k[0] == '-') {
             if (once == null) once = mutableMapOf()
-            once?.put(k._shift(), Ch.model.get(v))
+            once?.put(k._shift(), ChModel.get(v))
         }else if(k == "style"){
             val m = mutableMapOf<String, Any>()
             val key = "@{" + v.joinToString(".")
@@ -133,7 +136,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         }
         prop?.let{
             it.forEach {(k, _v) ->
-                val v = Ch.model.get(_v)
+                val v = ChModel.get(_v)
                 if(k[0] == '@'){
                     collector[k._shift()] = v
                     isRender = true
@@ -146,7 +149,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         }
         record?.let{record->
             recordViewModel?.let{collector.putAll(record.mapValues{ (_, v)->
-                Ch.model.record(v, it)
+                ChModel.record(v, it)
             }.filter ch@{ (k, v)->
                 recordVal?.let{
                     it[k]?.let{if(it == v) return@ch false}

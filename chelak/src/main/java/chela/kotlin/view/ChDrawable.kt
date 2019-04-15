@@ -31,10 +31,10 @@ object ChDrawable{
         object T_B:Param()
         object TR_BL:Param()
     }
-    @JvmStatic private val drawables = mutableMapOf<String, Drawable>()
-    @JvmStatic fun drawable(k:String):Drawable? = drawables[k]
-    @JvmStatic fun remove(k:String) = drawables.remove(k)
-    @JvmStatic fun shape(k:String, obj:JSONObject):Drawable{
+    private val drawables = mutableMapOf<String, Drawable>()
+    fun drawable(k:String):Drawable? = drawables[k]
+    fun remove(k:String) = drawables.remove(k)
+    fun shape(k:String, obj:JSONObject):Drawable{
         val arg = mutableListOf<Param>()
         obj._forValue { key, v ->
             when(key.toLowerCase()) {
@@ -65,8 +65,8 @@ object ChDrawable{
         }
         return shape(k, *arg.toTypedArray())
     }
-    @JvmStatic fun shape(vararg arg:Param):Drawable = shape("", *arg)
-    @JvmStatic fun shape(k:String, vararg arg:Param):Drawable{
+    fun shape(vararg arg:Param):Drawable = shape("", *arg)
+    fun shape(k:String, vararg arg:Param):Drawable{
         drawables[k]?.let{return it}
         var width = 0
         var stroke = 0
