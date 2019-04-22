@@ -115,7 +115,7 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
         arg.forEach{(query, a)->
             val q = query.substring(1)
             if(Ch.debugLevel > 1){
-                Log.i("ch", "query:$q")
+                Log.i("ch", "query:$query")
                 Log.i("ch", "arg:${a.joinToString(", ")}, ${a.isEmpty()}")
             }
             try {
@@ -131,7 +131,10 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
                 }
             }catch(e:Throwable){msg = "error - $e"}
         }
-        if(it.query.size > 1) writer.endTransaction()
+        if(it.query.size > 1){
+            writer.setTransactionSuccessful()
+            writer.endTransaction()
+        }
         if(Ch.debugLevel > 1) Log.i("ch", "cursor:$c")
         return c
     }

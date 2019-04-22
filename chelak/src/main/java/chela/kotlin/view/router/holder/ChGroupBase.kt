@@ -20,11 +20,14 @@ class ChGroupBase: ChHolderBase<View>(){
         group.visibility = View.VISIBLE
     }
     override fun pop(holder: ChHolder<View>){
-        group.removeViewAt(group.childCount - 1)
+        if(group.childCount > 0) group.removeViewAt(group.childCount - 1)
         if(group.childCount == 0) group.visibility = View.GONE
     }
     override fun take(index:Int, holder: ChHolder<View>){
-        group.removeViewAt(index)
+        if(group.childCount > index) group.removeViewAt(index)
         if(group.childCount == 0) group.visibility = View.GONE
+    }
+    override fun clear() {
+        group.removeAllViews()
     }
 }

@@ -40,7 +40,6 @@ class ChProcessor : AbstractProcessor(){
             val annotated = mutableListOf<String>()
             val getter = mutableListOf<String>()
             val fields = mutableListOf<String>()
-
             methods.forEach{
                 val name = "${it.simpleName}"
                 if(name != "get" && name.startsWith("get") &&  !exMethod.contains(name)){
@@ -58,7 +57,8 @@ class ChProcessor : AbstractProcessor(){
             }
             val cls = it.simpleName
             val pack = processingEnv.elementUtils.getPackageOf(it)
-            fields.find{!styles.contains(it.toLowerCase())}?.let{
+            val plugin = (it.getAnnotation(STYLE::class.java) as STYLE).ex
+            fields.find{!styles.contains(it.toLowerCase()) && !plugin.contains(it.toLowerCase())}?.let{
                 processingEnv.messager.printMessage(ERROR, "$it in $cls of $pack- invalid field")
             }
         }

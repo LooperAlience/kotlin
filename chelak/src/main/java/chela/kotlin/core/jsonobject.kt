@@ -84,7 +84,7 @@ fun JSONObject._array(vararg key:String):JSONArray?{
 }
 fun JSONObject._string(vararg key:String):String?{
     var r:String? = null
-    key.any{r = _try{this.getString(it)};r != null}
+    key.any{r = _try{this.get(it) as String};r != null}
     return r
 }
 fun JSONObject._int(vararg key:String):Int? {
@@ -112,3 +112,31 @@ fun JSONObject._boolean(vararg key:String):Boolean?{
     key.any {r = _try { this.getBoolean(it)};r != null}
     return r
 }
+fun JSONObject.find(key:String) = run{
+    var obj:JSONObject? = this
+    var list:JSONArray? = null
+    val v = key.split(".")
+    val s = v.size - 1
+    _try {
+        var r:Any? = null
+        v.forEachIndexed { i, v ->
+            r = obj?.get(v) ?: list?.get(v.toInt()) ?: throw Throwable("invalid key:$v")
+            if (i < s) when (r) {
+                is JSONObject -> {
+                    obj = r as JSONObject
+                    list = null
+                }
+                is JSONArray -> {
+                    obj = null
+                    list = r as JSONArray
+                }
+            }
+        }
+        r
+    }
+}
+fun JSONObject.s(key:String):String? = find(key) as? String
+fun JSONObject.i(key:String):Int? = find(key) as? Int
+fun JSONObject.f(key:String):Float? = (find(key) as? Double)?.toFloat()
+fun JSONObject.d(key:String):Double? = find(key) as? Double
+fun JSONObject.b(key:String):Boolean? = find(key) as? Boolean

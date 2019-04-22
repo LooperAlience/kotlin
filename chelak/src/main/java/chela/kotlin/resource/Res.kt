@@ -2,7 +2,7 @@ package chela.kotlin.resource
 
 import android.util.Log
 import chela.kotlin.core.*
-import chela.kotlin.i18n.ChI18n
+import chela.kotlin.cdata.ChCdata
 import chela.kotlin.sql.ChSql
 import org.json.JSONArray
 import org.json.JSONObject
@@ -16,7 +16,8 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
     private var font:Map<String, Font>? = null
     private var style:Map<String, Style>? = null
     private var shape:Map<String, Shape>? = null
-    private var i18n:Map<String, I18n>? = null
+    private var cdata:Map<String, JSONObject>? = null
+    private var cdataVal:Map<String, String>? = null
     init{
         v._string("id")?.let{id = it}
         v._forObject {key, it->
@@ -27,9 +28,13 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
                 "style"->style = it._mapObject{Style(it)}
                 "shape"->shape = it._mapObject{Shape(it)}
                 "ruleset"->ruleset = it._mapObject{Ruleset(it)}
-                "i18n"->{
-                    it._string("language")?.let{ChI18n(it)}
-                    i18n = it._mapObject{I18n(it)}
+                "cdata"->{
+                    val key = mutableMapOf<String, String>()
+                    it._forString { k, v ->key[k] = v}
+                    if(key.isNotEmpty()) cdataVal = key
+                    val obj = mutableMapOf<String, JSONObject>()
+                    it._forObject{k, v->obj[k] = v}
+                    if(obj.isNotEmpty()) cdata = obj
                 }
                 "query"->query = it._map{
                     when(it){
@@ -42,7 +47,7 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
         }
     }
     fun remove(){
-        i18n?.forEach{(k,v)->v.remove(k)}
+        cdata?.forEach{ (k,v)->v.remove(k)}
         font?.forEach{(k,v)->v.remove(k)}
         style?.forEach{(k,v)->v.remove(k)}
         shape?.forEach{(k,v)->v.remove(k)}
@@ -50,6 +55,11 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
         ruleset?.forEach{(k,v)->v.remove(k)}
         query?.forEach{(k,_)->ChSql.removeQuery(k)}
         db?.forEach{(k,v)->v.remove(k)}
+        cdataVal?.forEach{ (k, v) ->
+            if(k.startsWith("@@")) ChCdata.catDefault.remove(k.substring(1))
+            else ChCdata.cat.remove(k)
+        }
+        cdata?.forEach{(k, v)->ChCdata.root.remove(k)}
     }
     fun set(){
         api?.forEach{(k, v)->v.set(k)}
@@ -58,8 +68,13 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
         font?.forEach{(k, v)->v.set(k)}
         style?.forEach{(k, v)->v.set(k)}
         shape?.forEach{(k, v)->v.set(k)}
-        i18n?.forEach{(k, v)->v.set(k)}
         db?.forEach{(k, v)-> v.set(k)}
+        cdataVal?.forEach{ (k, v) ->
+            Log.i("ch", "cdatavalue string - $k, $v")
+            if(k.startsWith("@@")) ChCdata.catDefault[k.substring(1)] = v
+            else ChCdata(k, v)
+        }
+        cdata?.forEach{(k, v)->Cdata(k, v)}
     }
     override fun toJSON():String = json
 }

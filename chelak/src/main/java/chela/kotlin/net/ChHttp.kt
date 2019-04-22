@@ -60,20 +60,19 @@ class ChHttpOk3 internal constructor(private val method:String, private var requ
         return this
     }
     override fun send(block:httpCallBack){
-        if(method != "GET"){
-            multi?.let {multi->
+        if(method != "GET")(
+            multi?.let{multi->
                 bodyByte?.let {multi.addPart(RequestBody.create(BODYBYTE, it))} ?:
                 json?.let {multi.addPart(RequestBody.create(JSON, it))} ?:
                 body?.let {multi.addPart(RequestBody.create(BODY, it))} ?:
                 form?.let {multi.addPart(it.build())}
-                request = request.post(multi.build())
+                multi.build()
             } ?:
-            bodyByte?.let {request = request.post(RequestBody.create(BODYBYTE, it))} ?:
-            json?.let {request = request.post(RequestBody.create(JSON, it))} ?:
-            body?.let {request = request.post(RequestBody.create(BODY, it))} ?:
-            form?.let {request = request.post(it.build())}
-        }
-
+            bodyByte?.let{RequestBody.create(BODYBYTE, it)} ?:
+            json?.let{RequestBody.create(JSON, it)} ?:
+            body?.let{RequestBody.create(BODY, it)} ?:
+            form?.build()
+        )?.let{request = request.method(method, it)}
         if(Ch.debugLevel > 1) Log.i("ch", "$request")
         okHttpClient.newCall(request.build()).enqueue(object:Callback{
             override fun onFailure(call: Call, e: IOException) = block(ChResponse(null, e.toString()))

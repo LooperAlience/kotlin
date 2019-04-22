@@ -9,27 +9,28 @@ import chela.kotlin.view.property.ChProperty
  * The [collector] create ChScanItem field with the [items]'s key and value.
  */
 class ChScanned internal constructor(@JvmField var view: View, private val items:MutableSet<ChScanItem> = mutableSetOf()):MutableSet<ChScanItem> by items{
-    private val collector = mutableSetOf<ChScanItem>()
     private val keyItem = mutableMapOf<String, ChScanItem>()
     /**
      * Restore the view.
      */
     fun render(v: View? = null): View {
+        val collector = mutableSetOf<Pair<View, Map<String, Any>>>()
         val isNew = v != null && v !== view
         if(isNew) view = v!!
-        collector.clear()
         items.forEach{
             if(isNew) it.view(view)
-            if(it.render()) collector += it
+            val r = it.render()
+            if(r.isNotEmpty()) collector += it.view to r
         }
         if(collector.isNotEmpty()) ChThread.msg(ChThread.property, collector)
         return view
     }
     fun renderSync(){
         items.forEach{
-            if(it.render()){
+            val r = it.render()
+            if(r.isNotEmpty()){
                 val view = it.view
-                it.collector.forEach{(k, v)-> ChProperty.f(view, k.toLowerCase(), v) }
+                r.forEach{(k, v)-> ChProperty.f(view, k.toLowerCase(), v) }
             }
         }
     }

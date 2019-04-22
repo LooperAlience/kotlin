@@ -30,6 +30,7 @@ abstract class ChHolderBase<T>{
     protected open fun pause(holder: ChHolder<T>){}
     protected open fun resume(holder: ChHolder<T>){}
     open fun take(index:Int, holder: ChHolder<T>){}
+    open fun clear(){}
 }
 abstract class ChHolder<T>(val isJumpPoint:Boolean = false){
     abstract fun create(base: ChHolderBase<T>):T

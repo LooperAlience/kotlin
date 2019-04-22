@@ -4,9 +4,7 @@ import android.app.Application
 import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MotionEvent
-import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
@@ -15,7 +13,7 @@ import chela.kotlin.core.ChMath
 import chela.kotlin.core.ChReflect
 import chela.kotlin.core._try
 import chela.kotlin.crypto.ChCrypto
-import chela.kotlin.i18n.ChI18n
+import chela.kotlin.cdata.ChCdata
 import chela.kotlin.looper.ChLooper
 import chela.kotlin.model.ChModel
 import chela.kotlin.net.ChNet
@@ -94,7 +92,7 @@ object Ch{
     val view = ChView
     val drawable = ChDrawable
     val style = ChStyle
-    val i18n = ChI18n
+    val cdata = ChCdata
     val crypto = ChCrypto
     val scanner = ChScanner
     val prop = ChProperty
@@ -157,13 +155,15 @@ object Ch{
     abstract class Data <T>(val key:Any){
         companion object{
             private val data = mutableMapOf<Any, Any>()
+            fun clear() = data.clear()
         }
-        protected abstract fun getDB():T
-        protected abstract fun setDB(res:ChResponse)
-        protected abstract fun net(block:(ChResponse)->Unit)
+        protected abstract fun getDB():T?
+        protected abstract fun setDB(res:ChResponse?):Boolean
+        protected abstract fun net(block:(ChResponse?)->Unit)
         protected abstract fun isValid(v:T):Boolean
-        protected abstract fun renew(v:T)
         protected abstract fun data(v:T)
+        protected open fun renew(v:T){}
+        protected open fun error(){}
         operator fun invoke(){
             @Suppress("UNCHECKED_CAST")
             data[key]?.let{
@@ -173,14 +173,11 @@ object Ch{
                 }else data.remove(key)
             }
             val v = getDB()
-            if(isValid(v)){
+            if(v != null && isValid(v)){
                 data[key] = v as Any
                 renew(v)
                 invoke()
-            }else net{res->
-                setDB(res)
-                invoke()
-            }
+            }else net{res->if(setDB(res)) invoke() else error()}
         }
     }
 }

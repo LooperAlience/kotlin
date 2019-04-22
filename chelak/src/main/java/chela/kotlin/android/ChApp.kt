@@ -25,7 +25,7 @@ import java.util.*
  */
 object ChApp{
     lateinit var app: Application
-    lateinit var clip: ClipboardManager
+    val clip: ClipboardManager by lazy{app.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager}
     lateinit var res: Resources
     lateinit var asset: AssetManager
     lateinit var cm: ConnectivityManager
@@ -50,7 +50,6 @@ object ChApp{
         locale = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) res.configuration.locales[0]
             else res.configuration.locale
         imm = app.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        clip = app.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         dm = res.displayMetrics
         val d = dm.density.toDouble()

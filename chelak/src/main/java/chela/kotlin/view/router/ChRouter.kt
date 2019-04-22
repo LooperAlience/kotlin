@@ -76,6 +76,9 @@ class ChRouter<T>(private val base: ChHolderBase<T>){
             base._take(index, stack.removeAt(index))
         })
     }
-    fun clear() = stack.clear()
+    fun clear() {
+        stack.clear()
+        base.clear()
+    }
     fun action(key:String, vararg arg:Any) = if(stack.isNotEmpty()) stack.last().action(key, arg) else false
 }

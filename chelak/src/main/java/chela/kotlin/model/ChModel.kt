@@ -2,7 +2,7 @@ package chela.kotlin.model
 
 import android.util.Log
 import chela.kotlin.core._for
-import chela.kotlin.i18n.ChI18n
+import chela.kotlin.cdata.ChCdata
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.reflect.full.createInstance
@@ -12,7 +12,7 @@ object ChModel{
     fun get(v:String):Any = get(v.split(".").map { it.trim() })
     fun get(v:List<String>):Any{
         if(v.isEmpty()) throw Exception("invalid list size == 0")
-        if(v[0] == "i18n") return ChI18n.get(v)
+        if(v[0] == "cdata") return ChCdata[v[1]] ?: "no data:${v[1]}"
         repo[v[0]]?.let { return find(v, it) } ?: throw Exception("invalid key:" + v[0])
     }
     fun record(v: List<String>, record: Model): Any {

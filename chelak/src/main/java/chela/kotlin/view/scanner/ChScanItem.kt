@@ -1,5 +1,6 @@
 package chela.kotlin.view.scanner
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import chela.kotlin.Ch
@@ -20,7 +21,6 @@ import kotlin.reflect.full.memberProperties
  * @param pos has the index of the child view.
  */
 class ChScanItem internal constructor(@JvmField var view: View, private val pos:List<Int>): Model(){
-    @JvmField internal val collector = mutableMapOf<String, Any>()
     @JvmField internal var key = ""
     private var prop:MutableMap<String, List<String>>? = null
     private var propVal:MutableMap<String, Any>? = null
@@ -45,7 +45,6 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
             }
         }
     }
-
     /**
      * Store style attributes on [updater] or [once].
      * @param k If [k] is style or 0 index is @, then key of JSONObject or JSONArray.
@@ -120,45 +119,38 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         record?.put(k, v)
         return true
     }
-    fun render(recordViewModel: Model? = null):Boolean{
-        var isRender = false
-        collector.clear()
+    private fun value(v:Any) = when {
+        v is String && v.isNotBlank() && v[0] == '@' -> ChModel.get(v.substring(2, v.length - 1))
+        else -> v
+    }
+    fun render(recordViewModel: Model? = null):Map<String, Any>{
+        val r = mutableMapOf<String, Any>()
         if(!isOnce){
             isOnce = true
-            once?.let{
-                isRender = true
-                collector.putAll(it)
-            }
+            once?.let{r.putAll(it.mapValues{value(it.value)})}
         }
-        updater?.let{
-            isRender = true
-            collector.putAll(it)
-        }
+        updater?.let{r.putAll(it.mapValues{value(it.value)})}
         prop?.let{
             it.forEach {(k, _v) ->
-                val v = ChModel.get(_v)
-                if(k[0] == '@'){
-                    collector[k._shift()] = v
-                    isRender = true
-                }else propVal?.let{
-                    if(it[k] == null || it[k] != v) collector[k] = v
+                val v = value(ChModel.get(_v))
+                propVal?.let{
+                    if(it[k] == null || it[k] != v) r[k] = v
                     it[k] = v
-                    isRender = true
                 }
             }
         }
         record?.let{record->
-            recordViewModel?.let{collector.putAll(record.mapValues{ (_, v)->
+            recordViewModel?.let{r.putAll(record.mapValues{ (_, v)->
                 ChModel.record(v, it)
             }.filter ch@{ (k, v)->
                 recordVal?.let{
                     it[k]?.let{if(it == v) return@ch false}
                     it.put(k, v)
-                    isRender = true
                 }
                 return@ch true
             }
-            )}}
-        return isRender
+            )}
+        }
+        return r
     }
 }

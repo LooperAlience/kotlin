@@ -76,7 +76,7 @@ class ChLooper:LifecycleObserver{
     fun act(act: AppCompatActivity){
         val root = act.window.decorView as ViewGroup
         if(root.findViewWithTag<Ani>("CHELA_ANI") == null){
-            act.lifecycle.addObserver(this)
+            //act.lifecycle.addObserver(this)
             val ani = Ani(act, this)
             ChThread.main(Runnable { root.addView(ani) })
         }
