@@ -119,7 +119,7 @@ object ChNet {
             }
         }
         val net = http(api.method, api.url)
-        var msg = ""
+        var msg = "requestTask"
         if(false == api.requestTask?.all{
             val (k, arg) = reParam.parse(it)
             return@all requestTask[k]?.let{
