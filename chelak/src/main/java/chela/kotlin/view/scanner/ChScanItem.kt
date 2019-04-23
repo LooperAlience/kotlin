@@ -142,10 +142,14 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         record?.let{record->
             recordViewModel?.let{r.putAll(record.mapValues{ (_, v)->
                 ChModel.record(v, it)
-            }.filter ch@{ (k, v)->
+            }.filter ch@{ (k, _v) ->
+                Log.i("ch", "record > _v : $_v" )
+                val v = value(_v)
                 recordVal?.let{
                     it[k]?.let{if(it == v) return@ch false}
                     it.put(k, v)
+                    r[k] = v
+                    Log.i("ch", "record > v : $k :: $v" )
                 }
                 return@ch true
             }

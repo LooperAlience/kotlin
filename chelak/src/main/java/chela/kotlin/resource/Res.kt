@@ -70,7 +70,6 @@ class Res internal constructor(internal var id:String = "", v:JSONObject):toJSON
         shape?.forEach{(k, v)->v.set(k)}
         db?.forEach{(k, v)-> v.set(k)}
         cdataVal?.forEach{ (k, v) ->
-            Log.i("ch", "cdatavalue string - $k, $v")
             if(k.startsWith("@@")) ChCdata.catDefault[k.substring(1)] = v
             else ChCdata(k, v)
         }

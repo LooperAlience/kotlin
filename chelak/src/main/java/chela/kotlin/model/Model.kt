@@ -1,6 +1,5 @@
 package chela.kotlin.model
 
-import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.core.*
 import chela.kotlin.crypto.ChCrypto
@@ -10,6 +9,7 @@ import chela.kotlin.view.ChStyleModel
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
+
 abstract class Model{
     @Target(AnnotationTarget.CLASS) annotation class Unknown()
     @Target(AnnotationTarget.CLASS) annotation class Name(val name:String)
