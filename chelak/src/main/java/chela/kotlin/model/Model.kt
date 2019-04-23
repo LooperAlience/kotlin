@@ -6,13 +6,12 @@ import chela.kotlin.crypto.ChCrypto
 import chela.kotlin.regex.reK
 import chela.kotlin.regex.reV
 import chela.kotlin.view.ChStyleModel
+import com.chela.annotation.EX
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
-abstract class Model{
-    @Target(AnnotationTarget.CLASS) annotation class Unknown()
-    @Target(AnnotationTarget.CLASS) annotation class Name(val name:String)
+abstract class Model(isRegister:Boolean = true, name:String? = null){
     private class St(val p: St?, val t:Char, v:String, val k: String = "", val i:Int = 0){
         @JvmField internal val v:String = v.trim()
         internal val key:String
@@ -29,67 +28,29 @@ abstract class Model{
             St(p ?: this.p, t ?: this.t, v ?: this.v, k ?: this.k, i ?: this.i)
     }
     companion object {
-        @JvmField val OBJECT = object{}
-        @JvmField val ARRAY = object{}
-        @JvmField val isTypeChecked = mutableSetOf<KClass<*>>()
+        private val isTypeChecked = mutableSetOf<KClass<*>>()
     }
-    init{
-        @Suppress("LeakingThis")
-        val cls = this::class
-        if(cls.findAnnotation<Unknown>() == null){
-            if(this !is ChStyleModel || this.isRegister) {
-                if (!isTypeChecked.contains(cls)) {
-                    isTypeChecked.add(cls)
-                    _try { cls.java.getDeclaredField("INSTANCE") }?.let {
-                        (cls.findAnnotation<Name>()?.let { it.name } ?: cls.simpleName)?.let {
-                            if (ChModel.repo.containsKey(it)) throw Exception("exist key:$it")
-                            ChModel.repo[it] = this
-                        }
-                    }
+    init{val cls = this::class
+        if(!isTypeChecked.contains(cls)){
+            isTypeChecked.add(cls)
+            if(isRegister) _try{cls.java.getDeclaredField("INSTANCE")}?.let{
+                (name ?: cls.simpleName)?.let {
+                    if (ChModel.repo.containsKey(it)) throw Throwable("exist key:$it")
+                    else ChModel.repo[it] = this
                 }
             }
         }
     }
-    @JvmField @Suppress("LeakingThis")
-    val ref = ChReflect.fields(this::class)
+    val ref by lazy{ChReflect.fields(this::class)}
     @JvmField var isSet = false
-    open operator fun get(k:String):Any = ref.getter[k]?.call(this) ?: Ch.NONE
-    open operator fun set(k:String, v:Any):Boolean = ref.setter[k]?.let {
+    open operator fun get(k:String) = ref.getter[k]?.call(this) ?: Ch.NONE
+    open operator fun set(k:String, v:Any) = ref.setter[k]?.let {
         it.call(this, v)
         true
     } ?: false
     open fun viewmodel(k:String, v:List<String>):Boolean{throw Exception("override")}
     open fun record(k:String, v:List<String>):Boolean{throw Exception("override")}
-    fun stringify():String{
-        val r = mutableListOf<String>()
-        this::class.memberProperties.forEach{p->
-            var k = ""
-            val v = p.getter.call(this)
-            when(
-                p.findAnnotation<Ch.STRING>()?.let {k = it.name;'s'} ?:
-                p.findAnnotation<Ch.NUMBER>()?.let {k = it.name;'n'} ?:
-                p.findAnnotation<Ch.BOOLEAN>()?.let {k = it.name;'b'} ?:
-                p.findAnnotation<Ch.SHA256>()?.let {k = it.name;'2'} ?:
-                p.findAnnotation<Ch.OUT>()?.let {k = it.name
-                    when(v) {
-                        is String -> 's'
-                        is Boolean -> 'b'
-                        is Number -> 'n'
-                        is Model -> 'v'
-                        else -> '-'
-                    }
-                }
-            ) {
-                's'->"\"${if(v is String) v.replace("\"", "\\\"") else "$v"}\""
-                '2'->"\"${if(v is String) ChCrypto.sha256(v) else ""}\""
-                'n'->"${if(v is Number) v else 0}"
-                'b'->"${if(v is Boolean) v else false}"
-                'v'-> (v as Model).stringify()
-                else -> null
-            }?.let {r += "\"${if (k.isNotBlank()) k else p.name}\":$it"}
-        }
-        return "{${r.joinToString(",")}}"
-    }
+    open fun stringify():String = ""
     fun fromJson(v:String){
         isSet = true
         if(v.isBlank()) return
@@ -98,11 +59,11 @@ abstract class Model{
                 ',' -> st += c.clone(v=c.v._shift(), k="", i=c.i + 1)
                 '{' -> {
                     st += St(c, 'o', c.v._shift())
-                    set(if(c.t == 'o') c.k else c.i.toString(), OBJECT)
+                    set(if(c.t == 'o') c.k else c.i.toString(), Ch.OBJECT)
                 }
                 '[' -> {
                     st += St(c, 'a', c.v._shift())
-                    set(if(c.t == 'o') c.k else c.i.toString(), ARRAY)
+                    set(if(c.t == 'o') c.k else c.i.toString(), Ch.ARRAY)
                 }
                 '}', ']' -> c.v._shift()._notBlank{if(c.p != null) st += c.p.clone(v=it)}
                 else ->
@@ -117,7 +78,7 @@ abstract class Model{
                             it.groups[4]?.let{set(key, reV.group4(it))} ?:
                             it.groups[5]?.let{set(key, it.value.toBoolean())} ?:
                             it.groups[6]?.let{viewmodel(key, it.value.split("."))} ?:
-                            it.groups[7]?.let{record(key, it.value.split("."))} ?: true
+                            it.groups[7]?.let{record(key, ("_." + it.value).split("."))} ?: true
                         reV.cut(c.v)._notBlank{ v->st += c.clone(v=v)}
                         if(!isOk) return@ch false
                     }

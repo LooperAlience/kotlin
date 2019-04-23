@@ -34,7 +34,7 @@ object ChScanner{
                 }
                 val target = ChScanItem(v, pos)
                 val tag = "${v.tag}"
-
+                v.tag = null
                 target.fromJson("{${if("@`$".contains(tag[0])) "style:" else ""}$tag}")
                 result += target
             }

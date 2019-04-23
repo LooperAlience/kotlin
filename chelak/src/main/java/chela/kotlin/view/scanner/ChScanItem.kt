@@ -4,7 +4,6 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import chela.kotlin.Ch
-import chela.kotlin.core._shift
 import chela.kotlin.model.ChModel
 import chela.kotlin.model.Model
 import chela.kotlin.view.ChStyle
@@ -15,18 +14,12 @@ import com.chela.annotation.PROP
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
-/**
- * Scans the view component.
- * @param view has android tag value.
- * @param pos has the index of the child view.
- */
 class ChScanItem internal constructor(@JvmField var view: View, private val pos:List<Int>): Model(){
     @JvmField internal var key = ""
     private var prop:MutableMap<String, List<String>>? = null
     private var propVal:MutableMap<String, Any>? = null
     private var record:MutableMap<String, List<String>>? = null
     private var recordVal:MutableMap<String, Any>? = null
-    private var updater:MutableMap<String, Any>? = null
     private var once:MutableMap<String, Any>? = null
     private var isOnce = false
     internal fun view(v: View){
@@ -38,31 +31,15 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         isOnce = false
     }
     private fun style(it:Map<String,Any>){
-        it.forEach {(k, v) ->
-            when {
-                v is String && v[0] == '@' -> viewmodel(k, v.substring(2, v.length - 1).split("."))
-                else -> set(k.toLowerCase(), v)
-            }
+        it.forEach{(k, v) ->
+            if(v is String && v[0] == '@') viewmodel(k, v.substring(2, v.length - 1).split("."))
+            else set(k.toLowerCase(), v)
         }
     }
-    /**
-     * Store style attributes on [updater] or [once].
-     * @param k If [k] is style or 0 index is @, then key of JSONObject or JSONArray.
-     * Otherwise, [k] is key of style attribute. For example, "textcolor".
-     * @param v String format with JSONObject, JSONArray or value of style attribute. For example, "#999999".
-     */
     override operator fun set(k:String, v:Any):Boolean{
-        if(v === OBJECT ||v === ARRAY) return true
-        when {
-            k.toLowerCase() == "style" ->"$v".split(",").map{it.trim()}.forEach{ChStyle[it]?.let{style(it)}}
-            k[0] == '@' -> {
-                if(updater == null) updater = mutableMapOf()
-                updater?.put(k._shift(), v)
-            }
-            v is Ch.Update->{
-                if(updater == null) updater = mutableMapOf()
-                updater?.put(k._shift(), v.v)
-            }
+        if(v == Ch.OBJECT ||v == Ch.ARRAY) return true
+        when (k) {
+            "style" -> "$v".split(",").map{it.trim()}.forEach{ChStyle[it]?.let{style(it)}}
             else -> {
                 if(once == null) once = mutableMapOf()
                 once?.put(k, v)
@@ -70,34 +47,21 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         }
         return true
     }
-
-    /**
-     * Get the style key and instance of the view component
-     * @param k style key. For example, "style", "alpha", etc.
-     * @param v Chela style identifier. For example, [SplashVM, holder], [SplashVM, holder, alpha], etc.
-     * If k is a style, [v] join with style attributes by point separator.  For example, @{SplashVM.holder.alpha}, @{SplashVM.holder.visibility}, etc.
-     * This process is repeated until the attribute is stored in [prop], [once], or [updater].
-     */
     override fun viewmodel(k:String, v: List<String>):Boolean{
-        if(k[0] == '-') {
-            if (once == null) once = mutableMapOf()
-            once?.put(k._shift(), ChModel.get(v))
-        }else if(k == "style"){
+        if(k == "style"){
             val m = mutableMapOf<String, Any>()
             val key = "@{" + v.joinToString(".")
-            val target = ChModel.get(v)
-            (target as? ChStyleModel)?.let{model->
-                model::class.memberProperties.forEach { p->
-                    if(p.findAnnotation<EX>() == null){
-                        val name = p.name.toLowerCase()
-                        m[name] = if(name == "style") target[p.name] else "$key.${p.name}}"
+            when(val target = ChModel.get(v)){
+                is ChStyleModel->{
+                    val anno = target.ref.annotation
+                    target.ref.getter.forEach{(k, _)->
+                        if(anno[k] != "EX") m[k] = if(k == "style") target[k] else "$key.$k}"
                     }
                 }
-            } ?: (target as? ChViewModel)?.let{model->
-                model::class.memberProperties.forEach { p->
-                    p.findAnnotation<PROP>()?.let{
-                        val name = p.name.toLowerCase()
-                        m[name] = if(name == "style") target[p.name] else "$key.${p.name}}"
+                is ChViewModel->{
+                    val anno = target.ref.annotation
+                    target.ref.getter.forEach{(k, _)->
+                        if(anno[k] == "PROP") m[k] = if(k == "style") target[k] else "$key.$k}"
                     }
                 }
             }
@@ -112,44 +76,79 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         return true
     }
     override fun record(k:String, v: List<String>):Boolean{
-        if(record == null){
+        if (record == null) {
             record = mutableMapOf()
             recordVal = mutableMapOf()
         }
         record?.put(k, v)
         return true
     }
-    private fun value(v:Any) = when {
-        v is String && v.isNotBlank() && v[0] == '@' -> ChModel.get(v.substring(2, v.length - 1))
+    private fun value(v:Any, data:Model? = null) = when{
+        v is String && v.isNotBlank()->when(v[0]){
+            '@'->ChModel.get(v.substring(2, v.length - 1))
+            '$'->data?.let {ChModel.record(v.substring(2, v.length - 1), it)} ?: throw Throwable("record but no data $v")
+            else->v
+        }
         else -> v
     }
-    fun render(recordViewModel:Model? = null):Map<String, Any>{
+    fun render(data:Model? = null):Map<String, Any>{
         val r = mutableMapOf<String, Any>()
         if(!isOnce){
             isOnce = true
-            once?.let{r.putAll(it.mapValues{value(it.value)})}
+            once?.forEach{(k, v)->r[k] = v}
         }
-        updater?.let{r.putAll(it.mapValues{value(it.value)})}
-        prop?.let{
-            it.forEach {(k, _v) ->
-                val v = value(ChModel.get(_v))
-                propVal?.let{
-                    if(it[k] == null || it[k] != v) r[k] = v
-                    it[k] = v
+        prop?.forEach{(k, _v) ->
+            when(val v = value(ChModel.get(_v), data)){
+                is Ch.Once->{
+                    r[k] = value(v.v)
+                    v.isRun = true
+                    prop?.remove(k)
+                }
+                is Ch.Update->r[k] = value(v.v)
+                else->propVal?.let{
+                    val pv = it[k]
+                    if(pv == null || pv != v){
+                        r[k] = v
+                        it[k] = v
+                    }
                 }
             }
         }
-        record?.let{record->
-            recordViewModel?.let{r.putAll(record.mapValues{ (_, v)->
-                ChModel.record(v, it)
-                recordVal?.let{
-                    it[k]?.let{if(it == v) return@ch false}
-                    it.put(k, v)
-                    r[k] = v
+        record?.forEach{(k, _v)->
+            if(data == null) throw Throwable("no data for record")
+            val v = value(ChModel.record(_v, data))
+            when{
+                k == "style" -> (v as? Model)?.ref?.getter?.forEach {(k, f) ->
+                    when(val sv = value(f.call(v) ?: Ch.NONE)){
+                        is Ch.Once -> if (!sv.isRun) {
+                            r[k] = value(sv.v)
+                            sv.isRun = true
+                        }
+                        is Ch.Update -> r[k] = value(sv.v)
+                        else -> recordVal?.let {
+                            val pv = it[k]
+                            if (pv == null || pv != sv) {
+                                r[k] = sv
+                                it[k] = sv
+                            }
+                        }
+                    }
                 }
-                return@ch true
+                v is Ch.Once -> {
+                    r[k] = value(v.v)
+                    v.isRun = true
+                    record?.remove(k)
+                }
+                v is Ch.Update -> r[k] = value(v.v)
+                else -> {
+                    recordVal?.let {
+                        if (it[k] == null || it[k] != v){
+                            r[k] = v
+                            it[k] = v
+                        }
+                    }
+                }
             }
-            )}
         }
         return r
     }

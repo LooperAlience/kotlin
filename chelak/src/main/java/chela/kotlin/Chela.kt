@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -47,13 +48,21 @@ object Ch{
     inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
 
     class Update(var v:Any)
+    class Once(var v:Any){var isRun = false}
 
+    enum class Value{obj, arr, wifi, mobile, none}
+
+    val OBJECT = Value.obj
+    val ARRAY = Value.arr
+    val WIFI = Value.wifi
+    val MOBILE = Value.mobile
+    val NONE = Value.none
+
+    val NONE_BA = ByteArray(0)
     private var isInited = false
     var debugLevel = 0
     fun isInited() = isInited
-    /**
-     * add base application & setting
-     */
+
     operator fun invoke(application:Application, path:String = ""){
         if(isInited) throw Throwable("inited!")
         isInited = true
@@ -68,10 +77,6 @@ object Ch{
         }
         if (debugLevel == 0) Thread.currentThread().setUncaughtExceptionHandler { _, _ ->}
     }
-    val WIFI = object : Value {}
-    val MOBILE = object : Value {}
-    val NONE = object : Value {}
-    val NONE_BA = ByteArray(0)
     val math = ChMath
     val reflect = ChReflect
     val thread = ChThread
@@ -97,7 +102,8 @@ object Ch{
     val scanner = ChScanner
     val prop = ChProperty
 
-    fun isNone(v:Any):Boolean = v === NONE || v === NONE_BA
+    @Suppress("SuspiciousEqualsCombination")
+    fun isNone(v:Any):Boolean = v == NONE || v === NONE_BA
 
     fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, f:()->Unit){
         (looper ?: run{
@@ -121,10 +127,7 @@ object Ch{
     }
 
     fun looper():ChLooper = ChLooper()
-    /**
-     * get router
-     *
-     */
+
     fun <T>router(base: ChHolderBase<T>): ChRouter<T> = ChRouter(base)
     fun groupBase():ChGroupBase = ChGroupBase()
     fun fragmentBase():ChFragmentBase = ChFragmentBase()
@@ -143,7 +146,6 @@ object Ch{
      * Interface for touch event(ex down, up, move)
      */
     interface Touch{fun onTouch(e: MotionEvent):Boolean}
-    interface Value
     abstract class OnTextChanged:TextWatcher{
         lateinit var text: EditText
         override fun afterTextChanged(s:Editable?){}
@@ -164,10 +166,13 @@ object Ch{
         protected abstract fun data(v:T)
         protected open fun renew(v:T){}
         protected open fun error(){}
-        operator fun invoke(){
-
-            @Suppress("UNCHECKED_CAST")
+        operator fun invoke(retry:Int = 3){
+            if(retry == 0){
+                error()
+                return
+            }
             data[key]?.let{
+                @Suppress("UNCHECKED_CAST")
                 if(isValid(it as T)){
                     data(it)
                     return
@@ -177,8 +182,11 @@ object Ch{
             if(v != null && isValid(v)){
                 data[key] = v as Any
                 renew(v)
-                invoke()
-            }else net{res->if(setDB(res)) invoke() else error()}
+                invoke(retry)
+            }else net { res ->
+                if(setDB(res)) invoke(retry - 1)
+                else error()
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ object ChRes{
     var inited = false
     @SuppressLint("StaticFieldLeak")
     lateinit var db:DataBase
-    fun res(res:JSONObject) = Res("", res)
+    fun res(res:JSONObject) = Res("", res).set()
     fun load(res:JSONObject){
         res._forObject{k, obj->load(Res(k, obj))}
         res._array("remove")?._for<String>{ _, v->

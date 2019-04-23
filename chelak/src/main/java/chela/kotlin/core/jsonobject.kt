@@ -135,6 +135,8 @@ fun JSONObject.find(key:String) = run{
         r
     }
 }
+fun JSONObject.o(key:String):JSONObject? = find(key) as? JSONObject
+fun JSONObject.a(key:String):JSONArray? = find(key) as? JSONArray
 fun JSONObject.s(key:String):String? = find(key) as? String
 fun JSONObject.i(key:String):Int? = find(key) as? Int
 fun JSONObject.f(key:String):Float? = (find(key) as? Double)?.toFloat()

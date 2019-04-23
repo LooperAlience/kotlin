@@ -5,10 +5,7 @@ import chela.kotlin.model.Model
 import com.chela.annotation.EX
 import com.chela.annotation.STYLE
 
-/**
- * This class represent viewmodel lifecycle event.
- */
-abstract class ChViewModel: Model(){
+abstract class ChViewModel(isRegister:Boolean = true, name:String? = null):Model(isRegister, name){
     open fun resumed(){}
     open fun resumeAnimation(it: ChItem){}
     open fun paused(){}
@@ -18,8 +15,4 @@ abstract class ChViewModel: Model(){
     open fun poped(){}
     open fun popAnimation(it: ChItem){}
 }
-/**
- * This class represent viewmodel UI style.
- * Exclude annotation helps you remove that style in the list.
- */
-abstract class ChStyleModel(@EX val isRegister:Boolean = false): ChViewModel()
+abstract class ChStyleModel(isRegister:Boolean = false, name:String? = null): ChViewModel(isRegister, name)

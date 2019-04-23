@@ -14,14 +14,12 @@ object ChModel{
         if(v[0] == "cdata") return ChCdata[v[1]] ?: "no data:${v[1]}"
         repo[v[0]]?.let { return find(v, it) } ?: throw Exception("invalid key:" + v[0])
     }
-    fun record(v: List<String>, record: Model): Any {
+    fun record(v:String, record:Model) = record(("_." + v).split('.'), record)
+    fun record(v: List<String>, record: Model):Any{
         if(v.isEmpty()) throw Exception("invalid list size == 0")
-        return find(with(mutableListOf("")){
-            addAll(v)
-            this
-        }, record)
+        return find(v, record)
     }
-    private fun find(v: List<String>, it: Model): Any {
+    private fun find(v:List<String>, it: Model): Any {
         var model: Model? = it
         var list:MutableList<Any>? = null
         var r: Any = 0
