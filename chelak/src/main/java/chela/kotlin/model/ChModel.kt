@@ -1,8 +1,7 @@
 package chela.kotlin.model
 
-import android.util.Log
-import chela.kotlin.core._for
 import chela.kotlin.cdata.ChCdata
+import chela.kotlin.core._for
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.reflect.full.createInstance
@@ -16,8 +15,11 @@ object ChModel{
         repo[v[0]]?.let { return find(v, it) } ?: throw Exception("invalid key:" + v[0])
     }
     fun record(v: List<String>, record: Model): Any {
-        if (v.isEmpty()) throw Exception("invalid list size == 0")
-        return find(v, record)
+        if(v.isEmpty()) throw Exception("invalid list size == 0")
+        return find(with(mutableListOf("")){
+            addAll(v)
+            this
+        }, record)
     }
     private fun find(v: List<String>, it: Model): Any {
         var model: Model? = it

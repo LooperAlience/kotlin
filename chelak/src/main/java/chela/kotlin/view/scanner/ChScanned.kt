@@ -1,5 +1,6 @@
 package chela.kotlin.view.scanner
 
+import android.util.Log
 import android.view.View
 import chela.kotlin.model.Model
 import chela.kotlin.thread.ChThread
@@ -22,6 +23,9 @@ class ChScanned internal constructor(@JvmField var view: View, private val items
             if(isNew) it.view(view)
             val r = it.render(record)
             if(r.isNotEmpty()) collector += it.view to r
+            r["glide"]?.let{
+                Log.i("ch", "---------------------------------collector glide ${it}")
+            }
         }
         if(collector.isNotEmpty()) ChThread.msg(ChThread.property, collector)
         return view
