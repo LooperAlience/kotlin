@@ -165,6 +165,7 @@ object Ch{
         protected open fun renew(v:T){}
         protected open fun error(){}
         operator fun invoke(){
+
             @Suppress("UNCHECKED_CAST")
             data[key]?.let{
                 if(isValid(it as T)){

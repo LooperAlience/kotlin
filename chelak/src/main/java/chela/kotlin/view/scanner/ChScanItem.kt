@@ -123,7 +123,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         v is String && v.isNotBlank() && v[0] == '@' -> ChModel.get(v.substring(2, v.length - 1))
         else -> v
     }
-    fun render(recordViewModel: Model? = null):Map<String, Any>{
+    fun render(recordViewModel:Model? = null):Map<String, Any>{
         val r = mutableMapOf<String, Any>()
         if(!isOnce){
             isOnce = true

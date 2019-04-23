@@ -1,6 +1,7 @@
 package chela.kotlin.view.scanner
 
 import android.view.View
+import chela.kotlin.model.Model
 import chela.kotlin.thread.ChThread
 import chela.kotlin.view.property.ChProperty
 
@@ -13,13 +14,13 @@ class ChScanned internal constructor(@JvmField var view: View, private val items
     /**
      * Restore the view.
      */
-    fun render(v: View? = null): View {
+    fun render(v:View? = null, record: Model? = null):View{
         val collector = mutableSetOf<Pair<View, Map<String, Any>>>()
         val isNew = v != null && v !== view
         if(isNew) view = v!!
         items.forEach{
             if(isNew) it.view(view)
-            val r = it.render()
+            val r = it.render(record)
             if(r.isNotEmpty()) collector += it.view to r
         }
         if(collector.isNotEmpty()) ChThread.msg(ChThread.property, collector)

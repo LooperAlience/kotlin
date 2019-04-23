@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 class ChFragmentBase: ChHolderBase<ChFragmentInfo>(){
     lateinit var manager:FragmentManager
     var container:Int = 0
-    override fun push(holder: ChHolder<ChFragmentInfo>) = with(holder.create(this)) {
+    override fun push(holder: ChHolder<ChFragmentInfo>, isRestore:Boolean) = with(holder.create(this, isRestore)) {
         val ft = manager.beginTransaction()
         if(transition != 0) ft.setTransition(transition)
         if(style != 0) ft.setTransitionStyle(style)
@@ -19,7 +19,7 @@ class ChFragmentBase: ChHolderBase<ChFragmentInfo>(){
         manager.executePendingTransactions()
         Unit
     }
-    override fun pop(holder: ChHolder<ChFragmentInfo>){
+    override fun pop(holder: ChHolder<ChFragmentInfo>, isJump:Boolean){
         manager.popBackStackImmediate()
     }
 }
