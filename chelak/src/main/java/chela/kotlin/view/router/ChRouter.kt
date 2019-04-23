@@ -8,27 +8,19 @@ import chela.kotlin.view.router.holder.ChHolderBase
 
 class ChRouter<T>(private val base: ChHolderBase<T>){
     private val stack = mutableListOf<ChHolder<T>>()
-    private var pushLock = false
-    private var popLock = false
     val isFinal:Boolean get() = stack.size == 1
     fun restore(){stack.forEach{base._push(it, true)}}
-    fun unlockPush(){if(pushLock) pushLock = false}
-    fun unlockPop(){if(popLock) popLock = false}
-    fun push(holder: ChHolder<T>, isAutoUnlock:Boolean = true){
-        if(pushLock) return
-        if(!isAutoUnlock) pushLock = true
+    fun push(holder:ChHolder<T>){
         ChThread.main(Runnable{
             if(stack.isNotEmpty()) base._pause(stack.last(), false)
             base._push(holder, false)
             stack += holder
         })
     }
-    fun pop(isAutoUnlock:Boolean = true):Int{
+    fun pop():Int{
         if(stack.isEmpty()) return 0
-        if(popLock) return -1
-        if(!isAutoUnlock) popLock = true
         val h = stack.last()
-        ChThread.main(Runnable {
+        ChThread.main(Runnable{
             base._pop(h, false)
             stack._pop()
             if (stack.isNotEmpty()) base._resume(stack.last(), true)
