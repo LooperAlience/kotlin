@@ -121,7 +121,7 @@ fun JSONObject.find(key:String) = run{
         var r:Any? = null
         v.forEachIndexed { i, v ->
             r = obj?.get(v) ?: list?.get(v.toInt()) ?: throw Throwable("invalid key:$v")
-            if (i < s) when (r) {
+            if(i < s) when (r) {
                 is JSONObject -> {
                     obj = r as JSONObject
                     list = null
