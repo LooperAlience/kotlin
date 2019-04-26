@@ -17,6 +17,7 @@ import chela.kotlin.crypto.ChCrypto
 import chela.kotlin.cdata.ChCdata
 import chela.kotlin.looper.ChLooper
 import chela.kotlin.model.ChModel
+import chela.kotlin.model.Model
 import chela.kotlin.net.ChNet
 import chela.kotlin.net.ChResponse
 import chela.kotlin.resource.ChRes
@@ -104,7 +105,18 @@ object Ch{
 
     @Suppress("SuspiciousEqualsCombination")
     fun isNone(v:Any):Boolean = v == NONE || v === NONE_BA
-
+    fun value(_v:Any, data: Model? = null):Any{
+        var v = _v
+        while(v is String && v.isNotBlank()){
+            v = when(v[0]){
+                '@'->ChModel.get(v.substring(2, v.length - 1))
+                '$'->if(data != null) ChModel.record(v.substring(2, v.length - 1), data)
+                else throw Throwable("record but no data $v")
+                else-> return v
+            }
+        }
+        return v
+    }
     fun waitActivate(activity:AppCompatActivity, looper:ChLooper? = null, f:()->Unit){
         (looper ?: run{
             val l = looper()
@@ -120,6 +132,7 @@ object Ch{
             }
         }
     }
+
     fun finish(act:AppCompatActivity){
         act.cacheDir?.let{it.deleteRecursively()}
         act.finish()

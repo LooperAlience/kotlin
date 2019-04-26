@@ -83,17 +83,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         record?.put(k, v)
         return true
     }
-    private fun value(_v:Any, data:Model? = null):Any{
-        var v = _v
-        while(v is String && v.isNotBlank()){
-            v = when(v[0]){
-                '@'->ChModel.get(v.substring(2, v.length - 1))
-                '$'->if(data != null) ChModel.record(v.substring(2, v.length - 1), data) else throw Throwable("record but no data $v")
-                else-> return v
-            }
-        }
-        return v
-    }
+
     fun render(data:Model? = null):Map<String, Any>{
         val r = mutableMapOf<String, Any>()
         if(!isOnce){
@@ -104,13 +94,13 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
             }
         }
         prop?.forEach{(k, _v) ->
-            when(val v = value(ChModel.get(_v), data)){
+            when(val v = Ch.value(ChModel.get(_v), data)){
                 is Ch.Once->{
-                    r[k] = value(v.v)
+                    r[k] = Ch.value(v.v)
                     v.isRun = true
                     prop?.remove(k)
                 }
-                is Ch.Update->r[k] = value(v.v)
+                is Ch.Update->r[k] = Ch.value(v.v)
                 else->propVal?.let{
                     val pv = it[k]
                     if(pv == null || pv != v){
@@ -122,15 +112,15 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         }
         record?.forEach{(k, _v)->
             if(data == null) throw Throwable("no data for record")
-            val v = value(ChModel.record(_v, data))
+            val v = Ch.value(ChModel.record(_v, data))
             when{
                 k == "style" -> (v as? Model)?.ref?.getter?.forEach {(k, f) ->
-                    when(val sv = value(f.call(v) ?: Ch.NONE)){
+                    when(val sv = Ch.value(f.call(v) ?: Ch.NONE)){
                         is Ch.Once -> if (!sv.isRun) {
-                            r[k] = value(sv.v)
+                            r[k] = Ch.value(sv.v)
                             sv.isRun = true
                         }
-                        is Ch.Update -> r[k] = value(sv.v)
+                        is Ch.Update -> r[k] = Ch.value(sv.v)
                         else -> recordVal?.let {
                             val pv = it["style.$k"]
                             if (pv == null || pv != sv) {
@@ -141,11 +131,11 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
                     }
                 }
                 v is Ch.Once -> {
-                    r[k] = value(v.v)
+                    r[k] = Ch.value(v.v)
                     v.isRun = true
                     record?.remove(k)
                 }
-                v is Ch.Update -> r[k] = value(v.v)
+                v is Ch.Update -> r[k] = Ch.value(v.v)
                 else -> {
                     recordVal?.let {
                         if (it[k] == null || it[k] != v){
