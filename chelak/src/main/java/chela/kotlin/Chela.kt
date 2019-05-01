@@ -94,6 +94,7 @@ object Ch{
     val permission = ChPermission
     val model = ChModel
     val sql = ChSql
+    val query = Query
     val ruleset = ChRuleSet
     val view = ChView
     val drawable = ChDrawable
@@ -103,6 +104,11 @@ object Ch{
     val scanner = ChScanner
     val prop = ChProperty
 
+    object Query{
+        fun chAdd(id:String, contents:String) = ChSql.db("ch").exec("ch_add", "id" to id, "contents" to contents)
+        fun chId(id:String) = ChSql.db("ch").i("ch_id", "id" to id)
+        fun chGet(id:String) = ChSql.db("ch").s("ch_getId", "id" to id)
+    }
     @Suppress("SuspiciousEqualsCombination")
     fun isNone(v:Any):Boolean = v == NONE || v === NONE_BA
     fun value(_v:Any, data: Model? = null):Any{
@@ -141,7 +147,7 @@ object Ch{
 
     fun looper():ChLooper = ChLooper()
 
-    fun <T>router(base: ChHolderBase<T>): ChRouter<T> = ChRouter(base)
+    fun <T, R:ChHolderBase<T>>router(base: R): ChRouter<T, R> = ChRouter(base)
     fun groupBase():ChGroupBase = ChGroupBase()
     fun fragmentBase():ChFragmentBase = ChFragmentBase()
 

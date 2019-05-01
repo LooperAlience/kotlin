@@ -16,6 +16,7 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 
 class ChScanItem internal constructor(@JvmField var view: View, private val pos:List<Int>): Model(){
+    companion object{private val exKey = "isSet,ref,popX,pushX"}
     @JvmField internal var key = ""
     private var prop:MutableMap<String, List<String>>? = null
     private var propVal:MutableMap<String, Any>? = null
@@ -48,31 +49,34 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
         }
         return true
     }
-    override fun viewmodel(k:String, v: List<String>):Boolean{
-        if(k == "style"){
-            val m = mutableMapOf<String, Any>()
-            val key = "@{" + v.joinToString(".")
-            when(val target = ChModel.get(v)){
-                is ChStyleModel->{
-                    val anno = target.ref.annotation
-                    target.ref.getter.forEach{(k, _)->
-                        if(anno[k] != "EX") m[k] = if(k == "style") target[k] else "$key.$k}"
+    override fun viewmodel(k:String, v: List<String>):Boolean {
+        when(k){
+            "style"->{
+                val m = mutableMapOf<String, Any>()
+                val key = "@{" + v.joinToString(".")
+                when (val target = ChModel.get(v)) {
+                    is ChStyleModel -> {
+                        val anno = target.ref.annotation
+                        target.ref.getter.forEach { (k, _) ->
+                            if(!exKey.contains(k) && anno[k] != "EX") m[k] = if(k == "style") target[k] else "$key.$k}"
+                        }
+                    }
+                    is ChViewModel -> {
+                        val anno = target.ref.annotation
+                        target.ref.getter.forEach { (k, _) ->
+                            if (anno[k] == "PROP") m[k] = if(k == "style") target[k] else "$key.$k}"
+                        }
                     }
                 }
-                is ChViewModel->{
-                    val anno = target.ref.annotation
-                    target.ref.getter.forEach{(k, _)->
-                        if(anno[k] == "PROP") m[k] = if(k == "style") target[k] else "$key.$k}"
-                    }
+                if (m.isNotEmpty()) style(m)
+            }
+            else->{
+                if (prop == null) {
+                    prop = mutableMapOf()
+                    propVal = mutableMapOf()
                 }
+                prop?.put(k, v)
             }
-            if(m.isNotEmpty()) style(m)
-        }else{
-            if(prop == null){
-                prop = mutableMapOf()
-                propVal = mutableMapOf()
-            }
-            prop?.put(k, v)
         }
         return true
     }

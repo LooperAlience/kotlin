@@ -3,7 +3,9 @@ package chela.kotlin.thread
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.util.Log
 import android.view.View
+import android.widget.TextView
 import chela.kotlin.view.property.ChProperty
 import chela.kotlin.view.scanner.ChScanItem
 import java.util.concurrent.Executors
@@ -15,7 +17,9 @@ object Prop:MsgType(0){
             if(pair !is Pair<*, *>) return
             (pair.first as? View)?.let{view->
                 @Suppress("UNCHECKED_CAST")
-                (pair.second as? Map<String, Any>)?.forEach{(k, v)-> ChProperty.f(view, k.toLowerCase(), v)}
+                (pair.second as? Map<String, Any>)?.forEach{(k, v)->
+                    ChProperty.f(view, k.toLowerCase(), v)
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ import chela.kotlin.thread.ChThread
 import chela.kotlin.view.router.holder.ChHolder
 import chela.kotlin.view.router.holder.ChHolderBase
 
-class ChRouter<T>(private val base: ChHolderBase<T>){
+class ChRouter<T, R:ChHolderBase<T>>(val base:R){
     private val stack = mutableListOf<ChHolder<T>>()
     val isFinal:Boolean get() = stack.size == 1
     fun restore(){stack.forEach{base._push(it, true)}}

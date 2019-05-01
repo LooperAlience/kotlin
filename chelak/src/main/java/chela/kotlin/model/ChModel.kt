@@ -11,7 +11,7 @@ object ChModel{
     fun get(v:String):Any = get(v.split(".").map { it.trim() })
     fun get(v:List<String>):Any{
         if(v.isEmpty()) throw Exception("invalid list size == 0")
-        if(v[0] == "cdata") return ChCdata[v[1]] ?: "no data:${v[1]}"
+        if(v[0] == "cdata") return ChCdata[v[1]] ?: "::${v[1]}"
         repo[v[0]]?.let { return find(v, it) } ?: throw Exception("invalid key:" + v[0])
     }
     fun record(v:String, record:Model) = record(("_." + v).split('.'), record)

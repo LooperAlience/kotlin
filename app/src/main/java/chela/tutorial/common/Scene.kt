@@ -12,7 +12,7 @@ abstract class Scene: ChHolder<View>(){
     private var inflater: LayoutInflater? = null
     protected var scan:ChScanned? = null
 
-    override fun create(base: ChHolderBase<View>):View{
+    override fun create(base: ChHolderBase<View>, isRestore:Boolean, vararg arg:Any):View{
         if(base !is ChGroupBase) throw Exception("")
         vm()
         if(base.inflater != inflater) {
@@ -24,7 +24,7 @@ abstract class Scene: ChHolder<View>(){
         init()
         return scan!!.view
     }
-    override fun push(base: ChHolderBase<View>, isRestore: Boolean) {
+    override fun push(isRestore: Boolean) {
         if(isRestore){
             vm().pushed()
             render()
@@ -43,7 +43,7 @@ abstract class Scene: ChHolder<View>(){
             }
         }
     }
-    override fun pop(base: ChHolderBase<View>, isJump: Boolean):Long {
+    override fun pop(isJump: Boolean):Long {
         return if(isJump){
             vm().poped()
             render()

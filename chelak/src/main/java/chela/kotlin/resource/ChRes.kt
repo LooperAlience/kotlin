@@ -43,6 +43,7 @@ object ChRes{
         ch_id--select count(*)from ch_res where id=@id:string@;
         ch_remove--delete from ch_res where id=@id:string@;
         ch_getId--select contents from ch_res where id=@id:string@;
+        ch_getCdata--select contents from ch_res where id like @id:string@ order by res_rowid desc limit 1;
         ch_get--select id,contents from ch_res;
         ch_list--select id from ch_res
         """.split(";").forEach {
