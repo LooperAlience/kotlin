@@ -1,24 +1,20 @@
 package chela.kotlin.view.scanner
 
-import android.util.Log
 import android.view.View
 import chela.kotlin.Ch
 import chela.kotlin.model.Model
 import chela.kotlin.thread.ChThread
 import chela.kotlin.view.property.ChProperty
 
-/**
- * This class stores the [items] scanned by the ChScanner.
- * The [collector] create ChScanItem field with the [items]'s key and value.
- */
 class ChScanned internal constructor(@JvmField var view: View, private val items:MutableSet<ChScanItem> = mutableSetOf()):MutableSet<ChScanItem> by items{
     private val keyItem = mutableMapOf<String, ChScanItem>()
-    fun render(v:View? = null, record: Model? = null) = if(Ch.thread.isMain()) renderSync(v, record)
+    fun render(v:View? = null, record: Model? = null) =
+        if(Ch.thread.isMain()) renderSync(v, record)
         else ChThread.main(Runnable {renderSync(v, record)})
     fun renderSync(v:View? = null, record: Model? = null){
         val isNew = v != null && v !== view
         if(isNew) view = v!!
-        items.forEach{
+        forEach{
             if(isNew) it.view(view)
             val r = it.render(record)
             if(r.isNotEmpty()){

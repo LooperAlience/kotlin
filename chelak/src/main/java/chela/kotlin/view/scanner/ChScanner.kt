@@ -13,11 +13,9 @@ object ChScanner{
     private val scanned = mutableMapOf<Any, ChScanned>()
     operator fun get(k:Any): ChScanned? = scanned[k]
     fun scan(id:Any, view:View): ChScanned{
-        val prev = scanned[id]
-        if(prev != null && prev.view == view) return prev
-        val st = mutableListOf(view)
+        scanned[id]?.let{if(it.view == view) return it}
         val result = ChScanned(view)
-        if(Ch.NONE != id) scanned[id] = result
+        val st = mutableListOf(view)
         var limit = 200
         while(st.isNotEmpty()&& limit-- > 0){
             val v = st.removeAt(st.size - 1)
@@ -38,8 +36,12 @@ object ChScanner{
                 target.fromJson("{${if("@`$".contains(tag[0])) "style:" else ""}$tag}")
                 result += target
             }
-            if (v is ViewGroup) for (i in v.childCount - 1 downTo 0) st.add(v.getChildAt(i))
+            if(v is ViewGroup){
+                var i = v.childCount
+                while(i-- > 0) st.add(v.getChildAt(i))
+            }
         }
+        if(Ch.NONE != id) scanned[id] = result
         return result
     }
 }

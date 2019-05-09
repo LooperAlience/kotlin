@@ -5,8 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.tutorial.R
 import chela.tutorial.common.App
-import chela.tutorial.src5.Act
-import chela.tutorial.src5.holder.Main
+import chela.tutorial.src4.holder.Main
 import kotlinx.android.synthetic.main.activity_container.*
 
 class Act : AppCompatActivity(){

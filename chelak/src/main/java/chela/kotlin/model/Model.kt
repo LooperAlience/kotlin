@@ -41,7 +41,7 @@ abstract class Model(isRegister:Boolean = true, name:String? = null){
             }
         }
     }
-    val ref by lazy{ChReflect.fields(this::class)}
+    val ref by lazy{ChReflect.fields(this)}
     @JvmField var isSet = false
     open operator fun get(k:String) = ref.getter[k]?.call(this) ?: Ch.NONE
     open operator fun set(k:String, v:Any) = ref.setter[k]?.let {

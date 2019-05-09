@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
@@ -50,7 +51,7 @@ object Ch{
 
     class Update(var v:Any)
     class Once(var v:Any){var isRun = false}
-
+    class Id
     enum class Value{obj, arr, wifi, mobile, none}
 
     val OBJECT = Value.obj
@@ -208,4 +209,5 @@ object Ch{
             }
         }
     }
+    fun click(block:(View)->Unit) = View.OnClickListener{block(it)}
 }

@@ -119,18 +119,31 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
             if(data == null) throw Throwable("no data for record")
             val v = Ch.value(ChModel.record(_v, data))
             when{
-                k == "style" -> (v as? Model)?.ref?.getter?.forEach {(k, f) ->
-                    when(val sv = Ch.value(f.call(v) ?: Ch.NONE)){
-                        is Ch.Once -> if (!sv.isRun) {
-                            r[k] = Ch.value(sv.v)
-                            sv.isRun = true
-                        }
-                        is Ch.Update -> r[k] = Ch.value(sv.v)
-                        else -> recordVal?.let {
-                            val pv = it["style.$k"]
-                            if (pv == null || pv != sv) {
-                                r[k] = sv
-                                it["style.$k"] = sv
+                k == "style" -> {
+                    val type = when(v){
+                        is ChStyleModel->0
+                        is ChViewModel->1
+                        else->-1
+                    }
+                    if(type != -1) (v as? Model)?.ref?.let{
+                        val anno = it.annotation
+                        it.getter.forEach{(k, f)->
+                            if(
+                                (type == 0 && !exKey.contains(k) && anno[k] != "EX") ||
+                                (type == 1 && anno[k] == "PROP")
+                            ) when (val sv = Ch.value(f.call(v) ?: Ch.NONE)) {
+                                is Ch.Once -> if (!sv.isRun) {
+                                    r[k] = Ch.value(sv.v)
+                                    sv.isRun = true
+                                }
+                                is Ch.Update -> r[k] = Ch.value(sv.v)
+                                else -> recordVal?.let {
+                                    val pv = it["style.$k"]
+                                    if (pv == null || pv != sv) {
+                                        r[k] = sv
+                                        it["style.$k"] = sv
+                                    }
+                                }
                             }
                         }
                     }

@@ -29,5 +29,6 @@
         <activity android:name="chela.tutorial.src3.Act"/>
         <activity android:name="chela.tutorial.src4.Act"/>
         <activity android:name="chela.tutorial.src5.Act"/>
+        <activity android:name="chela.tutorial.src6.Act"/>
     </application>
 </manifest>

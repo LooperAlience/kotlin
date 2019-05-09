@@ -24,9 +24,9 @@ object ChCdata{
     val root = Cdata("root")
     val req = mutableMapOf<String, MutableSet<String>>()
     private val rex = """\{|\}| """.toRegex()
-    val requestKey:String? get() = if(Ch.cdata.req.isEmpty()) null else{
-        val r ="${Ch.cdata.req}".replace(rex, "")
-        ChCdata.req.clear()
+    val requestKey:String? get() = if(req.isEmpty()) null else{
+        val r ="$req".replace(rex, "")
+        req.clear()
         r
     }
     fun remove(k:String){root.remove(k)}
