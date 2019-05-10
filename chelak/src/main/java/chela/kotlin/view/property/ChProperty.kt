@@ -24,4 +24,5 @@ object ChProperty:Property(){
     val text = PropText
     val layout = PropLayout
     val image = PropImage
+    val button = PropButton
 }

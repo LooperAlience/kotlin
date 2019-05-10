@@ -1,6 +1,7 @@
 package chela.kotlin
 
 import android.app.Application
+import android.graphics.drawable.Drawable
 import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
@@ -50,6 +51,25 @@ object Ch{
 
     class Update(var v:Any)
     class Once(var v:Any){var isRun = false}
+
+    class ButtonDrawable(
+        private val _top:Any?,
+        private val _right:Any?,
+        private val _bottom:Any?,
+        private val _left:Any?
+    ){
+        companion object{
+            fun d(v:Any?) = when(v){
+                is String ->ChApp.drawable(v)
+                is Drawable -> v
+                else->null
+            }
+        }
+        val top:Drawable? get() = d(_top)
+        val right:Drawable? get() = d(_right)
+        val bottom:Drawable? get() = d(_bottom)
+        val left:Drawable? get() = d(_left)
+    }
 
     enum class Value{obj, arr, wifi, mobile, none}
 

@@ -4,6 +4,7 @@ import android.os.Build
 import android.text.Html
 import android.text.InputFilter
 import android.text.Spanned
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
@@ -58,10 +59,9 @@ object Alignment{
 object PropText:Property(){
     val type = Type
     val alignment = Alignment
-
     fun text(view:View, v:Any){
         if(view !is TextView) return
-        view.text = v as String
+        view.text = "$v"
     }
     fun fromHtml(view:View, v:Any){
         if(view !is TextView) return
