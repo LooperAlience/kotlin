@@ -228,4 +228,5 @@ object Ch{
             }
         }
     }
+    fun click(block:(View)->Unit) = View.OnClickListener{block(it)}
 }

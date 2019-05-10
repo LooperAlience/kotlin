@@ -33,6 +33,22 @@ class ChItem{
         end += pauseStart
         pauseStart = 0.0
     }
+    fun ease(type:String, from: Double, to: Double) = when(type.toLowerCase()){
+        "backin"->backIn(from, to)
+        "backout"->backOut(from, to)
+        "backinout"->backInOut(from, to)
+        "sinein"->sineIn(from, to)
+        "sineout"->sineOut(from, to)
+        "sineinout"->sineInOut(from, to)
+        "circlein"->circleIn(from, to)
+        "circleout"->circleOut(from, to)
+        "circleinout"->circleInOut(from, to)
+        "quadraticin"->quadraticIn(from, to)
+        "quadraticout"->quadraticOut(from, to)
+        "bounceout"->bounceOut(from, to)
+        "linear"->linear(from, to)
+        else->linear(from, to)
+    }
     fun linear(from: Double, to: Double): Double {
         return from + rate * (to - from)
     }
