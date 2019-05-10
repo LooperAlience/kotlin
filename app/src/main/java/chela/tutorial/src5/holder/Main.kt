@@ -4,6 +4,7 @@ import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.core._forObject
 import chela.kotlin.core._try
+import chela.kotlin.model.Model
 import chela.kotlin.resource.Cdata
 import chela.tutorial.R
 import chela.tutorial.common.Scene
@@ -40,6 +41,18 @@ object Main : Scene(){
                }
             }""")
         }
+        val m = object:Model(){
+            override fun set(k:String, v:Any):Boolean{
+                Log.i("ch", "$k - $v")
+                return true
+            }
+        }
+        m.fromJson("""{
+            t:"wer",
+            a:3ce,
+            b:1223
+        }""")
+
     }
     override fun pushed(){ }
     private fun updateCdata(block:()->Unit){

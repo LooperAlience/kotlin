@@ -1,8 +1,6 @@
 package chela.tutorial.src5.viewmodel
 
-import android.util.Log
 import android.view.View
-import chela.kotlin.Ch.DptoPx
 import chela.kotlin.view.ChStyleModel
 import chela.tutorial.common.SceneModel
 import chela.tutorial.src5.holder.Main

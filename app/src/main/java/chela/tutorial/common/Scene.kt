@@ -2,6 +2,7 @@ package chela.tutorial.common
 
 import android.view.LayoutInflater
 import android.view.View
+import chela.kotlin.Ch
 import chela.kotlin.view.router.holder.ChGroupBase
 import chela.kotlin.view.router.holder.ChHolder
 import chela.kotlin.view.router.holder.ChHolderBase
@@ -9,14 +10,13 @@ import chela.kotlin.view.scanner.ChScanned
 import chela.kotlin.view.scanner.ChScanner
 
 abstract class Scene: ChHolder<View>(){
-    private var inflater: LayoutInflater? = null
     protected var scan:ChScanned? = null
-
+    private var id: Ch.Id? = null
     override fun create(base: ChHolderBase<View>, isRestore:Boolean, vararg arg:Any):View{
         if(base !is ChGroupBase) throw Exception("")
         vm()
-        if(base.inflater != inflater) {
-            inflater = base.inflater
+        base.checkId(id)?.let{
+            id = it
             val view = base.inflate(layout())
             scan?.let{it.view = view} ?: run{scan = ChScanner.scan(this, view)}
         }

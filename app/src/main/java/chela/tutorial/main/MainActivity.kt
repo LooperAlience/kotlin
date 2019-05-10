@@ -8,7 +8,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import chela.tutorial.R
-import chela.tutorial.src5.Act
+import chela.tutorial.src6.Act
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
@@ -60,8 +60,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_1 -> startActivity(Intent(this, chela.tutorial.src1.Act::class.java))
             R.id.nav_2 -> startActivity(Intent(this, chela.tutorial.src2.Act::class.java))
             R.id.nav_3 -> startActivity(Intent(this, chela.tutorial.src3.Act::class.java))
-            R.id.nav_4 -> startActivity(Intent(this, Act::class.java))
+            R.id.nav_4 -> startActivity(Intent(this, chela.tutorial.src4.Act::class.java))
             R.id.nav_5 -> startActivity(Intent(this, chela.tutorial.src5.Act::class.java))
+            R.id.nav_6 -> startActivity(Intent(this, chela.tutorial.src6.Act::class.java))
             R.id.nav_share -> {
             }
             R.id.nav_send -> {
