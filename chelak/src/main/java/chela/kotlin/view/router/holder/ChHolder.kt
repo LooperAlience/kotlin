@@ -1,11 +1,24 @@
 package chela.kotlin.view.router.holder
 
-abstract class ChHolder<T>(val name:String = ""){
-    abstract fun create(base: ChHolderBase<T>, isRestore:Boolean, vararg arg:Any):T
-    open fun push(isRestore:Boolean){}
-    open fun pop(isRestore:Boolean) = 0L
-    open fun resume(isRestore:Boolean){}
-    open fun pause(isRestore:Boolean){}
-    open fun take(){}
+import chela.kotlin.Ch
+
+abstract class ChHolder<T>{
+    var id:Ch.Id? = null
+    open fun createInit(base: ChHolderBase<T>, vararg arg:Any){}
+    abstract fun create(base: ChHolderBase<T>, vararg arg:Any):T
+
+    open fun addPush(){}
+    open fun addPop(){}
+    open fun addRestore(){}
+
+    open fun removePush(){}
+    open fun removePop() = 0L
+    open fun removeTake(){}
+
+    open fun pauseRestore(){}
+    open fun pausePush(){}
+
+    open fun resume(){}
+
     open fun action(key: String, arg: Array<out Any>) = false
 }

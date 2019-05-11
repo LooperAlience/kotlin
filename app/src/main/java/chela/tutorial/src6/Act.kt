@@ -23,7 +23,6 @@ class Act : AppCompatActivity(){
         router.base.group(main)
         Ch.waitActivate(this, ChScanHolder.looper){
             if(!router.restore()){
-                Log.i("ch", "new")
                 router.push(Holder("1", R.layout.activity_main6, MainVm("test1", "#ff0000")))
                 router.push(Holder("2", R.layout.activity_main6, MainVm("test2", "#ffff00")))
                 router.push(Holder("3", R.layout.activity_main6, MainVm("test3", "#ff00ff")))

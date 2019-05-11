@@ -17,12 +17,8 @@ class Wrapper(
         @EX internal val popTime = 320L
         @EX internal val pushTime = 320L
     }
-    sealed class Type(val isX:Boolean){
-        object LR:Type(true)
-        object RL:Type(true)
-        object TB:Type(false)
-        object BT:Type(false)
-        object NO:Type(false)
+    enum class Type(val isX:Boolean){
+        LR(true), RL(true), TB(false), BT(false), NO(false)
     }
     @EX val pushed = when(push){
         Type.LR-> -ChWindow.width.toDouble() to 0.0

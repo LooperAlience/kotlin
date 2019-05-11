@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.android.*
@@ -48,6 +49,7 @@ object Ch{
     inline val Number.PxtoDp get() = this.toDouble() * ChWindow.PxtoDp
     inline val Number.PxtoSp get() = this.toDouble() * ChWindow.PxtoSp
     inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
+
 
     class Update(var v:Any)
     class Once(var v:Any){var isRun = false}

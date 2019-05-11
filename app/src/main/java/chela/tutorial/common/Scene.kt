@@ -11,57 +11,52 @@ import chela.kotlin.view.scanner.ChScanner
 
 abstract class Scene: ChHolder<View>(){
     protected var scan:ChScanned? = null
-    private var id: Ch.Id? = null
-    override fun create(base: ChHolderBase<View>, isRestore:Boolean, vararg arg:Any):View{
+    override fun createInit(base:ChHolderBase<View>, vararg arg:Any){
         if(base !is ChGroupBase) throw Exception("")
         vm()
-        base.checkId(id)?.let{
-            id = it
-            val view = base.inflate(layout())
-            scan?.let{it.view = view} ?: run{scan = ChScanner.scan(this, view)}
-        }
-        scan!!.render()
+        val view = base.inflate(layout())
+        if(scan == null) scan = ChScanner.scan(this, view)
+        scan!!.render(view)
+    }
+    override fun create(base:ChHolderBase<View>, vararg arg:Any):View{
         init()
         return scan!!.view
     }
-    override fun push(isRestore: Boolean) {
-        if(isRestore){
-            vm().pushed()
-            render()
-        }else{
-            App.looper {
-                time = Holder.pushTime
-                block = {
-                    vm().pushAnimation(it)
-                    renderSync()
-                }
-                ended = {
-                    vm().pushed()
-                    pushed()
-                    render()
-                }
+    override fun addRestore(){
+        vm().pushed()
+        render()
+    }
+    override fun addPush(){
+        App.looper {
+            time = Holder.pushTime
+            block = {
+                vm().pushAnimation(it)
+                renderSync()
+            }
+            ended = {
+                vm().pushed()
+                pushed()
+                render()
             }
         }
     }
-    override fun pop(isJump: Boolean):Long {
-        return if(isJump){
-            vm().poped()
-            render()
-            0L
-        }else{
-            App.looper{
-                time = Holder.popTime
-                block = {
-                    vm().popAnimation(it)
-                    renderSync()
-                }
-                ended = {
-                    vm().poped()
-                    render()
-                }
+    override fun removeTake(){
+        vm().poped()
+        render()
+    }
+    override fun removePop():Long{
+        App.looper{
+            time = Holder.popTime
+            block = {
+                vm().popAnimation(it)
+                renderSync()
             }
-            Holder.popTime.toLong()
+            ended = {
+                vm().poped()
+                render()
+            }
         }
+        return Holder.popTime.toLong()
     }
     fun render() = scan?.render()
     fun renderSync() = scan?.renderSync()
