@@ -1,6 +1,5 @@
 package chela.kotlin.view.router.scanholder
 
-import android.util.Log
 import chela.kotlin.Ch.WrapperType
 import chela.kotlin.looper.ChItem
 import chela.kotlin.view.ChStyleModel

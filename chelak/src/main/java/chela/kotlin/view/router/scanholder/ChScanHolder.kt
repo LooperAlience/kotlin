@@ -2,7 +2,6 @@ package chela.kotlin.view.router.scanholder
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
