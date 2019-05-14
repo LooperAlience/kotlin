@@ -23,6 +23,7 @@ abstract class ChScanHolder(private val layout:Int, private val model:ChScanHold
     protected fun openURLonBrower(url:String) = (scanned?.view?.context as? AppCompatActivity)?.startActivity(
         Intent(Intent.ACTION_VIEW, Uri.parse(url))
     )
+    val view:View? get() = scanned?.view
     override fun createInit(base:ChHolderBase<View>, vararg arg:Any){
         if(base !is ChGroupBase) throw Exception("")
         val view = base.inflate(layout)

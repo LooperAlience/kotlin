@@ -53,7 +53,7 @@ abstract class ChHolderBase<T>{
         holderT.clear()
         clear()
     }
-    protected open fun add(holder:ChHolder<T>, isBottom:Boolean){}
+    open fun add(holder:ChHolder<T>, isBottom:Boolean){}
     open fun remove(holder: ChHolder<T>, t:T){}
     protected open fun pause(holder: ChHolder<T>){}
     protected open fun resume(holder: ChHolder<T>){}
