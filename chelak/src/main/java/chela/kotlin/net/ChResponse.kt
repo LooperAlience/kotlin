@@ -1,5 +1,6 @@
 package chela.kotlin.net
 
+import chela.kotlin.Ch
 import okhttp3.Response
 
 class ChResponse(private val response:Response?, var err:String? = null){
@@ -7,16 +8,16 @@ class ChResponse(private val response:Response?, var err:String? = null){
     var arg:List<Pair<String, Any>>? = null
     val extra = mutableMapOf<String, Any>()
     var result:Any = ""
-    val state:Int by lazy{response?.code() ?: 0}
+    val state:Int by Ch.slazy{response?.code() ?: 0}
     private var isOpened = response == null
-    val body:String? by lazy{
+    val body:String? by Ch.slazy{
         if(isOpened) null
         else{
             isOpened = true
             response?.body()?.use{it.string()}
         }
     }
-    val byte:ByteArray? by lazy{
+    val byte:ByteArray? by Ch.slazy{
         if(isOpened) null
         else {
             isOpened = true

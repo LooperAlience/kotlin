@@ -18,10 +18,8 @@ class Act : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         Ch.debugLevel = 1
         setContentView(R.layout.activity_container)
-        if(ChScanHolder.looper == null) ChScanHolder.looper = Ch.looper()
-        ChScanHolder.looper?.act(this)
         router.base.group(main)
-        Ch.waitActivate(this, ChScanHolder.looper){
+        Ch.waitActivate(this, Ch.groupLooper){
             if(!router.restore()){
                 router.push(Holder("1", R.layout.activity_main6, MainVm("test1", "#ff0000")))
                 router.push(Holder("2", R.layout.activity_main6, MainVm("test2", "#ffff00")))

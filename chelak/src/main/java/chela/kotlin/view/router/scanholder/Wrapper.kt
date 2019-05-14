@@ -1,5 +1,7 @@
 package chela.kotlin.view.router.scanholder
 
+import android.util.Log
+import chela.kotlin.Ch.WrapperType
 import chela.kotlin.looper.ChItem
 import chela.kotlin.view.ChStyleModel
 import chela.kotlin.view.ChWindow
@@ -8,31 +10,29 @@ import com.chela.annotation.STYLE
 
 @STYLE
 class Wrapper(
-    @EX internal val push:Type,
-    @EX internal val pop:Type,
-    @EX internal val pushEase:String,
-    @EX internal val popEase:String
+    @EX internal var push:WrapperType,
+    @EX internal var pop:WrapperType,
+    @EX internal var pushEase:String,
+    @EX internal var popEase:String
 ):ChStyleModel(){
     companion object {
-        @EX internal val popTime = 320L
-        @EX internal val pushTime = 320L
+        @EX internal var popTime = 320L
+        @EX internal var pushTime = 320L
     }
-    enum class Type(val isX:Boolean){
-        LR(true), RL(true), TB(false), BT(false), NO(false)
-    }
+
     @EX val pushed = when(push){
-        Type.LR-> -ChWindow.width.toDouble() to 0.0
-        Type.RL-> ChWindow.width.toDouble() to 0.0
-        Type.TB-> -ChWindow.height.toDouble() to 0.0
-        Type.BT-> ChWindow.height.toDouble() to 0.0
-        Type.NO-> 0.0 to 0.0
+        WrapperType.LR-> -ChWindow.width.toDouble() to 0.0
+        WrapperType.RL-> ChWindow.width.toDouble() to 0.0
+        WrapperType.TB-> -ChWindow.height.toDouble() to 0.0
+        WrapperType.BT-> ChWindow.height.toDouble() to 0.0
+        WrapperType.NO-> 0.0 to 0.0
     }
     @EX val poped = when(pop){
-        Type.LR-> 0.0 to ChWindow.width.toDouble()
-        Type.RL-> 0.0 to -ChWindow.width.toDouble()
-        Type.TB-> 0.0 to ChWindow.height.toDouble()
-        Type.BT-> 0.0 to -ChWindow.height.toDouble()
-        Type.NO-> 0.0 to 0.0
+        WrapperType.LR-> 0.0 to ChWindow.width.toDouble()
+        WrapperType.RL-> 0.0 to -ChWindow.width.toDouble()
+        WrapperType.TB-> 0.0 to ChWindow.height.toDouble()
+        WrapperType.BT-> 0.0 to -ChWindow.height.toDouble()
+        WrapperType.NO-> 0.0 to 0.0
     }
 
     var x = 0.0

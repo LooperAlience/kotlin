@@ -1,5 +1,6 @@
 package chela.kotlin.view.scanner
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import chela.kotlin.Ch
@@ -26,7 +27,7 @@ object ChScanner{
                 while(t !== view && limit-- > 0){
                     t.parent?.let {
                         val p = it as ViewGroup
-                        pos += p.indexOfChild(v)
+                        pos += p.indexOfChild(t)
                         t = p
                     }
                 }

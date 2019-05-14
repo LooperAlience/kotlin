@@ -26,15 +26,15 @@ object Prop:MsgType(0){
 }
 object ChThread{
     val property = Prop
-    val msgType by lazy{mapOf<Int, MsgType>(0 to Prop)}
-    private val mainHnd by lazy{object:Handler(Looper.getMainLooper()) {
+    val msgType = mapOf<Int, MsgType>(0 to Prop)
+    private val mainHnd = object:Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg:Message){
             msgType[msg.what]?.f(msg.obj)
             msg.recycle()
         }
-    }}
-    private val que by lazy{Executors.newSingleThreadExecutor()}
-    private val pool by lazy{Executors.newFixedThreadPool(3)}
+    }
+    private val que = Executors.newSingleThreadExecutor()
+    private val pool = Executors.newFixedThreadPool(3)
     fun flushAll(){
         que.shutdownNow()
         pool.shutdownNow()

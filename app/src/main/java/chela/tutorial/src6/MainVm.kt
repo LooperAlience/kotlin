@@ -1,14 +1,12 @@
 package chela.tutorial.src6
 
-import android.util.Log
-import android.view.View
 import chela.kotlin.Ch
 import chela.kotlin.view.ChStyleModel
 import chela.kotlin.view.router.scanholder.ChScanHolderModel
 import chela.kotlin.view.router.scanholder.Wrapper
 import com.chela.annotation.STYLE
 
-class MainVm(text:String, bg:String) : ChScanHolderModel(Wrapper.Type.NO, Wrapper.Type.NO) {
+class MainVm(text:String, bg:String) : ChScanHolderModel(Wrapper.WrapperType.NO, Wrapper.WrapperType.NO) {
     val text = Text(text, bg)
 }
 @STYLE

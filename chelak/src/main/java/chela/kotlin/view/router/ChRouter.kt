@@ -9,7 +9,6 @@ import chela.kotlin.view.router.holder.ChHolderBase
 class ChRouter<T, R:ChHolderBase<T>>(val base:R){
     enum class State{RESTORE, POP, PUSH, TAKE}
     private val stack = mutableListOf<ChHolder<T>>()
-    val isFinal:Boolean get() = stack.size == 1
     private var isRestored = false
     fun restore() = if(stack.isEmpty()) false
     else{
@@ -53,6 +52,13 @@ class ChRouter<T, R:ChHolderBase<T>>(val base:R){
         if(i != -1){
             stack.removeAt(i)
             ChThread.main(Runnable {base._remove(holder, State.TAKE)})
+        }
+    }
+    fun takeBeforeLast(){
+        var i = stack.size - 1
+        while(i-- > 0){
+            val h = stack.removeAt(i)
+            ChThread.main(Runnable {base._remove(h, State.TAKE)})
         }
     }
     fun clear() {

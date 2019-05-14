@@ -39,17 +39,14 @@ import chela.kotlin.view.scanner.ChScanner
 import net.sqlcipher.database.SQLiteDatabase
 import org.json.JSONObject
 
-
-/**
- * Chela base object
- */
 object Ch{
 
     inline val Number.DptoPx get() = this.toDouble() * ChWindow.SptoPx
     inline val Number.PxtoDp get() = this.toDouble() * ChWindow.PxtoDp
     inline val Number.PxtoSp get() = this.toDouble() * ChWindow.PxtoSp
     inline val Number.SptoPx get() = this.toDouble() * ChWindow.SptoPx
-
+    fun <T> slazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.PUBLICATION, initializer)
+    fun <T> ulazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE, initializer)
 
     class Update(var v:Any)
     class Once(var v:Any){var isRun = false}
@@ -74,7 +71,9 @@ object Ch{
     }
 
     enum class Value{obj, arr, wifi, mobile, none}
-
+    enum class WrapperType(val isX:Boolean){
+        LR(true), RL(true), TB(false), BT(false), NO(false)
+    }
     val OBJECT = Value.obj
     val ARRAY = Value.arr
     val WIFI = Value.wifi
@@ -160,15 +159,13 @@ object Ch{
             }
         }
     }
-
     fun finish(act:AppCompatActivity){
         act.cacheDir?.let{it.deleteRecursively()}
         act.finish()
         System.exit(0)
     }
-
     fun looper():ChLooper = ChLooper()
-
+    val groupLooper:ChLooper get() = ChGroupBase.looper
     fun <T, R:ChHolderBase<T>>router(base: R): ChRouter<T, R> = ChRouter(base)
     fun groupBase():ChGroupBase = ChGroupBase()
     fun fragmentBase():ChFragmentBase = ChFragmentBase()

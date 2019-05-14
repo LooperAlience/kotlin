@@ -28,7 +28,7 @@ abstract class Model(isRegister:Boolean = true, name:String? = null){
             St(p ?: this.p, t ?: this.t, v ?: this.v, k ?: this.k, i ?: this.i)
     }
     companion object {
-        private val isTypeChecked = mutableSetOf<KClass<*>>()
+        @EX private val isTypeChecked = mutableSetOf<KClass<*>>()
     }
     init{val cls = this::class
         if(!isTypeChecked.contains(cls)){
@@ -41,8 +41,8 @@ abstract class Model(isRegister:Boolean = true, name:String? = null){
             }
         }
     }
-    val ref by lazy{ChReflect.fields(this)}
-    @JvmField var isSet = false
+    @EX val ref by Ch.ulazy{ChReflect.fields(this)}
+    @EX @JvmField var isSet = false
     open operator fun get(k:String) = ref.getter[k]?.call(this) ?: Ch.NONE
     open operator fun set(k:String, v:Any) = ref.setter[k]?.let {
         it.call(this, v)

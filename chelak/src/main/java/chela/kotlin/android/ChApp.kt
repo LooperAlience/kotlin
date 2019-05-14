@@ -12,10 +12,9 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.provider.Settings
 import android.util.DisplayMetrics
-import android.util.Log
-import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.content.res.AppCompatResources
+import chela.kotlin.Ch
 import chela.kotlin.view.ChWindow
 import java.io.File
 import java.util.*
@@ -25,7 +24,7 @@ import java.util.*
  */
 object ChApp{
     lateinit var app: Application
-    val clip: ClipboardManager by lazy{app.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager}
+    val clip: ClipboardManager by Ch.slazy{app.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager}
     lateinit var res: Resources
     lateinit var asset: AssetManager
     lateinit var cm: ConnectivityManager

@@ -32,10 +32,12 @@ class ChLooper:LifecycleObserver{
      * @param ctx activity context
      * @param looper its loop() execute on activity_main1 thread
      */
-    private class Ani(ctx: Context, private val looper: ChLooper): View(ctx){
+    private class Ani(ctx: Context): View(ctx){
+        private val loopers = mutableSetOf<ChLooper>()
         init{tag = "CHELA_ANI"}
+        operator fun plusAssign(looper:ChLooper){loopers.add(looper)}
         override fun onDraw(canvas: Canvas?){
-            looper.loop()
+            loopers.forEach {it.loop()}
             invalidate()
         }
     }
@@ -75,11 +77,12 @@ class ChLooper:LifecycleObserver{
      */
     fun act(act: AppCompatActivity){
         val root = act.window.decorView as ViewGroup
-        if(root.findViewWithTag<Ani>("CHELA_ANI") == null){
+        (root.findViewWithTag<Ani>("CHELA_ANI") ?: run{
             //act.lifecycle.addObserver(this)
-            val ani = Ani(act, this)
+            val ani = Ani(act)
             ChThread.main(Runnable { root.addView(ani) })
-        }
+            ani
+        }) += this
     }
     fun loop(){
         val c = now()

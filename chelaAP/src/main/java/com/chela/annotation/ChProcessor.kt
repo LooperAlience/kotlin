@@ -18,7 +18,7 @@ class ChProcessor : AbstractProcessor(){
     val exProp = "ref,isSet,OBJECT,ARRAY,isTypeChecked,Companion,INSTANCE".split(",")
     val exMethod = "getClass,hashCode,clone,toString,notify,notifyAll,equals,wait,finalize".split(",")
     val styles = (
-        "style,ref," +
+        "style," +
         "tag,isEnabled,visibility,background,shadow,x,y,z,scaleX,scaleY,rotation,alpha,paddingStart,paddingEnd,paddingTop,paddingBottom,padding," +
         "click,longClick,clickable,longClickable,focusChange,focusable,focusableInTouchMode,focus,textChanged,touch,down,up,move," +
         "width,height,margin,marginStart,marginEnd,marginTop,marginBottom," +
@@ -59,7 +59,7 @@ class ChProcessor : AbstractProcessor(){
             val cls = it.simpleName
             val pack = processingEnv.elementUtils.getPackageOf(it)
             val plugin = (it.getAnnotation(STYLE::class.java) as STYLE).ex
-            fields.find{!styles.contains(it.toLowerCase()) && !plugin.contains(it.toLowerCase())}?.let{
+            fields.find{!styles.contains(it.toLowerCase())&& !exProp.contains(it.toLowerCase()) && !plugin.contains(it.toLowerCase())}?.let{
                 processingEnv.messager.printMessage(ERROR, "$it in $cls of $pack- invalid field")
             }
         }

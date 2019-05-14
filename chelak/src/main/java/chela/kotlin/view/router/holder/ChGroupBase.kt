@@ -6,12 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
+import chela.kotlin.looper.ChLooper
+import chela.kotlin.view.router.scanholder.ChScanHolder
 
 class ChGroupBase: ChHolderBase<View>(){
+    companion object{var looper: ChLooper = ChLooper()}
     private var inflater:LayoutInflater? = null
     private var group:ViewGroup? = null
     fun group(it:ViewGroup, removeChildren:Boolean = true){
         newId()
+        looper.act(it.context as AppCompatActivity)
         group = it
         if(removeChildren) clear()
         (it.context as? AppCompatActivity)?.let{inflater = it.layoutInflater} ?: throw Throwable("invalid AppCompatActivity - ${it.context}")

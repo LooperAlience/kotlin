@@ -42,8 +42,6 @@ class Act : AppCompatActivity(){
             }
             request()
         }
-
-
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray){
         ChPermission.result(this, requestCode, permissions, grantResults)

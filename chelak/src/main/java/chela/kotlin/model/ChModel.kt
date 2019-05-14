@@ -1,5 +1,6 @@
 package chela.kotlin.model
 
+import android.util.Log
 import chela.kotlin.cdata.ChCdata
 import chela.kotlin.core._for
 import org.json.JSONArray

@@ -26,7 +26,8 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
     private var isOnce = false
     internal fun view(v: View){
         var t = v
-        for(i in pos) t = (t as ViewGroup).getChildAt(i)
+        var i = pos.size
+        while(i-- > 0) t = (t as ViewGroup).getChildAt(pos[i])
         view = t
         propVal?.clear()
         recordVal?.clear()
@@ -95,7 +96,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
             isOnce = true
             once?.let{
                 it.forEach{(k, v)->r[k] = v}
-                once = null
+                //once = null
             }
         }
         prop?.forEach{(k, _v) ->
@@ -140,7 +141,11 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
                                 else -> recordVal?.let {
                                     val pv = it["style.$k"]
                                     if (pv == null || pv != sv) {
-                                        r[k] = sv
+                                        if(k == "style") {
+                                            "$sv".split(",").map{it.trim()}.forEach{
+                                                ChStyle[it]?.let{r.putAll(it)}
+                                            }
+                                        }else r[k] = sv
                                         it["style.$k"] = sv
                                     }
                                 }
