@@ -39,7 +39,7 @@ object reV: ChRegex(
             else->v.toLong()
         }
     }
-    fun num(it:String):Number? = if(re.matches(it)) reV.match(it)?.let{
+    fun num(it:String):Number? = if(re.matches(it)) match(it)?.let{
         it.groups[3]?.let{reV.group3(it)} ?:
         it.groups[4]?.let{reV.group4(it)}
     } as? Number? else null
