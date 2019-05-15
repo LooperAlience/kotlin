@@ -1,15 +1,18 @@
 package chela.kotlin.view.router.holder
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import chela.kotlin.Ch
 import chela.kotlin.looper.ChLooper
+import chela.kotlin.view.router.scanholder.ChScanHolder
 
 class ChGroupBase: ChHolderBase<View>(){
     companion object{var looper: ChLooper = ChLooper()}
-    var inflater:LayoutInflater? = null
-    var group:ViewGroup? = null
+    private var inflater:LayoutInflater? = null
+    private var group:ViewGroup? = null
     fun group(it:ViewGroup, removeChildren:Boolean = true){
         newId()
         looper.act(it.context as AppCompatActivity)
