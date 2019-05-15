@@ -6,7 +6,7 @@ import chela.kotlin.view.router.scanholder.ChScanHolderModel
 import chela.kotlin.view.router.scanholder.Wrapper
 import com.chela.annotation.STYLE
 
-class MainVm(text:String, bg:String) : ChScanHolderModel(Wrapper.WrapperType.NO, Wrapper.WrapperType.NO) {
+class MainVm(text:String, bg:String) : ChScanHolderModel(Ch.WrapperType.NO, Ch.WrapperType.NO) {
     val text = Text(text, bg)
 }
 @STYLE

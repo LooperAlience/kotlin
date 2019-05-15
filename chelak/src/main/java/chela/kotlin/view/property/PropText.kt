@@ -3,15 +3,19 @@ package chela.kotlin.view.property
 import android.os.Build
 import android.text.Html
 import android.text.InputFilter
+import android.text.InputType
 import android.text.Spanned
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import chela.kotlin.Ch.PxtoSp
 import chela.kotlin.android.ChApp
 import chela.kotlin.core._try
 import chela.kotlin.view.ChStyle
-import chela.kotlin.Ch.PxtoSp
+
 
 object Type{
     val date = 0x14

@@ -2,7 +2,9 @@ package chela.kotlin.view.router.scanholder
 
 import android.content.Intent
 import android.net.Uri
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.kotlin.Ch.WrapperType.NO
@@ -32,6 +34,20 @@ abstract class ChScanHolder(private val layout:Int, private val model:ChScanHold
     }
     override fun create(base:ChHolderBase<View>, vararg arg:Any) = scanned!!.view
 
+    private var group:ViewGroup? = null
+    fun create(g: ViewGroup):View{
+        if(group != g) {
+            group = g
+            (g.context as? AppCompatActivity)?.let{
+                it.layoutInflater.inflate(layout, g, false)
+            }?.let {
+                if (scanned == null) scanned = ChScanner.scan(Ch.NONE, it)
+                scanInited()
+                scanned!!.render(it, model)
+            }
+        }
+        return scanned!!.view
+    }
     override fun addRestore(){
         model.wrapper.pushed()
         model.pushed()
