@@ -3,11 +3,7 @@ package chela.kotlin.view.property
 import android.os.Build
 import android.text.Html
 import android.text.InputFilter
-import android.text.InputType
 import android.text.Spanned
-import android.text.method.HideReturnsTransformationMethod
-import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
@@ -78,7 +74,6 @@ object PropText:Property(){
         }
         view.text = spanned
     }
-
     fun textSize(view:View, v:Any){
         if(v !is Number || view !is TextView) return
         view.textSize = v.PxtoSp.toFloat()

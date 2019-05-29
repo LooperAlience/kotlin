@@ -1,6 +1,5 @@
 package chela.kotlin.view.scanner
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import chela.kotlin.Ch
@@ -10,10 +9,6 @@ import chela.kotlin.regex.reV
 import chela.kotlin.view.ChStyle
 import chela.kotlin.view.ChStyleModel
 import chela.kotlin.view.ChViewModel
-import com.chela.annotation.EX
-import com.chela.annotation.PROP
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.memberProperties
 
 class ChScanItem internal constructor(@JvmField var view: View, private val pos:List<Int>): Model(){
     companion object{private val exKey = "isSet,ref,popX,pushX"}

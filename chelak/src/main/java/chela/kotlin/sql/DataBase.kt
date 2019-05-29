@@ -129,7 +129,10 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
                     }
                     'w'->if(a.isEmpty()) writer.execSQL(q) else writer.execSQL(q, a)
                 }
-            }catch(e:Throwable){msg = "error - $e"}
+            }catch(e:Throwable){
+                if(Ch.debugLevel > 1) Log.i("ch", "dberror :$e")
+                msg = "error - $e"
+            }
         }
         if(it.query.size > 1){
             writer.setTransactionSuccessful()

@@ -2,9 +2,9 @@ package chela.kotlin.view.router.scanholder
 
 import android.content.Intent
 import android.net.Uri
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import chela.kotlin.Ch
 import chela.kotlin.Ch.WrapperType.NO
@@ -18,12 +18,15 @@ import chela.kotlin.view.scanner.ChScanner
 
 abstract class ChScanHolder(private val layout:Int, private val model:ChScanHolderModel, private val tag:Any? = null): ChHolder<View>(){
     private var scanned:ChScanned? = null
-    protected fun render() = scanned?.render(null, model)
+    fun render() = scanned?.render(null, model)
     protected fun clearFocus() = scanned?.view?.clearFocus()
     protected fun keyboardHide() = (scanned?.view?.context as? AppCompatActivity)?.let{ ChKeyboard.hide(it)}
-    protected fun openURLonBrower(url:String) = (scanned?.view?.context as? AppCompatActivity)?.startActivity(
+    protected fun openURLOnBrowser(url:String) = (scanned?.view?.context as? AppCompatActivity)?.startActivity(
         Intent(Intent.ACTION_VIEW, Uri.parse(url))
     )
+    protected fun toast(text:String, length:Int = Toast.LENGTH_SHORT) = (scanned?.view?.context as? AppCompatActivity)?.let{
+        Ch.thread.main(Runnable{ Toast.makeText(it, text, length).show() })
+    }
     val view:View? get() = scanned?.view
     override fun createInit(base:ChHolderBase<View>, vararg arg:Any){
         if(base !is ChGroupBase) throw Exception("")

@@ -1,6 +1,5 @@
 package chela.kotlin.view.property
 
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 

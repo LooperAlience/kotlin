@@ -3,7 +3,6 @@ package chela.kotlin.view.property
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.util.Log
 import android.view.View
 import chela.kotlin.android.ChApp
 import chela.kotlin.regex.reV
