@@ -165,7 +165,7 @@ class ChScanItem internal constructor(@JvmField var view: View, private val pos:
             }
         }
         if(r.isNotEmpty()) r.forEach{(k, v)->
-            r[k] = if(v is String && v.indexOf(' ') == -1) reV.num(v)?.toFloat() ?: v
+            r[k] = if(v is String && v.indexOf(' ') == -1) reV.num(v) ?: v
             else v
         }
         return r
