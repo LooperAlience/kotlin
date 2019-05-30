@@ -12,7 +12,7 @@ object ChProperty:Property(){
         plugin[k] = block
     }
     fun f(view:View, k:String, v:Any) = properties[k.toLowerCase()]?.let{
-        //Log.i("ch", "k-$k :::::: f : ${it.second} $view :::::: $v")
+        Log.i("ch", "chproperty $k -- $v--$view")
         it.first.call(it.second, view, if(v is Ch.Update) v.v else v)
     } ?: plugin[k.toLowerCase()]?.let{it(view, v)}
     fun color(v:String):Int{

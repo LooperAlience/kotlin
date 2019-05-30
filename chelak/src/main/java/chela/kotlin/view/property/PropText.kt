@@ -4,6 +4,7 @@ import android.os.Build
 import android.text.Html
 import android.text.InputFilter
 import android.text.Spanned
+import android.text.TextUtils
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
@@ -117,8 +118,18 @@ object PropText:Property(){
         view.setHintTextColor(ChProperty.color(v))
     }
     fun maxLines(view:View, v:Any){
-        if(v !is Number || view !is TextView) return
-        view.maxLines = v.toInt()
+        if(view !is TextView || v !is Int) return
+        view.maxLines = v
+    }
+    fun ellipsize(view:View, v:Any){
+        if(view !is TextView) return
+        view.ellipsize = when("$v") {
+            "start" -> TextUtils.TruncateAt.START
+            "middle" -> TextUtils.TruncateAt.MIDDLE
+            "end" -> TextUtils.TruncateAt.END
+            "marquee" -> TextUtils.TruncateAt.MARQUEE
+            else->throw Throwable("invalid ellipsize $v")
+        }
     }
     fun maxLength(view:View, v:Any){
         if(v !is Number || view !is TextView) return
