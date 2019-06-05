@@ -22,9 +22,9 @@ abstract class ChScanHolder(private val layout:Int, private val model:ChScanHold
     fun render() = scanned?.render(null, model)
     protected fun clearFocus() = scanned?.view?.clearFocus()
     protected fun keyboardHide() = (scanned?.view?.context as? AppCompatActivity)?.let{ ChKeyboard.hide(it)}
-    protected fun openURLOnBrowser(url:String) = (scanned?.view?.context as? AppCompatActivity)?.startActivity(
+    protected fun openURLOnBrowser(url:String){if(url.isNotEmpty()) (scanned?.view?.context as? AppCompatActivity)?.startActivity(
         Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    )
+    )}
     protected fun toast(text:String, length:Int = Toast.LENGTH_SHORT) = (scanned?.view?.context as? AppCompatActivity)?.let{
         Ch.thread.main(Runnable{ Toast.makeText(it, text, length).show() })
     }
