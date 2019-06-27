@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.StrictMode
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
@@ -203,6 +204,18 @@ object Ch{
         protected abstract fun data(v:T)
         protected open fun renew(v:T){}
         protected open fun error(){}
+        fun reload(){
+            net { res ->
+                if(setDB(res)) {
+                    val v = getDB()
+                    if(v != null && isValid(v)){
+                        data[key] = v as Any
+                        renew(v)
+                        data(v)
+                    }else error()
+                }else error()
+            }
+        }
         operator fun invoke(retry:Int = 3){
             if(retry == 0){
                 error()
