@@ -58,8 +58,7 @@ abstract class ChScanHolder(private val layout:Int, private val model:ChScanHold
         restored()
         scanned!!.render(null, model)
     }
-    override fun addPop(){
-    }
+    override fun addPop(){}
     override fun addPush(){
         if(model.wrapper.push != NO){
             ChGroupBase.looper{
