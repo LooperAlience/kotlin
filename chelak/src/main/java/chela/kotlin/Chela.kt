@@ -37,6 +37,8 @@ import chela.kotlin.view.router.holder.ChHolderBase
 import chela.kotlin.view.scanner.ChScanner
 import net.sqlcipher.database.SQLiteDatabase
 import org.json.JSONObject
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.write
 
 object Ch{
 
@@ -239,4 +241,43 @@ object Ch{
         }
     }
     fun click(block:(View)->Unit) = View.OnClickListener{block(it)}
+
+    class ChannelEvent(val channel: String, private val v:Any?){
+        internal var isStop = false
+        internal var isRemove = false
+        @Suppress("UNCHECKED_CAST")
+        fun <T>value():T? = v as? T
+        fun stop(){isStop = true}
+        fun remove(){isRemove = true}
+    }
+    private val channels = mutableMapOf<String, MutableSet<(ChannelEvent)->Unit>>()
+    private val channelLock = ReentrantReadWriteLock()
+    fun addListener(channel:String, listener:(ChannelEvent)->Unit){
+        channelLock.write {
+            if (channels[channel] == null) channels[channel] = mutableSetOf()
+            channels[channel]?.let { it += listener }
+        }
+    }
+    fun addListenerOnce(channel:String, listener:(ChannelEvent)->Unit) = addListener(channel){
+        listener(it)
+        it.remove()
+    }
+    fun addListener(channel:String, remover:(ChannelEvent)->Boolean, listener:(ChannelEvent)->Unit) = addListener(channel){
+        if(remover(it)) it.remove() else listener(it)
+    }
+    fun removeListener(channel: String, listener:(ChannelEvent) -> Unit) = channels[channel]?.let{it -= listener}
+    fun notify(channel: String, value:Any? = null) = channels[channel]?.let{c->
+        val e = ChannelEvent(channel, value)
+        c.all{
+            if(!e.isStop) false
+            else{
+                it(e)
+                if(e.isRemove){
+                    channelLock.write{c -= it}
+                    e.isRemove = false
+                }
+                true
+            }
+        }
+    }
 }
