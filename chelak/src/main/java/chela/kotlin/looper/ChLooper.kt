@@ -96,7 +96,7 @@ class ChLooper:LifecycleObserver{
             var i = 0
             while(i < items.size) {
                 val item = items[i++]
-                if (item.isPaused || item.start > c) break
+                if (item.isPaused || item.start > c) continue
                 item.isTurn = false
                 var isEnd = false
                 item.rate = if(!item.isInfinity && item.end <= c){
