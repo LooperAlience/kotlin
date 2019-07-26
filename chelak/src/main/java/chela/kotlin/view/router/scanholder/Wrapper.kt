@@ -8,7 +8,7 @@ import com.chela.annotation.EX
 import com.chela.annotation.STYLE
 
 @STYLE
-class Wrapper(
+open class Wrapper(
     @EX internal var push:WrapperType,
     @EX internal var pop:WrapperType,
     @EX internal var pushEase:String,
@@ -18,7 +18,6 @@ class Wrapper(
         @EX internal var popTime = 320L
         @EX internal var pushTime = 320L
     }
-
     @EX val pushed = when(push){
         WrapperType.LR-> -ChWindow.width.toDouble() to 0.0
         WrapperType.RL-> ChWindow.width.toDouble() to 0.0
@@ -33,23 +32,21 @@ class Wrapper(
         WrapperType.BT-> 0.0 to -ChWindow.height.toDouble()
         WrapperType.NO-> 0.0 to 0.0
     }
-
     var x = 0.0
     var y = 0.0
-    var clickable = true
-    var visible = true
-
+    val clickable = true
+    var visibility = true
     override fun pushed() {
         if(push.isX) x = pushed.second else y = pushed.second
-        visible = true
     }
     override fun poped(){
         if(pop.isX) x = poped.second else y = poped.second
-        visible = false
+        visibility = false
     }
     override fun pushAnimation(it: ChItem){
         val v = it.ease(pushEase, pushed.first, pushed.second)
         if (push.isX) x = v else y = v
+        visibility = true
     }
     override fun popAnimation(it: ChItem){
         val v = it.ease(popEase, poped.first, poped.second)
