@@ -116,7 +116,7 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
             val q = query.substring(1)
             if(Ch.debugLevel > 1){
                 Log.i("ch", "query:$query")
-                Log.i("ch", "arg:${a.joinToString(", ")}, ${a.isEmpty()}")
+                Log.i("ch", "arg:${a.joinToString(", ")}")
             }
             try {
                 when (query[0]) {
@@ -130,7 +130,7 @@ class DataBase internal constructor(private val db:String, ver:Int, private val 
                     'w'->if(a.isEmpty()) writer.execSQL(q) else writer.execSQL(q, a)
                 }
             }catch(e:Throwable){
-                if(Ch.debugLevel > 1) Log.i("ch", "dberror :$e")
+                if(Ch.debugLevel > 1) Log.i("ch", "DB Error :$e")
                 msg = "error - $e"
             }
         }

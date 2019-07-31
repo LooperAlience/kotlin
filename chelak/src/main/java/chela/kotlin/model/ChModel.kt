@@ -1,6 +1,5 @@
 package chela.kotlin.model
 
-import android.util.Log
 import chela.kotlin.cdata.ChCdata
 import chela.kotlin.core._for
 import org.json.JSONArray
@@ -13,7 +12,7 @@ object ChModel{
     fun get(v:List<String>):Any{
         if(v.isEmpty()) throw Exception("invalid list size == 0")
         if(v[0] == "cdata") return ChCdata[v[1]] ?: "::${v[1]}"
-        repo[v[0]]?.let { return find(v, it) } ?: throw Exception("invalid key:" + v[0])
+        repo[v[0]]?.let { return if(v.size == 1) it else find(v, it) } ?: throw Exception("invalid key:" + v[0])
     }
     fun record(v:String, record:Model) = record(("_." + v).split('.'), record)
     fun record(v: List<String>, record: Model):Any{
@@ -23,7 +22,7 @@ object ChModel{
     private fun find(v:List<String>, it: Model): Any {
         var model: Model? = it
         var list:MutableList<Any>? = null
-        var r: Any = 0
+        var r: Any = it
         for(idx in 1 until v.size) {
             r = model?.get(v[idx]) ?: list?.get(v[idx].toInt()) ?: throw Exception("invalid key:${v[idx]} in $v")
             when(r){

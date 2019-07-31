@@ -1,8 +1,6 @@
 package chela.tutorial.common
 
-import android.view.LayoutInflater
 import android.view.View
-import chela.kotlin.Ch
 import chela.kotlin.view.router.holder.ChGroupBase
 import chela.kotlin.view.router.holder.ChHolder
 import chela.kotlin.view.router.holder.ChHolderBase

@@ -26,4 +26,5 @@ object ChProperty:Property(){
     val image = PropImage
     val button = PropButton
     val switch = PropSwitch
+    val webView = PropWebview
 }

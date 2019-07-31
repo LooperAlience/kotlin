@@ -70,7 +70,7 @@ object Ch{
         val bottom:Drawable? get() = d(_bottom)
         val left:Drawable? get() = d(_left)
     }
-
+    enum class WebView{default}
     enum class Value{obj, arr, wifi, mobile, none}
     enum class WrapperType(val isX:Boolean){
         LR(true), RL(true), TB(false), BT(false), NO(false)
@@ -202,6 +202,7 @@ object Ch{
         protected abstract fun setDB(res:ChResponse?):Boolean
         protected abstract fun net(block:(ChResponse?)->Unit)
         protected abstract fun isValid(v:T):Boolean
+        protected open fun isValidDB(v:T) = isValid(v)
         protected abstract fun data(v:T)
         protected open fun renew(v:T){}
         protected open fun error(){}
@@ -209,7 +210,7 @@ object Ch{
             net { res ->
                 if(setDB(res)) {
                     val v = getDB()
-                    if(v != null && isValid(v)){
+                    if(v != null && isValidDB(v)){
                         data[key] = v as Any
                         renew(v)
                         data(v)
@@ -230,7 +231,7 @@ object Ch{
                 }else data.remove(key)
             }
             val v = getDB()
-            if(v != null && isValid(v)){
+            if(v != null && isValidDB(v)){
                 data[key] = v as Any
                 renew(v)
                 invoke(retry)

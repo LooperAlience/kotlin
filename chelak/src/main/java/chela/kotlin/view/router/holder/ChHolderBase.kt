@@ -1,6 +1,5 @@
 package chela.kotlin.view.router.holder
 
-import android.util.Log
 import chela.kotlin.Ch
 import chela.kotlin.thread.ChThread
 import chela.kotlin.view.router.ChRouter

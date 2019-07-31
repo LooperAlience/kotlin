@@ -2,14 +2,22 @@ package chela.kotlin.view.router.scanholder
 
 import chela.kotlin.Ch
 import chela.kotlin.view.ChViewModel
+import com.chela.annotation.VM
 
-abstract class ChScanHolderModel(
-    push: Ch.WrapperType = Ch.WrapperType.RL,
-    pop: Ch.WrapperType = Ch.WrapperType.LR,
-    pushEase:String="circleOut",
-    popEase:String="circleIn"
-):ChViewModel(){
-    val wrapper = Wrapper(push, pop, pushEase, popEase)
+@VM
+abstract class ChScanHolderModel:ChViewModel{
+    constructor(
+        push: Ch.WrapperType = Ch.WrapperType.RL,
+        pop: Ch.WrapperType = Ch.WrapperType.LR,
+        pushEase:String="circleOut",
+        popEase:String="circleIn"
+    ):super(){
+        wrapper = Wrapper(push, pop, pushEase, popEase)
+    }
+    constructor(wrap:Wrapper):super(){
+        wrapper = wrap
+    }
+    val wrapper:Wrapper
     fun wrapperPushAnimation(type:Ch.WrapperType, ease:String="circleOut"){
         wrapper.push = type
         wrapper.pushEase = ease
